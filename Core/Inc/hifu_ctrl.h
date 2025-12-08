@@ -65,8 +65,6 @@ typedef enum
 	PWM_L2_LEVEL = 3,
 	PWM_H3_LEVEL = 4,
 	PWM_L3_LEVEL = 5,
-	PWM_H4_LEVEL = 6,
-	PWM_COOL_LEVEL = 7,
 
 
 	PWM_H_LEVEL = 0,
@@ -129,18 +127,6 @@ typedef enum
 	RTC_REG_MIN = 0x01,
 	RTC_REG_SEC = 0x00,
 
-	IDX_MAIN_P1_WATT = 1,
-	IDX_MAIN_P1_DURATION_TIME ,
-	IDX_MAIN_P1_INTERVAL_TIME ,
-	IDX_MAIN_P2_WATT = 4,
-	IDX_MAIN_P2_DURATION_TIME ,
-	IDX_MAIN_P2_INTERVAL_TIME ,
-	IDX_MAIN_P3_WATT = 7,
-	IDX_MAIN_P3_DURATION_TIME ,
-	IDX_MAIN_P3_INTERVAL_TIME ,
-	IDX_MAIN_P4_WATT = 10,
-	IDX_MAIN_P4_DURATION_TIME ,
-	IDX_MAIN_POSTCO0L_TIME,
 
 } RF_E;
 
@@ -251,7 +237,7 @@ typedef struct
 	uint8_t readyFlag;
 	uint8_t rfTxFlag;
 	int FeedBackW;
-	int FeedBackWBuff[30];
+	int FeedBackWBuff[100];
 	uint8_t autoCalFlag;
 	uint8_t autoCalStep;
 	uint8_t autoCalNowDa;
@@ -264,14 +250,6 @@ typedef struct
 	uint8_t liveChkCnt;
 	uint8_t liveOk;
 	uint8_t testPulseOption;
-	uint8_t pulseNum;
-	uint8_t pulseBuff[13];
-	uint8_t pulseMaxBuff[13];
-	uint8_t pulseMinBuff[13];
-	uint8_t pulseNowWattNum;
-	uint8_t pulseEndisBuff[5];
-	uint8_t pulseEndisChkBuff[5];
-	uint8_t pulsePreHigh;
 } RF_T;
 typedef struct
 {
@@ -348,7 +326,7 @@ typedef enum
 	WATER_LEVEL_HIGH = 0,
 	WATER_LEVEL_LOW = 1,
 
-	PRECOOL_TIMEOUT = 2000,
+	PRECOOL_TIMEOUT = 120000,
 
 	LEVEL_UNIT = 1000,
 	ERR_ENDIS_UNIT = 100,
@@ -569,7 +547,6 @@ void Tx_RF_GenStatus_Check();
 void Error_Check_Config();
 void LCD_Init();
 void AutoCal_Avg();
-void PulseData_Sand(uint8_t num, uint16_t data);
 
 
 /*  			function end  			*/

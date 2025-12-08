@@ -123,13 +123,13 @@ int main(void)
 
 
 #if 1
-//	IO_Test();
+//	IO_Config();
+	IO_Test();
 
 	Rf_Config();
 	UartRxDataProcess();
 
 #else
-  IO_Config();
   Error_Check_Config();
   TxTest();
   IO_Test();

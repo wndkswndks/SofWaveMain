@@ -266,7 +266,6 @@ void RTC_Config(void)
 {
 	static uint32_t timeStamp;
 
-
 	if(HAL_GetTick()-timeStamp >= 500)
 	{
 
@@ -298,8 +297,6 @@ void IO_Config()
 	uint8_t is_flowOk = (5<m_io.flowSensorFrq&&m_io.flowSensorFrq<10);
 	uint8_t is_pumpOn = (m_io.waterPumpPwrEn == 1);
 	uint8_t is_cillerOn = (m_io.ChillerPwrEn == 1);
-
-	if(m_rf.pluseOn) return;
 
 	m_io.level1Status = IS_LEVEL_SENSOR1_ON() ;
 	m_io.level2Status = IS_LEVEL_SENSOR2_ON() ;

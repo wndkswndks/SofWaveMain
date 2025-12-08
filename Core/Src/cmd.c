@@ -217,7 +217,7 @@ void Tx_LCD_Msg(uint8_t add, uint16_t data)
 	lcdTxMsg[3] = (data>>8)&0xff;
 	lcdTxMsg[5] = (data)&0xff;
 
-	Debug_LCD_Printf(DEBUG_TX, add, data);
+	//Debug_LCD_Printf(DEBUG_TX, add, data);
 
 #if 1//To PC
 	char str[20]={0,};
@@ -271,9 +271,7 @@ void AutoCal_Tx_Z_Msg()
 {
 	char buff[5] = "Z\r\n";
 	HAL_UART_Transmit(&huart3,buff, 3,100);
-#ifdef DEBUG_PRINT
-
-#endif
+	printf("z\r\n");
 
 }
 
@@ -381,6 +379,7 @@ void UartRx5DataProcess()
 void Uart_HP_Temp_LCD_Veiw()
 {
 	static uint32_t timeStamp;
+	static uint8_t once = 1;
 
 	if(m_hand1.cartEndFlag == 1)
 	{
@@ -391,11 +390,20 @@ void Uart_HP_Temp_LCD_Veiw()
 			timeStamp = HAL_GetTick();
 		}
 	}
+	if(m_hand1.temprature > 280)
+	{
+		if(once)
+		{
+			Tx_Hand1_Msg(CMD_HP1_ADD, 2);
+			once = 0;
+		}
+	}
+
+
 }
 
 void UartRxDataProcess()
 {
-	if(m_rf.pluseOn) return;
 	UartRx1DataProcess();
 	UartRx2DataProcess();//hp
 	UartRx4DataProcess();//gen
@@ -488,7 +496,7 @@ void Uart3_Passing(uint8_t data)//stm32��
 			m_rf.FeedBackW = FeedBackWtemp;
 			m_rf.FeedBackWBuff[m_rf.FeedBackCnt] = m_rf.FeedBackW;
 			m_rf.FeedBackCnt++;
-			m_rf.FeedBackCnt %= 30;
+			m_rf.FeedBackCnt %= 100;
 		}
 
 		Rx_BuffClear(&m_uart3);
