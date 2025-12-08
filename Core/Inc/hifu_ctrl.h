@@ -200,6 +200,8 @@ typedef enum
 	AUTOCAL_DA_FAIL = 1,
 	AUTOCAL_DA_PASS_CNT = 15,
 
+	PULSE_DISABLE = 0,
+	PULSE_ENABLE = 1,
 
 } LCD_NUM_E;
 /*  			enum end  				*/
@@ -570,6 +572,7 @@ void Error_Check_Config();
 void LCD_Init();
 void AutoCal_Avg();
 void PulseData_Sand(uint8_t num, uint16_t data);
+void PulseEn_Sand(uint8_t num, uint16_t enDis);
 
 
 /*  			function end  			*/

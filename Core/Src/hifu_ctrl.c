@@ -235,12 +235,6 @@ void Hand_Init()
 void LCD_Init()
 {
 	HAL_Delay(500);
-	m_rf.energy = 5;
-	m_rf.pulseDuration = 10;
-	m_rf.postCooling = 3;
-	m_rf.interval = 4;
-	m_rf.currentShot = 0;
-	m_rf.totaEnergy = 0;
 
 
 
@@ -257,16 +251,16 @@ void LCD_Init()
 	PulseData_Sand(IDX_MAIN_P4_DURATION_TIME, 25);
 	PulseData_Sand(IDX_MAIN_POSTCO0L_TIME, 10);
 
+	PulseEn_Sand(1, PULSE_ENABLE);
+	PulseEn_Sand(2, PULSE_ENABLE);
+	PulseEn_Sand(3, PULSE_ENABLE);
+	PulseEn_Sand(4, PULSE_ENABLE);
 
-	m_rf.pulseEndisBuff[1] = 1;
-	m_rf.pulseEndisBuff[2] = 1;
-	m_rf.pulseEndisBuff[3] = 1;
-	m_rf.pulseEndisBuff[4] = 1;
+	m_rf.currentShot = 0;
+	m_rf.totaEnergy = 0;
+	Tx_LCD_Msg(CMD_TOTAL_JOULE, m_rf.totaEnergy);
+	Tx_LCD_Msg(CMD_CURRENT_SHOT, m_rf.currentShot);
 
-	Tx_LCD_Msg(CMD_PLUSE_EN, 11);
-	Tx_LCD_Msg(CMD_PLUSE_EN, 21);
-	Tx_LCD_Msg(CMD_PLUSE_EN, 31);
-	Tx_LCD_Msg(CMD_PLUSE_EN, 41);
 	Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_STNBY);
 
 }
@@ -281,6 +275,17 @@ void PulseData_Sand(uint8_t num, uint16_t data)
 	Tx_LCD_Msg(CMD_PLUSE_VALUE, pulseData);
 
 }
+void PulseEn_Sand(uint8_t num, uint16_t enDis)
+{
+	uint16_t pulseData;
+	if(num>12)return;
+
+	pulseData = num*10 + enDis;
+	m_rf.pulseEndisBuff[num] = enDis;
+	Tx_LCD_Msg(CMD_PLUSE_EN, pulseData);
+
+}
+
 
 #if 0
 
@@ -2459,6 +2464,13 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 
 	}
 }
+
+
+
+
+
+
+
 void Hand_Rx_Parssing(uint8_t add, uint32_t data, uint32_t data2, uint32_t data3, uint32_t data4 )
 {
 	uint16_t valueTd, valueWatt;
@@ -2551,13 +2563,9 @@ void Hand_Rx_Parssing(uint8_t add, uint32_t data, uint32_t data2, uint32_t data3
 				}
 				if(eepErr==0)
 				{
-					Tx_LCD_Msg(CMD_ENERGY, m_rf.energy);
-					Tx_LCD_Msg(CMD_PULSE_DURATION, m_rf.pulseDuration);
-					Tx_LCD_Msg(CMD_POST_COOLING, m_rf.postCooling);
-					Tx_LCD_Msg(CMD_INTERVAL, m_rf.interval);
-					Tx_LCD_Msg(CMD_TOTAL_JOULE, m_rf.totaEnergy);
-					Tx_LCD_Msg(CMD_CURRENT_SHOT, m_rf.currentShot);
+					LCD_Init();
 					Tx_LCD_Msg(CMD_GET_ALL_CART_END, 1);
+
 					m_hand1.cartEndFlag = 1;
 				}
 				else
@@ -2602,6 +2610,7 @@ void Hand_Rx_Parssing(uint8_t add, uint32_t data, uint32_t data2, uint32_t data3
 
 
 }
+
 
 void RF_Rx_Parssing(uint8_t rxID)
 {
@@ -2698,6 +2707,19 @@ void Exp_Config()
 //	if(m_rf.pluseOn != 0 || m_rf.egExpOn != 0) return;
 	if(m_rf.readyFlag != READY_ON) return;
 
+
+	float pulse1Htime = (float)m_rf.pulseBuff[IDX_MAIN_P1_DURATION_TIME]/10.0;
+	float pulse2Htime = (float)m_rf.pulseBuff[IDX_MAIN_P2_DURATION_TIME]/10.0;
+	float pulse3Htime = (float)m_rf.pulseBuff[IDX_MAIN_P3_DURATION_TIME]/10.0;
+	float pulse4Htime = (float)m_rf.pulseBuff[IDX_MAIN_P4_DURATION_TIME]/10.0;
+	float pulse1Watt  = (float)m_rf.pulseBuff[IDX_MAIN_P1_WATT]/10.0;
+	float pulse2Watt  = (float)m_rf.pulseBuff[IDX_MAIN_P2_WATT]/10.0;
+	float pulse3Watt  = (float)m_rf.pulseBuff[IDX_MAIN_P3_WATT]/10.0;
+	float pulse4Watt  = (float)m_rf.pulseBuff[IDX_MAIN_P4_WATT]/10.0;
+	float energe = 0;
+
+
+
 	static uint8_t step = STEP0;
 
 	switch (step)
@@ -2719,15 +2741,19 @@ void Exp_Config()
 			RF_Pwm_Conter_Individual();
 			if(m_rf.expEndFlag) step = STEP2;
 		break;
+
 		case STEP2:
 			if(m_rf.expEndFlag)
 			{
 				m_rf.expEndFlag = 0;
-
-
+				if(m_rf.pulseEndisBuff[1]) energe += (pulse1Htime * pulse1Watt);
+				if(m_rf.pulseEndisBuff[2]) energe += (pulse2Htime * pulse2Watt);
+				if(m_rf.pulseEndisBuff[3]) energe += (pulse3Htime * pulse3Watt);
+				if(m_rf.pulseEndisBuff[4]) energe += (pulse4Htime * pulse4Watt);
+				energe *= 10;
+				m_rf.totaEnergy = m_rf.totaEnergy + energe;
 				m_rf.currentShot++;
 				Tx_LCD_Msg(CMD_CURRENT_SHOT, m_rf.currentShot);
-				m_rf.totaEnergy = m_rf.totaEnergy + m_rf.energy;
 				Tx_LCD_Msg(CMD_TOTAL_JOULE, m_rf.totaEnergy);
 				m_eep.remainingShotNum--;
 				Tx_LCD_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
