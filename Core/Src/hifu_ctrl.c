@@ -1403,7 +1403,7 @@ void LCD_Status_Tret()
 			m_rf.preCooltime = 0;
 			m_err.preCoolStatus = 1;
 
-#if 1
+#if 0
 		HAL_Delay(500);
 		testExpFlag =1;
 #endif
@@ -2614,7 +2614,7 @@ void Hand_Rx_Parssing(uint8_t add, uint32_t data, uint32_t data2, uint32_t data3
 
 void RF_Rx_Parssing(uint8_t rxID)
 {
-	static uint32_t timeStamp;
+	uint32_t timeStamp;
 
 
 
@@ -2624,7 +2624,10 @@ void RF_Rx_Parssing(uint8_t rxID)
 		timeStamp = HAL_GetTick();
 		while (HAL_GetTick() -timeStamp< 100 )
 		{
-			if(m_rf.lastTimeStamp)break;
+			if(m_rf.lastTimeStamp)
+			{
+				if(HAL_GetTick() - m_rf.lastTimeStamp>50)break;
+			}
 		}
 	}
 
@@ -2731,8 +2734,7 @@ void Exp_Config()
 				testExpFlag = 0;
 				Tx_LCD_Msg(CMD_LCD_EXP, LCD_EXP_START);
 				HAL_Delay(200);//�̰� �־����?���� ��Ȯ�� ����
-				if(m_rf.EnginerFlag) RF_eg_Exp_On();
-				else RF_Pwm_On();
+				RF_Pwm_On();
 				step = STEP1;
 			}
 		break;
