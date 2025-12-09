@@ -233,6 +233,7 @@ typedef struct
 	uint32_t postCooling;
 	uint32_t interval;
 	uint32_t currentShot;
+	uint16_t currentEnergy;
 	uint16_t totaEnergy;
 	uint8_t EnginerFlag;
 	uint8_t egExpOn;
@@ -573,6 +574,7 @@ void LCD_Init();
 void AutoCal_Avg();
 void PulseData_Sand(uint8_t num, uint16_t data);
 void PulseEn_Sand(uint8_t num, uint16_t enDis);
+void CurrentEnergy_Cal();
 
 
 /*  			function end  			*/
