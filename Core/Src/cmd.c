@@ -269,6 +269,7 @@ void AutoCal_Tx_Z_Msg()
 {
 	char buff[5] = "Z\r\n";
 	HAL_UART_Transmit(&huart3,buff, 3,100);
+	Debug_Printf("Z",1);
 #ifdef DEBUG_PRINT
 
 #endif
@@ -366,6 +367,9 @@ void Debug_Rx_Parssing(uint8_t add, uint32_t data)
 
 		case CMD_CAL_TEST_AUTOSTART:
 			m_rf.autoCalFlag = data;
+			if(data==1)Debug_Printf("Autocal Start",1);
+			else Debug_Printf("Autocal End",1);
+
 		break;
 
 

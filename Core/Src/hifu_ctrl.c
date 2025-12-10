@@ -191,7 +191,7 @@ void Rf_Init()
 	RF_Pwr_ON();
 
 
-	#if 0
+	#if 1
 	Rf_TD1_Table();
 	#else
 	Rf_TD2_Table();
@@ -1481,7 +1481,7 @@ int compare_32(const void *a, const void *b)    // 오름차순 비교 함수 (uint32_t 
     return 0;    // a와 b가 같을 때는 0 반환
 }
 
-int qsortBuff[20] = {0,};
+int qsortBuff[5] = {0,};
 void AutoCal_Avg()// 오름차순으로 정리
 {
 	int sum =0, avg = 0;
@@ -1492,10 +1492,11 @@ void AutoCal_Avg()// 오름차순으로 정리
 
 	avg = sum/3;
 	printf("avg : %d \r\n",avg);
+	memset(qsortBuff, 0, sizeof(qsortBuff));
 }
 
 
-int wattDa = 150;
+int wattDa = 1;
 int trandu = 0;
 int wattFrq = 11000;
 int wattDly = 250;
@@ -1662,14 +1663,14 @@ void AutoCal_Config_New()
 		break;
 
 		case STEP1:
-			m_rf.pluseEnginerHigh = 3000;
+			m_rf.pluseEnginerHigh = 2000;
 			for(int i =0 ;i < 5;i++)
 			{
 				AutoCal_Tx_IP_Msg();//아이들 0,2,4,6,8,
 				HAL_Delay(500);
 
 				RF_eg_Exp_On();
-				HAL_Delay(2500);
+				HAL_Delay(1000);
 
 				AutoCal_Tx_IP_Msg();//엑티브 1,3,5,7,9
 				HAL_Delay(2000); // 휴식
@@ -1714,23 +1715,24 @@ void AutoCal_Config_New()
 
 			if(wattDa<200)
 			{
-				wattDa++;
+				wattDa += 5 ;
 				m_rf.autoCalStep = STEP0;
 			}
 			else
 			{
 				Tx_RF_Watt_Zero_ALL_Module();
+				m_rf.autoCalFlag = 0;
 
 				wattDa = 1;
-				if(trandu<5)
-				{
-					trandu++;
-					m_rf.autoCalStep = STEP0;
-				}
-				else
-				{
-					m_rf.autoCalStep = STEP3;
-				}
+//				if(trandu<6)
+//				{
+//					trandu++;
+//					m_rf.autoCalStep = STEP0;
+//				}
+//				else
+//				{
+//					m_rf.autoCalStep = STEP3;
+//				}
 
 
 			}
@@ -2036,9 +2038,9 @@ void Rf_Config()
 #if 1
 	LCD_Status_Tret();
 	Exp_Config();
+	AutoCal_Config_New();
 
 #else
-	AutoCal_Config_New_Range();
 
 	Rf_Test();
 #endif
