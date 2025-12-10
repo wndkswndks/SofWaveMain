@@ -310,6 +310,744 @@ void CMD_Is_All_Live()
 
 }
 
+void Debug_Rx_Parssing(uint8_t add, uint32_t data)
+{
+	if(add==0)return;
+	switch (add)
+	{
+
+		case CMD_TEST_PULSE:
+			Tx_LCD_Msg(CMD_TEST_PULSE, data);
+			m_rf.testPulseOption = data;
+		break;
+
+		case CMD_TEST_FORCE_PAGE_CHANGE:
+			Tx_LCD_Msg(CMD_TEST_FORCE_PAGE_CHANGE, data);
+		break;
+
+		case CMD_CAL_TEST:
+			m_rf.readyFlag = READY_ON;
+			Tx_RF_FRQ_ALL_Module();
+			Tx_RF_Watt_Zero_ALL_Module();
+			TX_RF_Max_Ontime_Set();
+			m_rf.pluseEnginerHigh = 3000;
+			m_rf.EnginerFlag = 1;
+		break;
+
+		case CMD_CAL_TEST_ZERO:
+			AutoCal_Tx_Z_Msg();
+		break;
+
+		case CMD_CAL_TEST_EXP:
+			uint8_t tdu = data/1000;
+			uint16_t da = data%1000;
+			Tx_RF_Watt_Zero_ALL_Module();
+			Tx_RF_Watt_Module(tdu, da);
+			RF_eg_Exp_On();
+			m_rf.pluseEnginerHigh = 3000;
+		break;
+		case CMD_DEGUG_TEMP_DUTY_ON:
+			Tx_Hand1_Msg(CMD_GET_ALL_CART_END, data);
+		break;
+
+		case CMD_DEGUG_LCD_TEMP_DUTY_ON:
+			m_hand1.cartEndFlag = data;
+		break;
+		case CMD_CAL_TEST_IP:
+			AutoCal_Tx_IP_Msg();
+		break;
+
+		case CMD_CAL_TEST_AUTOSTART:
+			m_rf.autoCalFlag = data;
+		break;
+
+
+		case CMD_DEBUG_PUMP:
+			if(data) WaterPump_Pwr_ON();
+			else WaterPump_Pwr_OFF();
+		break;
+
+		case CMD_DEBUG_CHILLER:
+			if(data) Ciller_Pwr_ON();
+			else Ciller_Pwr_OFF();
+		break;
+
+		case CMD_DEBUG_PELTIER:
+			Tx_Hand1_Msg(CMD_HP1_ADD, data);
+		break;
+
+
+		case CMD_FRQ_CH0:
+			m_rf.rfFrqBuff[RF_FRQ_CH0] = data;
+			Tx_RF_FRQ_Module(RF_FRQ_CH0, data);
+			Tx_LCD_Msg(CMD_FRQ_CH0, data);
+		break;
+
+		case CMD_FRQ_CH1:
+			m_rf.rfFrqBuff[RF_FRQ_CH1] = data;
+			Tx_RF_FRQ_Module(RF_FRQ_CH1, data);
+			Tx_LCD_Msg(CMD_FRQ_CH1, data);
+		break;
+
+		case CMD_FRQ_CH2:
+			m_rf.rfFrqBuff[RF_FRQ_CH2] = data;
+			Tx_RF_FRQ_Module(RF_FRQ_CH2, data);
+			Tx_LCD_Msg(CMD_FRQ_CH2, data);
+		break;
+
+		case CMD_FRQ_CH3:
+			m_rf.rfFrqBuff[RF_FRQ_CH3] = data;
+			Tx_RF_FRQ_Module(RF_FRQ_CH3, data);
+			Tx_LCD_Msg(CMD_FRQ_CH3, data);
+		break;
+
+		case CMD_FRQ_CH4:
+			m_rf.rfFrqBuff[RF_FRQ_CH4] = data;
+			Tx_RF_FRQ_Module(RF_FRQ_CH4, data);
+			Tx_LCD_Msg(CMD_FRQ_CH4, data);
+		break;
+
+		case CMD_FRQ_CH5:
+			m_rf.rfFrqBuff[RF_FRQ_CH5] = data;
+			Tx_RF_FRQ_Module(RF_FRQ_CH5, data);
+			Tx_LCD_Msg(CMD_FRQ_CH5, data);
+		break;
+
+		case CMD_FRQ_CH6:
+			m_rf.rfFrqBuff[RF_FRQ_CH6] = data;
+			Tx_RF_FRQ_Module(RF_FRQ_CH6, data);
+			Tx_LCD_Msg(CMD_FRQ_CH6, data);
+		break;
+
+	}
+
+
+}
+
+
+
+void LCD_Rx_Parssing(uint8_t add, uint32_t data)
+{
+
+
+
+	if(add==0)return;
+	Debug_LCD_Printf(DEBUG_RX, add, data);
+
+	if(m_rf.treatStatus == STATUS_TRET)
+	{
+		if(add != CMD_LCD_STATUS)
+		{
+			m_rf.treatStatus = STATUS_STNBY;
+			m_rf.readyFlag = READY_OFF;
+			Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_STNBY);
+		}
+	}
+	switch (add)
+	{
+		case CMD_ENERGY:
+			if(data == BUTTON_UP)
+			{
+				if(m_rf.energy<MAX_ENERGY)
+				{
+					float wattF = ((float)(m_rf.energy+1) /(float)m_rf.pulseDuration);
+					uint8_t wattRange = (0.1 <= wattF && wattF <= 1.0);
+					if(wattRange)
+					{
+						m_rf.energy++;
+					}
+				}
+			}
+			else if(data == BUTTON_DN)
+			{
+				if(m_rf.energy>0)
+				{
+					float wattF = ((float)(m_rf.energy-1) /(float)m_rf.pulseDuration);
+					uint8_t wattRange = (0.1 <= wattF && wattF <= 1.0);
+					if(wattRange)
+					{
+						m_rf.energy--;
+					}
+				}
+			}
+			Tx_LCD_Msg(CMD_ENERGY, m_rf.energy);
+		break;
+
+		case CMD_PULSE_DURATION:
+			if(data == BUTTON_UP)
+			{
+				if(m_rf.pulseDuration<MAX_PULSE_DURATION)
+				{
+					float wattF = ((float)(m_rf.energy) /(float)(m_rf.pulseDuration+1));
+					uint8_t wattRange = (0.1 <= wattF && wattF <= 1.0);
+					if(wattRange)
+					{
+						m_rf.pulseDuration++;
+					}
+				}
+			}
+			else if(data == BUTTON_DN)
+			{
+				if(m_rf.pulseDuration>0)
+				{
+					float wattF = ((float)(m_rf.energy) /(float)(m_rf.pulseDuration-1));
+					uint8_t wattRange = (0.1 <= wattF && wattF <= 1.0);
+					if(wattRange)
+					{
+						m_rf.pulseDuration--;
+					}
+				}
+			}
+			Tx_LCD_Msg(CMD_PULSE_DURATION, m_rf.pulseDuration);
+
+		break;
+
+		case CMD_POST_COOLING:
+
+			if(data == BUTTON_UP&& m_rf.postCooling<MAX_POST_COOLING)
+				m_rf.postCooling++;
+			else if(data == BUTTON_DN&& m_rf.postCooling>0)
+				m_rf.postCooling--;
+			Tx_LCD_Msg(CMD_POST_COOLING, m_rf.postCooling);
+		break;
+
+		case CMD_INTERVAL:
+
+			if(data == BUTTON_UP&& m_rf.interval<MAX_INTERVAL)
+				m_rf.interval++;
+			else if(data == BUTTON_DN&& m_rf.interval>0)
+				m_rf.interval--;
+			Tx_LCD_Msg(CMD_INTERVAL, m_rf.interval);
+		break;
+
+		case CMD_CURRENT_SHOT:
+			if(data==0)
+			{
+				m_rf.currentShot = 0;
+				Tx_LCD_Msg(CMD_CURRENT_SHOT, m_rf.currentShot);
+			}
+		break;
+
+		case CMD_TOTAL_JOULE:
+			if(data==0)
+			{
+				m_rf.totaEnergy = 0;
+				Tx_LCD_Msg(CMD_TOTAL_JOULE, m_rf.totaEnergy);
+			}
+		break;
+
+		case CMD_REMIND_SHOT:
+			m_eep.remainingShotNum = data;
+			Tx_LCD_Msg(CMD_REMIND_SHOT, data);
+			Tx_Hand1_Msg(CMD_REMIND_SHOT, data);
+		break;
+
+		case CMD_FRQ_CH0:
+			m_rf.rfFrqBuff[RF_FRQ_CH0] = data;
+			Tx_RF_FRQ_Module(RF_FRQ_CH0, data);
+			Tx_LCD_Msg(CMD_FRQ_CH0, data);
+		break;
+
+		case CMD_FRQ_CH1:
+			m_rf.rfFrqBuff[RF_FRQ_CH1] = data;
+			Tx_RF_FRQ_Module(RF_FRQ_CH1, data);
+			Tx_LCD_Msg(CMD_FRQ_CH1, data);
+		break;
+
+		case CMD_FRQ_CH2:
+			m_rf.rfFrqBuff[RF_FRQ_CH2] = data;
+			Tx_RF_FRQ_Module(RF_FRQ_CH2, data);
+			Tx_LCD_Msg(CMD_FRQ_CH2, data);
+		break;
+
+		case CMD_FRQ_CH3:
+			m_rf.rfFrqBuff[RF_FRQ_CH3] = data;
+			Tx_RF_FRQ_Module(RF_FRQ_CH3, data);
+			Tx_LCD_Msg(CMD_FRQ_CH3, data);
+		break;
+
+		case CMD_FRQ_CH4:
+			m_rf.rfFrqBuff[RF_FRQ_CH4] = data;
+			Tx_RF_FRQ_Module(RF_FRQ_CH4, data);
+			Tx_LCD_Msg(CMD_FRQ_CH4, data);
+		break;
+
+		case CMD_FRQ_CH5:
+			m_rf.rfFrqBuff[RF_FRQ_CH5] = data;
+			Tx_RF_FRQ_Module(RF_FRQ_CH5, data);
+			Tx_LCD_Msg(CMD_FRQ_CH5, data);
+		break;
+
+		case CMD_FRQ_CH6:
+			m_rf.rfFrqBuff[RF_FRQ_CH6] = data;
+			Tx_RF_FRQ_Module(RF_FRQ_CH6, data);
+			Tx_LCD_Msg(CMD_FRQ_CH6, data);
+		break;
+
+		case CMD_WATT_CH0:
+			m_rf.rfwattBuff[RF_WATT_CH0] = data;
+			Tx_RF_Watt_Module(RF_WATT_CH0, data);
+			Tx_LCD_Msg(CMD_WATT_CH0, data);
+		break;
+
+		case CMD_WATT_CH1:
+			m_rf.rfwattBuff[RF_WATT_CH1] = data;
+			Tx_RF_Watt_Module(RF_WATT_CH1, data);
+			Tx_LCD_Msg(CMD_WATT_CH1, data);
+		break;
+
+		case CMD_WATT_CH2:
+			m_rf.rfwattBuff[RF_WATT_CH2] = data;
+			Tx_RF_Watt_Module(RF_WATT_CH2, data);
+			Tx_LCD_Msg(CMD_WATT_CH2, data);
+		break;
+
+		case CMD_WATT_CH3:
+			m_rf.rfwattBuff[RF_WATT_CH3] = data;
+			Tx_RF_Watt_Module(RF_WATT_CH3, data);
+			Tx_LCD_Msg(CMD_WATT_CH3, data);
+		break;
+
+		case CMD_WATT_CH4:
+			m_rf.rfwattBuff[RF_WATT_CH4] = data;
+			Tx_RF_Watt_Module(RF_WATT_CH4, data);
+			Tx_LCD_Msg(CMD_WATT_CH4, data);
+		break;
+
+		case CMD_WATT_CH5:
+			m_rf.rfwattBuff[RF_WATT_CH5] = data;
+			Tx_RF_Watt_Module(RF_WATT_CH5, data);
+			Tx_LCD_Msg(CMD_WATT_CH5, data);
+		break;
+
+		case CMD_WATT_CH6:
+			m_rf.rfwattBuff[RF_WATT_CH6] = data;
+			Tx_RF_Watt_Module(RF_WATT_CH6, data);
+			Tx_LCD_Msg(CMD_WATT_CH6, data);
+		break;
+
+		case CMD_PLUSE_NUM:
+			if(data == 0) break;
+			m_rf.pulseNum = data;
+			Tx_LCD_Msg(CMD_PLUSE_NUM, data);
+		break;
+
+		case CMD_PLUSE_EN:
+			if(data == 0) break;
+			uint8_t endisValue;
+			if(m_rf.pulseEndisBuff[data])
+			{
+				m_rf.pulseEndisBuff[data] = 0;
+			}
+			else
+			{
+				m_rf.pulseEndisBuff[data] = 1;
+			}
+
+			endisValue = data*10 + m_rf.pulseEndisBuff[data];
+			Tx_LCD_Msg(CMD_PLUSE_EN, endisValue);
+			CurrentEnergy_Cal();
+		break;
+
+
+		case CMD_PLUSE_BTN_UP_DN:
+			uint16_t pulseData = 0;
+			if(m_rf.pulseNum == 0) break;
+			if(data == BUTTON_UP)
+			{
+				if(m_rf.pulseBuff[m_rf.pulseNum]< m_rf.pulseMaxBuff[m_rf.pulseNum])
+				{
+					m_rf.pulseBuff[m_rf.pulseNum]++;
+				}
+			}
+			else if(data == BUTTON_DN)
+			{
+				if(m_rf.pulseBuff[m_rf.pulseNum]>m_rf.pulseMinBuff[m_rf.pulseNum])
+				{
+					m_rf.pulseBuff[m_rf.pulseNum]--;
+				}
+			}
+			pulseData = m_rf.pulseNum*100 + m_rf.pulseBuff[m_rf.pulseNum];
+			Tx_LCD_Msg(CMD_PLUSE_VALUE, pulseData);
+			CurrentEnergy_Cal();
+		break;
+
+
+		case CMD_CAIV_DURATION:
+			if(data==0xff)
+			{
+				m_rf.EnginerFlag = 0;
+			}
+			else
+			{
+				TX_RF_Max_Ontime_Set();
+				m_rf.pluseEnginerHigh = data*100;
+				m_rf.EnginerFlag = 1;
+			}
+			Tx_LCD_Msg(CMD_CAIV_DURATION, data);
+
+		break;
+
+		case CMD_OK:
+			switch (data)
+			{
+				case ERR_CHK_MAIN:
+					Error_Check_Main();
+				break;
+				case ERR_CHK_HP:
+					Error_Check_HP();
+				break;
+				case ERR_CHK_RF:
+					Error_Check_RF();
+				break;
+			}
+		break;
+
+		case CMD_CART_ID:
+			m_eep.catridgeId = data;
+			Tx_LCD_Msg(CMD_CART_ID, data);
+			Tx_Hand1_Msg(CMD_CART_ID, data);
+		break;
+		case CMD_MANUFAC_YY:
+			m_eep.manufacYY = data;
+			Tx_LCD_Msg(CMD_MANUFAC_YY, data);
+			Tx_Hand1_Msg(CMD_MANUFAC_YY, data);
+		break;
+
+		case CMD_MANUFAC_MM:
+			m_eep.manufacMM = data;
+			Tx_LCD_Msg(CMD_MANUFAC_MM, data);
+			Tx_Hand1_Msg(CMD_MANUFAC_MM, data);
+		break;
+
+		case CMD_MANUFAC_DD:
+			m_eep.manufacDD = data;
+			Tx_LCD_Msg(CMD_MANUFAC_DD, data);
+			Tx_Hand1_Msg(CMD_MANUFAC_DD, data);
+		break;
+
+		case CMD_ISSUED_YY:
+			m_eep.issuedYY = data;
+			Tx_LCD_Msg(CMD_ISSUED_YY, data);
+			Tx_Hand1_Msg(CMD_ISSUED_YY, data);
+		break;
+
+		case CMD_ISSUED_MM:
+			m_eep.issuedMM= data;
+			Tx_LCD_Msg(CMD_ISSUED_MM, data);
+			Tx_Hand1_Msg(CMD_ISSUED_MM, data);
+		break;
+
+		case CMD_ISSUED_DD:
+			m_eep.issuedDD= data;
+			Tx_LCD_Msg(CMD_ISSUED_DD, data);
+			Tx_Hand1_Msg(CMD_ISSUED_DD, data);
+		break;
+
+		case CMD_DAY_REQ:
+			Tx_LCD_Msg(CMD_DAY_REQ, data);
+			Tx_Hand1_Msg(CMD_DAY_REQ, data);
+		break;
+
+		case CMD_RTC:
+			Tx_LCD_Msg(CMD_RTC, data);
+			Tx_Hand1_Msg(CMD_RTC, data);
+		break;
+
+		case CMD_RTC_YY:
+			m_io.YY = data;
+			Tx_LCD_Msg(CMD_RTC_YY, m_io.YY);
+			DS1308_SetParts(RTC_REG_YY, m_io.YY);
+		break;
+
+		case CMD_RTC_MM:
+			m_io.MM = data;
+			Tx_LCD_Msg(CMD_RTC_MM, m_io.MM);
+			DS1308_SetParts(RTC_REG_MM, m_io.MM);
+		break;
+
+		case CMD_RTC_DD:
+			m_io.DD = data;
+			Tx_LCD_Msg(CMD_RTC_DD, m_io.DD);
+			DS1308_SetParts(RTC_REG_DD, m_io.DD);
+		break;
+
+		case CMD_RTC_HOUR:
+			m_io.hour = data;
+			Tx_LCD_Msg(CMD_RTC_HOUR, m_io.hour);
+			DS1308_SetParts(RTC_REG_HOUR, m_io.hour);
+		break;
+
+		case CMD_RTC_MIN:
+			m_io.min = data;
+			Tx_LCD_Msg(CMD_RTC_MIN, m_io.min);
+			DS1308_SetParts(RTC_REG_MIN, m_io.min);
+		break;
+
+		case CMD_RTC_SEC:
+			m_io.sec = data;
+			Tx_LCD_Msg(CMD_RTC_SEC, m_io.sec);
+			DS1308_SetParts(RTC_REG_SEC, m_io.sec);
+		break;
+
+
+		case CMD_SYS_CHK:
+			Tx_LCD_Msg(CMD_SYS_CHK, data);
+			CARTRIGE_REQ_DATA(data);
+			m_rf.sysChkFlag = 1;
+		break;
+
+		case CMD_LCD_STATUS:
+			m_rf.treatStatus = data;
+			Tx_LCD_Msg(CMD_LCD_STATUS, data);
+			if(data == STATUS_PRECOOLING)
+			{
+				m_rf.preCooltime = HAL_GetTick();
+			}
+		break;
+
+
+		case CMD_TRET_READY_OK:
+			if(data == READY_ON)
+			{
+				m_rf.readyFlag = READY_ON;
+				Tx_RF_FRQ_ALL_Module();
+				Tx_RF_Watt_ALL_Module_org();
+				TX_RF_Max_Ontime_Set();
+			}
+			else if(data == READY_OFF)
+			{
+				m_rf.readyFlag = READY_OFF;
+			}
+			Tx_LCD_Msg(CMD_TRET_READY_OK, data);
+		break;
+
+		case CMD_DO_ALL_LIVE:
+			CMD_Is_All_Live();
+		break;
+
+		case CMD_GET_ALL_CART:
+			Tx_LCD_Msg(CMD_GET_ALL_CART, 0);
+			Tx_Hand1_Msg(CMD_GET_ALL_CART, 0);
+		break;
+
+		case CMD_GET_ALL_CART_END:
+			Debug_Printf("lcd all cart Recive",1);
+			Tx_Hand1_Msg(CMD_GET_ALL_CART_END, 0);
+
+		break;
+
+
+		case CMD_LCD_AUTO_CAL:
+			switch (data)
+			{
+				case KEY_AUTO_CAL_1_2:
+					AutoCal_On(CMD_TRANDU1_WATT10, CMD_TRANDU2_WATT005);
+				break;
+
+				case KEY_AUTO_CAL_3_4_5:
+					AutoCal_On(CMD_TRANDU3_WATT10, CMD_TRANDU5_WATT005);
+				break;
+
+				case KEY_AUTO_CAL_6_7:
+					AutoCal_On(CMD_TRANDU6_WATT10, CMD_TRANDU7_WATT005);
+				break;
+
+				case KEY_AUTO_CAL_STOP:
+				case KEY_AUTO_CAL_BACK:
+					AutoCal_Off();
+				break;
+			}
+		break;
+
+		case CMD_TEST_PULSE:
+			Tx_LCD_Msg(CMD_TEST_PULSE, data);
+			m_rf.testPulseOption = data;
+		break;
+
+
+		default:
+			uint16_t reqAdd, reqData;
+			if(data == REQ_DATA)
+			{
+				if(CMD_TRANDU1_FRQ <= add && add <= CMD_TRANDU7_FRQ)
+				{
+					reqAdd = add - CMD_TRANDU_FRQ_BASE;
+					reqData = m_eep.rfFrqBuff[reqAdd];
+				}
+				else if(CMD_TRANDU1_WATT10 <= add && add <=CMD_TRANDU7_WATT005)
+				{
+					reqAdd = add-CMD_TRANDU_WATT_BASE;
+					reqData = m_eep.rfWattBuff[reqAdd];
+				}
+				Tx_LCD_Msg(add, reqData);
+
+			}
+			else
+			{
+				if(CMD_TRANDU1_FRQ <= add && add <=CMD_TRANDU7_FRQ)
+				{
+					m_eep.rfFrqBuff[add-CMD_TRANDU_FRQ_BASE] = data;
+				}
+				else if(CMD_TRANDU1_WATT10 <= add && add <=CMD_TRANDU7_WATT005)
+				{
+					reqAdd = add-CMD_TRANDU_WATT_BASE;
+					m_eep.rfWattBuff[reqAdd] = data;
+				}
+				Tx_LCD_Msg(add, data);
+				Tx_Hand1_Msg(add, data);
+			}
+
+		break;
+
+
+
+	}
+}
+
+
+void Hand_Rx_Parssing(uint8_t add, uint32_t data, uint32_t data2, uint32_t data3, uint32_t data4 )
+{
+	uint16_t valueTd, valueWatt;
+	if(add !=0)
+	{
+		if(add != CMD_HP1_ADD)
+		{
+			Debug_HAND_Printf(DEBUG_RX, add, data);
+		}
+		switch (add)
+		{
+			case CMD_HP1_ADD:
+				m_err.handTimeout = 0;
+				m_err.handComuErr = 0;
+				Hand1_Poling_Ctrl(CMD_HP1_ADD,data, data2, data3, data4);
+			break;
+
+			case CMD_CART_ID:
+				m_eep.catridgeId = data;
+				Tx_LCD_Msg(CMD_CART_ID, data);
+			break;
+
+			case CMD_MANUFAC_YY:
+				m_eep.manufacYY = data;
+				Tx_LCD_Msg(CMD_MANUFAC_YY, data);
+			break;
+
+			case CMD_MANUFAC_MM:
+				m_eep.manufacMM = data;
+				Tx_LCD_Msg(CMD_MANUFAC_MM, data);
+			break;
+
+			case CMD_MANUFAC_DD:
+				m_eep.manufacDD = data;
+				Tx_LCD_Msg(CMD_MANUFAC_DD, data);
+			break;
+
+			case CMD_ISSUED_YY:
+				m_eep.issuedYY = data;
+				Tx_LCD_Msg(CMD_ISSUED_YY, data);
+			break;
+
+			case CMD_ISSUED_MM:
+				m_eep.issuedMM = data;
+				Tx_LCD_Msg(CMD_ISSUED_MM, data);
+			break;
+
+			case CMD_ISSUED_DD:
+				m_eep.issuedDD = data;
+				Tx_LCD_Msg(CMD_ISSUED_DD, data);
+			break;
+
+			case CMD_REMIND_SHOT:
+				m_eep.remainingShotNum = data;
+				Tx_LCD_Msg(CMD_REMIND_SHOT, data);
+			break;
+
+			case CMD_CATRIDGE_STATUS:
+				m_eep.catridgeStatus = data;
+				//持绢具窃
+			break;
+
+			case CMD_CATRIDGE_EVENT:
+				m_eep.catridgeDetect = data;
+				//持绢具窃
+			break;
+
+			case CMD_DO_ALL_LIVE:
+				m_hand1.liveChkCnt++;
+				//持绢具窃
+			break;
+
+			case CMD_GET_ALL_CART_END:
+				uint8_t eepErr = 0;
+				if(!m_eep.catridgeId)eepErr++;
+				if(!m_eep.manufacYY)eepErr++;
+				if(!m_eep.manufacMM)eepErr++;
+				if(!m_eep.manufacDD)eepErr++;
+				if(!m_eep.issuedYY)eepErr++;
+				if(!m_eep.issuedMM)eepErr++;
+				if(!m_eep.issuedDD)eepErr++;
+				if(!m_eep.remainingShotNum)eepErr++;
+				for(int i =1 ;i <= 7;i++)
+				{
+					if(!m_eep.rfFrqBuff[i])eepErr++;
+				}
+				for(int i =1 ;i <= 77;i++)
+				{
+					if(!m_eep.rfWattBuff[i])eepErr++;
+				}
+				if(eepErr==0)
+				{
+					LCD_Init();
+					Tx_LCD_Msg(CMD_GET_ALL_CART_END, 1);
+
+					m_hand1.cartEndFlag = 1;
+				}
+				else
+				{
+					m_eep.catridgeRxErrCnt++;
+					if(m_eep.catridgeRxErrCnt<3)
+					{
+						HAL_Delay(1000);
+						Debug_Printf("CartErrReCall",1);
+						Tx_Hand1_Msg(CMD_GET_ALL_CART, 0);
+						m_hand1.cartEndFlag = 2;
+					}
+					else
+					{
+						Debug_Printf("CartAllOk",1);
+						m_hand1.cartEndFlag = 3;
+						m_err.handComuErr = 1;
+					}
+
+				}
+
+
+			break;
+
+			default:
+				if(CMD_TRANDU1_FRQ <= add && add <=CMD_TRANDU7_FRQ)
+				{
+					m_eep.rfFrqBuff[add-CMD_TRANDU_FRQ_BASE] = data;
+					Tx_LCD_Msg(add, data);
+				}
+				else if(CMD_TRANDU1_WATT10 <= add && add <=CMD_TRANDU7_WATT005)
+				{
+					m_eep.rfWattBuff[add -CMD_TRANDU_WATT_BASE] = data;
+					Tx_LCD_Msg(add, data);
+				}
+
+			break;
+
+		}
+
+	}
+
+
+}
+
+
+
 void UartRx1DataProcess()
 {
 	if(m_uart1.rxCmdChk == 0x0000)return;
