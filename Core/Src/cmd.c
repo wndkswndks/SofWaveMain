@@ -209,24 +209,15 @@ void Debug_Tx_GenStatus_Check_Printf()
 #endif
 }
 
-uint8_t lcdTxMsg[7] = {0x5B, 0x00, 0x2C, 0x00, 0x2C, 0x00, 0x5D};
 void Tx_LCD_Msg(uint8_t add, uint16_t data)
 {
 	while(HAL_GetTick() -m_rf.lastLcdTxTime<20);
-	lcdTxMsg[1] = add;
-	lcdTxMsg[3] = (data>>8)&0xff;
-	lcdTxMsg[5] = (data)&0xff;
 
 	Debug_LCD_Printf(DEBUG_TX, add, data);
 
-#if 1//To PC
 	char str[20]={0,};
 	sprintf(str,"[%d,%d]\r\n",add, data);
 	HAL_UART_Transmit(&huart5, str, strlen(str), 100);
-
-#else
-	HAL_UART_Transmit(&huart5, lcdTxMsg, 7,100);
-#endif
 
 	m_rf.lastLcdTxTime = HAL_GetTick();
 
