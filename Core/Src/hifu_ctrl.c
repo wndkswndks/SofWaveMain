@@ -1895,27 +1895,27 @@ void RF_Rx_Parssing(uint8_t rxID)
 			break;
 
 			case GEN_FREQ_SET_R:
-				Debug_Printf("GEN_FREQ_SET_R",1);
+				Debug_Printf("[RX_RF] GEN_FREQ_SET_R",1);
 			break;
 
 			case GEN_OUTPUT_SET_R://
-				Debug_Printf("GEN_OUTPUT_SET_R",1);
+				Debug_Printf("[RX_RF] GEN_OUTPUT_SET_R",1);
 			break;
 
 			case GEN_MAX_ON_TIME_SET_R:
-				Debug_Printf("GEN_MAX_ON_TIME_SET_R",1);
+				Debug_Printf("[RX_RF] GEN_MAX_ON_TIME_SET_R",1);
 			break;
 
 			case GEN_RF_VOLTAGE_REQ_R:
-				Debug_Printf("GEN_RF_VOLTAGE_REQ_R",1);
+				Debug_Printf("[RX_RF] GEN_RF_VOLTAGE_REQ_R",1);
 			break;
 
 			case ALL_CH_FREQ_SET_R:
-				Debug_Printf("ALL_CH_FREQ_SET_R",1);
+				Debug_Printf("[RX_RF] ALL_CH_FREQ_SET_R",1);
 			break;
 
 			case ALL_CH_OUTPUT_SET_R:
-				Debug_Printf("ALL_CH_OUTPUT_SET_R",1);
+				Debug_Printf("[RX_RF] ALL_CH_OUTPUT_SET_R",1);
 			break;
 		}
 

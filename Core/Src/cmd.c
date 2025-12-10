@@ -98,7 +98,7 @@ void Debug_HAND_Printf(uint8_t rxtx, uint8_t cmd, uint16_t data)
 
 	if(rxtx != DEBUG_RX && rxtx != DEBUG_TX) return;
 	char rxtxStr[2][3] = {"Rx","Tx"};
-	printf("[%s] HAND [%u,%u]\r\n",rxtxStr[rxtx], cmd, data);
+	printf("[%s_HAND] [%u,%u]\r\n",rxtxStr[rxtx], cmd, data);
 
 #endif
 
@@ -109,7 +109,7 @@ void Debug_LCD_Printf(uint8_t rxtx, uint8_t cmd, uint16_t data)
 #ifdef DEBUG_PRINT
 	if(rxtx != DEBUG_RX && rxtx != DEBUG_TX) return;
 	char rxtxStr[2][3] = {"Rx","Tx"};
-	printf("[%s] LCD [%u,%u]\r\n",rxtxStr[rxtx], cmd, data);
+	printf("[%s_LCD] [%u,%u]\r\n",rxtxStr[rxtx], cmd, data);
 
 #endif
 
@@ -119,7 +119,7 @@ void Debug_LCD_Printf(uint8_t rxtx, uint8_t cmd, uint16_t data)
 void Debug_Rx_RF_Printf(uint8_t* buff)
 {
 #if 1
-	printf("Rf rx :");
+	printf("[RX_RF] ");
 	printf("%02X %02X %02X %02X %02X %02X %02X\r\n",buff[0], buff[1], buff[2], buff[3], buff[4], buff[5], buff[6] );
 #endif
 
@@ -142,6 +142,7 @@ void Debug_Tx_RF_Printf(uint8_t* buff,uint8_t len)
 void Debug_Tx_RF_Watt_Printf(uint8_t ch, uint16_t watt)
 {
 #if 1
+	printf("[TX_RF] ");
 	printf("Ch[%u] Watt[%u] \r\n",ch, watt);
 
 #endif
@@ -150,6 +151,7 @@ void Debug_Tx_RF_Watt_Printf(uint8_t ch, uint16_t watt)
 void Debug_Tx_RF_Frq_Printf(uint8_t ch, uint16_t frq)
 {
 #if 1
+	printf("[TX_RF] ");
 	printf("Ch[%u] Frq[%u] \r\n",ch, frq);
 #endif
 
@@ -160,6 +162,7 @@ void Debug_Tx_RF_All_Watt_Printf()
 {
 #if 1
 	float wattF = (float)m_rf.watt/10;
+	printf("[TX_RF] ");
 	printf("> %.1f Watt \r\n", wattF);
 	for(int i =0 ;i < 7;i++)
 	{
@@ -173,6 +176,7 @@ void Debug_Tx_RF_All_Watt_Printf()
 void Debug_Tx_RF_All_Zero_Watt_Printf()
 {
 #if 1
+	printf("[TX_RF] ");
 	printf(">Watt Zero Da\r\n");
 	for(int i =0 ;i < 7;i++)
 	{
@@ -186,6 +190,7 @@ void Debug_Tx_RF_All_Zero_Watt_Printf()
 void Debug_Tx_RF_All_Frq_Printf()
 {
 #if 1
+	printf("[TX_RF] ");
 	printf(">Frq\r\n");
 	for(int i =0 ;i < 7;i++)
 	{
@@ -199,12 +204,14 @@ void Debug_Tx_RF_All_Frq_Printf()
 void Debug_Tx_RF_MaxOntime_Printf()
 {
 #if 1
+	printf("[TX_RF] ");
 	printf(">MaxOntime = %u\r\n", MAX_ONTIME);
 #endif
 }
 void Debug_Tx_GenStatus_Check_Printf()
 {
 #if 1
+	printf("[TX_RF] ");
 	printf("GenStatus_Check\r\n");
 #endif
 }
@@ -1015,7 +1022,7 @@ void Hand_Rx_Parssing(uint8_t add, uint32_t data, uint32_t data2, uint32_t data3
 					}
 					else
 					{
-						Debug_Printf("CartAllOk",1);
+						Debug_Printf("Cart Fail",1);
 						m_hand1.cartEndFlag = 3;
 						m_err.handComuErr = 1;
 					}
@@ -1110,6 +1117,7 @@ void UartRx5DataProcess()
 void Uart_HP_Temp_LCD_Veiw()
 {
 	static uint32_t timeStamp;
+	static uint8_t once = 1;
 
 	if(m_hand1.cartEndFlag == 1)
 	{
