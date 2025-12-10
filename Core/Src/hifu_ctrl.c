@@ -1876,8 +1876,8 @@ void Debug_Rx_Parssing(uint8_t add, uint32_t data)
 	switch (add)
 	{
 
-		case CMD_TEST_2_PULSE:
-			Tx_LCD_Msg(CMD_TEST_2_PULSE, data);
+		case CMD_TEST_PULSE:
+			Tx_LCD_Msg(CMD_TEST_PULSE, data);
 			m_rf.testPulseOption = data;
 		break;
 
@@ -2421,8 +2421,8 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 			}
 		break;
 
-		case CMD_TEST_2_PULSE:
-			Tx_LCD_Msg(CMD_TEST_2_PULSE, data);
+		case CMD_TEST_PULSE:
+			Tx_LCD_Msg(CMD_TEST_PULSE, data);
 			m_rf.testPulseOption = data;
 		break;
 
@@ -2773,7 +2773,7 @@ void Exp_Config()
 				m_rf.expEndFlag = 0;
 
 				m_rf.totaEnergy = m_rf.totaEnergy + m_rf.currentEnergy;
-				totalEenerge = m_rf.totaEnergy/10;
+				totalEenerge = m_rf.totaEnergy;
 				Tx_LCD_Msg(CMD_TOTAL_JOULE, totalEenerge);
 
 				m_rf.currentShot++;
