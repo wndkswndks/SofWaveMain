@@ -255,6 +255,7 @@ void LCD_Init()
 	PulseEn_Sand(2, PULSE_ENABLE);
 	PulseEn_Sand(3, PULSE_ENABLE);
 	PulseEn_Sand(4, PULSE_ENABLE);
+	CurrentEnergy_Cal();
 
 	m_rf.currentShot = 0;
 	m_rf.totaEnergy = 0;
@@ -2208,6 +2209,7 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 
 			endisValue = data*10 + m_rf.pulseEndisBuff[data];
 			Tx_LCD_Msg(CMD_PLUSE_EN, endisValue);
+			CurrentEnergy_Cal();
 		break;
 
 
@@ -2704,15 +2706,15 @@ void Rf_Test()
 
 void CurrentEnergy_Cal()
 {
-	float pulse1Htime = (float)m_rf.pulseBuff[IDX_MAIN_P1_DURATION_TIME]/10.0;
-	float pulse2Htime = (float)m_rf.pulseBuff[IDX_MAIN_P2_DURATION_TIME]/10.0;
-	float pulse3Htime = (float)m_rf.pulseBuff[IDX_MAIN_P3_DURATION_TIME]/10.0;
-	float pulse4Htime = (float)m_rf.pulseBuff[IDX_MAIN_P4_DURATION_TIME]/10.0;
-	float pulse1Watt  = (float)m_rf.pulseBuff[IDX_MAIN_P1_WATT]/10.0;
-	float pulse2Watt  = (float)m_rf.pulseBuff[IDX_MAIN_P2_WATT]/10.0;
-	float pulse3Watt  = (float)m_rf.pulseBuff[IDX_MAIN_P3_WATT]/10.0;
-	float pulse4Watt  = (float)m_rf.pulseBuff[IDX_MAIN_P4_WATT]/10.0;
-	float energy = 0;
+	uint16_t pulse1Htime =m_rf.pulseBuff[IDX_MAIN_P1_DURATION_TIME];
+	uint16_t pulse2Htime = m_rf.pulseBuff[IDX_MAIN_P2_DURATION_TIME];
+	uint16_t pulse3Htime = m_rf.pulseBuff[IDX_MAIN_P3_DURATION_TIME];
+	uint16_t pulse4Htime = m_rf.pulseBuff[IDX_MAIN_P4_DURATION_TIME];
+	uint16_t pulse1Watt  = m_rf.pulseBuff[IDX_MAIN_P1_WATT];
+	uint16_t pulse2Watt  = m_rf.pulseBuff[IDX_MAIN_P2_WATT];
+	uint16_t pulse3Watt  = m_rf.pulseBuff[IDX_MAIN_P3_WATT];
+	uint16_t pulse4Watt  = m_rf.pulseBuff[IDX_MAIN_P4_WATT];
+	uint16_t energy = 0;
 
 	if(m_rf.pulseEndisBuff[1]) energy += (pulse1Htime * pulse1Watt);
 	if(m_rf.pulseEndisBuff[2]) energy += (pulse2Htime * pulse2Watt);
@@ -2720,8 +2722,7 @@ void CurrentEnergy_Cal()
 	if(m_rf.pulseEndisBuff[4]) energy += (pulse4Htime * pulse4Watt);
 
 
-	m_rf.currentEnergy = energy*100.0;
-
+	m_rf.currentEnergy = energy;
 
 	Tx_LCD_Msg(CMD_CURRENT_JOULE, m_rf.currentEnergy);
 
@@ -2773,7 +2774,7 @@ void Exp_Config()
 				m_rf.expEndFlag = 0;
 
 				m_rf.totaEnergy = m_rf.totaEnergy + m_rf.currentEnergy;
-				totalEenerge = m_rf.totaEnergy;
+				totalEenerge = m_rf.totaEnergy/10;
 				Tx_LCD_Msg(CMD_TOTAL_JOULE, totalEenerge);
 
 				m_rf.currentShot++;
