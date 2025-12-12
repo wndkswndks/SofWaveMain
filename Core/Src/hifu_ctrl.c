@@ -874,15 +874,11 @@ void Tx_RF_Watt_ALL_Module_org( )
 
 
 
-void Tx_RF_Watt_ALL_Module(uint16_t watt, uint8_t pulseStep)
+void Tx_RF_Watt_ALL_Module(uint16_t watt)
 {
 
 	uint8_t len = 0;
-	static uint8_t pulseStepPre;
 
-
-//	if(pulseStep == m_rf.pulsePreHigh) return;
-//	m_rf.pulsePreHigh = pulseStep;
 
 
 	ddTimeStart1(); //wndksdebug
@@ -1025,11 +1021,10 @@ void Rx_RF_Get(uint8_t getData)
 void RF_Pwm_On()
 {
 	uint16_t pulse1Watt = m_rf.pulseBuff[IDX_MAIN_P1_WATT];
-	Tx_RF_Watt_ALL_Module(pulse1Watt, PWM_H1_LEVEL );
+	Tx_RF_Watt_ALL_Module(pulse1Watt);
 	m_rf.pluseOn = 1;
 	m_rf.pluseLevel = PWM_H1_LEVEL;
 	m_rf.pluseTimeStamp = HAL_GetTick();
-	m_rf.pulsePreHigh = 0xFF;
 
 	m_rf.pulseEndisChkBuff[1] = 0;
 	m_rf.pulseEndisChkBuff[2] = 0;
@@ -1037,152 +1032,12 @@ void RF_Pwm_On()
 	m_rf.pulseEndisChkBuff[4] = 0;
 }
 
-void RF_eg_Exp_On()
+void RF_eg_Exp_On(uint32_t expTime)
 {
 	m_rf.egExpOn = 1;
 	m_rf.pluseEgTimeStamp = HAL_GetTick();
+	m_rf.pluseEnginerHigh = expTime;
 	HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_HIGH);
-}
-
-
-void RF_Pwm_Conter()
-{
-	if(m_rf.pluseOn)
-	{
-		switch (m_rf.pluseLevel)
-		{
-			case PWM_H1_LEVEL:
-				HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_HIGH);
-				if(HAL_GetTick() - m_rf.pluseTimeStamp> (m_rf.pulseDuration/ 2 *TIME_100MS))
-				{
-					m_rf.pluseTimeStamp = HAL_GetTick();
-					if(m_rf.interval==0) m_rf.pluseLevel = PWM_H2_LEVEL;
-					else m_rf.pluseLevel = PWM_L1_LEVEL;
-
-				}
-			break;
-
-			case PWM_L1_LEVEL:
-				HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_LOW);
-				if(HAL_GetTick() - m_rf.pluseTimeStamp> m_rf.interval*TIME_100MS)
-				{
-					m_rf.pluseTimeStamp = HAL_GetTick();
-					m_rf.pluseLevel = PWM_H2_LEVEL;
-				}
-			break;
-
-			case PWM_H2_LEVEL:
-				HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_HIGH);
-				if(HAL_GetTick() - m_rf.pluseTimeStamp> (m_rf.pulseDuration / 2*TIME_100MS))
-				{
-					m_rf.pluseTimeStamp = HAL_GetTick();
-					m_rf.pluseLevel = PWM_L2_LEVEL;
-				}
-			break;
-
-			case PWM_L2_LEVEL:
-				HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_LOW);
-				if(HAL_GetTick() - m_rf.pluseTimeStamp> m_rf.postCooling*TIME_100MS)
-				{
-					m_rf.pluseLevel = PWM_H1_LEVEL;
-					m_rf.expEndFlag = 1;
-
-					m_rf.pluseOn = 0;
-				}
-			break;
-		}
-	}
-}
-
-
-
-
-void RF_Pwm_Conter_Common(uint8_t pulseNum)
-{
-	static uint8_t pulseCnt;
-	if(m_rf.pluseOn)
-	{
-		switch (m_rf.pluseLevel)
-		{
-			case PWM_H_LEVEL:
-				HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_HIGH);
-				if(HAL_GetTick() - m_rf.pluseTimeStamp> (m_rf.pulseDuration/pulseNum *TIME_100MS))
-				{
-					m_rf.pluseTimeStamp = HAL_GetTick();
-					pulseCnt++;
-					if(pulseCnt == pulseNum)
-					{
-						m_rf.pluseLevel = PWM_POST_LEVEL;
-						pulseCnt = 0;
-					}
-					else
-					{
-						m_rf.pluseLevel = PWM_L_LEVEL;
-					}
-
-				}
-			break;
-
-			case PWM_L_LEVEL:
-				if(m_rf.interval != 0)HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_LOW);
-				if(HAL_GetTick() - m_rf.pluseTimeStamp> m_rf.interval*TIME_100MS)
-				{
-					m_rf.pluseTimeStamp = HAL_GetTick();
-
-					m_rf.pluseLevel = PWM_H_LEVEL;
-				}
-			break;
-
-			case PWM_POST_LEVEL:
-				HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_LOW);
-				if(HAL_GetTick() - m_rf.pluseTimeStamp> m_rf.postCooling*TIME_100MS)
-				{
-					m_rf.pluseLevel = PWM_H1_LEVEL;
-					m_rf.expEndFlag = 1;
-
-					m_rf.pluseOn = 0;
-				}
-			break;
-
-		}
-	}
-}
-
-
-
-void PulseEnDisCheck_org(uint8_t num)
-{
-//	if(num>4 || num<2) return;
-	int numInit = num;
-
-	for(int i = numInit ;i <=4;i++)
-	{
-		if(m_rf.pulseEndisBuff[num])
-		{
-			switch(i)
-			{
-				case 2:
-					m_rf.pluseLevel = PWM_H2_LEVEL;
-					printf("<2> \r\n");
-					return;
-				break;
-				case 3:
-					m_rf.pluseLevel = PWM_H3_LEVEL;
-					printf("<3> \r\n");
-					return;
-				break;
-				case 4:
-					m_rf.pluseLevel = PWM_H4_LEVEL;
-					printf("<4> \r\n");
-					return;
-				break;
-			}
-			break;
-		}
-	}
-	m_rf.pluseLevel = PWM_COOL_LEVEL;
-	printf("<FF> \r\n");
-
 }
 
 
@@ -1196,19 +1051,19 @@ void PulseEnDisCheck()
 	if(m_rf.pulseEndisBuff[2] && !m_rf.pulseEndisChkBuff[2] )
 	{
 		m_rf.pulseEndisChkBuff[2] = 1;
-		Tx_RF_Watt_ALL_Module(pulse2Watt, PWM_L1_LEVEL);
+		Tx_RF_Watt_ALL_Module(pulse2Watt);
 		m_rf.pluseLevel = PWM_H2_LEVEL;
 	}
 	else if(m_rf.pulseEndisBuff[3] && !m_rf.pulseEndisChkBuff[3] )
 	{
 		m_rf.pulseEndisChkBuff[3] = 1;
-		Tx_RF_Watt_ALL_Module(pulse3Watt, PWM_L1_LEVEL);
+		Tx_RF_Watt_ALL_Module(pulse3Watt);
 		m_rf.pluseLevel = PWM_H3_LEVEL;
 	}
 	else if(m_rf.pulseEndisBuff[4] && !m_rf.pulseEndisChkBuff[4] )
 	{
 		m_rf.pulseEndisChkBuff[4] = 1;
-		Tx_RF_Watt_ALL_Module(pulse4Watt, PWM_L1_LEVEL);
+		Tx_RF_Watt_ALL_Module(pulse4Watt);
 		m_rf.pluseLevel = PWM_H4_LEVEL;
 	}
 	else
@@ -1247,14 +1102,11 @@ void RF_Pwm_Conter_Individual()
 		switch (m_rf.pluseLevel)
 		{
 			case PWM_H1_LEVEL:
-
-
 				HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_HIGH);
 				if(HAL_GetTick() - m_rf.pluseTimeStamp> pulse1Htime)
 				{
 					m_rf.pluseTimeStamp = HAL_GetTick();
 					m_rf.pluseLevel = PWM_L1_LEVEL;
-//					Tx_RF_Watt_ALL_Module(pulse2Watt, PWM_L1_LEVEL);
 				}
 			break;
 
@@ -1273,7 +1125,6 @@ void RF_Pwm_Conter_Individual()
 				HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_HIGH);
 				if(HAL_GetTick() - m_rf.pluseTimeStamp> pulse2Htime)
 				{
-//					Tx_RF_Watt_ALL_Module(pulse3Watt, PWM_L2_LEVEL);
 					m_rf.pluseTimeStamp = HAL_GetTick();
 					m_rf.pluseLevel = PWM_L2_LEVEL;
 				}
@@ -1299,7 +1150,6 @@ void RF_Pwm_Conter_Individual()
 
 			case PWM_L3_LEVEL:
 				HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_LOW);
-//				Tx_RF_Watt_ALL_Module(pulse4Watt, PWM_L3_LEVEL);
 				if(HAL_GetTick() - m_rf.pluseTimeStamp> pulse3Ltime)
 				{
 					PulseEnDisCheck();
@@ -1331,13 +1181,6 @@ void RF_Pwm_Conter_Individual()
 }
 
 
-void RF_Pwm_Conter_Config_org()// systick ~~ it.c interupt 1ms caller
-{
-#if 0
-	RF_Pwm_Conter_Common(m_rf.testPulseOption);
-#endif
-
-}
 
 
 void RF_Eg_Exp_Conter()
@@ -1516,12 +1359,11 @@ void AutoCal_Config_New_Range()
 		break;
 
 		case STEP1:
-			m_rf.pluseEnginerHigh = 3000;
 
 			AutoCal_Tx_IP_Msg();//æ∆¿ÃµÈ 0,2,4,6,8,
 			HAL_Delay(500);
 
-			RF_eg_Exp_On();
+			RF_eg_Exp_On(3000);
 			HAL_Delay(wattDly);
 			AutoCal_Tx_IP_Msg();//ø¢∆º∫Í 1,3,5,7,9
 
@@ -1586,12 +1428,11 @@ void AutoCal_Config_New_Fast()
 		break;
 
 		case STEP1:
-			m_rf.pluseEnginerHigh = 3000;
 
 			AutoCal_Tx_IP_Msg();//æ∆¿ÃµÈ 0,2,4,6,8,
 			HAL_Delay(500);
 
-			RF_eg_Exp_On();
+			RF_eg_Exp_On(3000);
 			HAL_Delay(2500);
 
 			AutoCal_Tx_IP_Msg();//ø¢∆º∫Í 1,3,5,7,9
@@ -1663,13 +1504,12 @@ void AutoCal_Config_New()
 		break;
 
 		case STEP1:
-			m_rf.pluseEnginerHigh = 2000;
 			for(int i =0 ;i < 5;i++)
 			{
 				AutoCal_Tx_IP_Msg();//æ∆¿ÃµÈ 0,2,4,6,8,
 				HAL_Delay(500);
 
-				RF_eg_Exp_On();
+				RF_eg_Exp_On(2000);
 				HAL_Delay(1000);
 
 				AutoCal_Tx_IP_Msg();//ø¢∆º∫Í 1,3,5,7,9
@@ -1770,13 +1610,12 @@ void AutoCal_Config_New_frq()
 		break;
 
 		case STEP1:
-			m_rf.pluseEnginerHigh = 3000;
 			for(int i =0 ;i < 5;i++)
 			{
 				AutoCal_Tx_IP_Msg();//æ∆¿ÃµÈ 0,2,4,6,8,
 				HAL_Delay(500);
 
-				RF_eg_Exp_On();
+				RF_eg_Exp_On(3000);
 				HAL_Delay(2500);
 
 				AutoCal_Tx_IP_Msg();//ø¢∆º∫Í 1,3,5,7,9
@@ -1965,35 +1804,23 @@ void CurrentEnergy_Cal()
 }
 
 
-void Exp_Config()
+
+void Exp_Nomal_Config()
 {
 	uint16_t totalEenerge;
-//	if(m_rf.pluseOn != 0 || m_rf.egExpOn != 0) return;
-	if(m_rf.readyFlag != READY_ON) return;
-
-
-	float pulse1Htime = (float)m_rf.pulseBuff[IDX_MAIN_P1_DURATION_TIME]/10.0;
-	float pulse2Htime = (float)m_rf.pulseBuff[IDX_MAIN_P2_DURATION_TIME]/10.0;
-	float pulse3Htime = (float)m_rf.pulseBuff[IDX_MAIN_P3_DURATION_TIME]/10.0;
-	float pulse4Htime = (float)m_rf.pulseBuff[IDX_MAIN_P4_DURATION_TIME]/10.0;
-	float pulse1Watt  = (float)m_rf.pulseBuff[IDX_MAIN_P1_WATT]/10.0;
-	float pulse2Watt  = (float)m_rf.pulseBuff[IDX_MAIN_P2_WATT]/10.0;
-	float pulse3Watt  = (float)m_rf.pulseBuff[IDX_MAIN_P3_WATT]/10.0;
-	float pulse4Watt  = (float)m_rf.pulseBuff[IDX_MAIN_P4_WATT]/10.0;
-
-
 
 	static uint8_t step = STEP0;
+	if(m_rf.readyFlag != READY_ON) return;
 
 	switch (step)
 	{
 		case STEP0:
-			if(testExpFlag || IS_HP1_SHOT_PUSH()) // ÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩƒ°ÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩ
+			if(testExpFlag || IS_HP1_SHOT_PUSH())
 			{
 				HAL_Delay(200);
 				testExpFlag = 0;
 				Tx_LCD_Msg(CMD_LCD_EXP, LCD_EXP_START);
-				HAL_Delay(200);//ÔøΩÃ∞ÔøΩ ÔøΩ÷æÔøΩÔøΩÔøΩÔø?ÔøΩÔøΩÔøΩÔøΩ ÔøΩÔøΩ»ÆÔøΩÔøΩ ÔøΩÔøΩÔøΩÔøΩ
+				HAL_Delay(200);
 				RF_Pwm_On();
 				step = STEP1;
 			}
@@ -2026,11 +1853,13 @@ void Exp_Config()
 
 	}
 
+}
 
 
 
-
-
+void Exp_Config()
+{
+	Exp_Nomal_Config();
 }
 void Rf_Config()
 {

@@ -333,26 +333,23 @@ void Debug_Rx_Parssing(uint8_t add, uint32_t data)
 			Tx_LCD_Msg(CMD_TEST_FORCE_PAGE_CHANGE, data);
 		break;
 
-		case CMD_CAL_TEST:
+		case CMD_RF_ALL_SETTING:
 			m_rf.readyFlag = READY_ON;
 			Tx_RF_FRQ_ALL_Module();
 			Tx_RF_Watt_Zero_ALL_Module();
 			TX_RF_Max_Ontime_Set();
-			m_rf.pluseEnginerHigh = 3000;
-			m_rf.EnginerFlag = 1;
 		break;
 
-		case CMD_CAL_TEST_ZERO:
+		case CMD_RF_WATT_MEATER_Z:
 			AutoCal_Tx_Z_Msg();
 		break;
 
-		case CMD_CAL_TEST_EXP:
+		case CMD_RF_SINGLE_EXP:
 			uint8_t tdu = data/1000;
 			uint16_t da = data%1000;
 			Tx_RF_Watt_Zero_ALL_Module();
 			Tx_RF_Watt_Module(tdu, da);
-			RF_eg_Exp_On();
-			m_rf.pluseEnginerHigh = 3000;
+			RF_eg_Exp_On(3000);
 		break;
 		case CMD_DEGUG_TEMP_DUTY_ON:
 			Tx_Hand1_Msg(CMD_GET_ALL_CART_END, data);
@@ -361,11 +358,11 @@ void Debug_Rx_Parssing(uint8_t add, uint32_t data)
 		case CMD_DEGUG_LCD_TEMP_DUTY_ON:
 			m_hand1.cartEndFlag = data;
 		break;
-		case CMD_CAL_TEST_IP:
+		case CMD_RF_WATT_MEATER_IP:
 			AutoCal_Tx_IP_Msg();
 		break;
 
-		case CMD_CAL_TEST_AUTOSTART:
+		case CMD_AUTO_CAL_START:
 			m_rf.autoCalFlag = data;
 			if(data==1)Debug_Printf("Autocal Start",1);
 			else Debug_Printf("Autocal End",1);
@@ -687,13 +684,12 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 		case CMD_CAIV_DURATION:
 			if(data==0xff)
 			{
-				m_rf.EnginerFlag = 0;
+
 			}
 			else
 			{
 				TX_RF_Max_Ontime_Set();
-				m_rf.pluseEnginerHigh = data*100;
-				m_rf.EnginerFlag = 1;
+				RF_eg_Exp_On(data*100);
 			}
 			Tx_LCD_Msg(CMD_CAIV_DURATION, data);
 
@@ -809,16 +805,25 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 		break;
 
 		case CMD_LCD_STATUS:
-			m_rf.treatStatus = data;
-			Tx_LCD_Msg(CMD_LCD_STATUS, data);
 			if(data == STATUS_PRECOOLING)
 			{
 				m_rf.preCooltime = HAL_GetTick();
+				m_rf.treatStatus = data;
+				Tx_LCD_Msg(CMD_LCD_STATUS, data);
 			}
+			else if(data == STATUS_STNBY)
+			{
+				m_rf.readyFlag = READY_OFF;
+				m_rf.treatStatus = data;
+				Tx_LCD_Msg(CMD_LCD_STATUS, data);
+			}
+
+
+
 		break;
 
 
-		case CMD_TRET_READY_OK:
+		case CMD_CAL_TRET_READY_OK:
 			if(data == READY_ON)
 			{
 				m_rf.readyFlag = READY_ON;
@@ -830,7 +835,7 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 			{
 				m_rf.readyFlag = READY_OFF;
 			}
-			Tx_LCD_Msg(CMD_TRET_READY_OK, data);
+			Tx_LCD_Msg(CMD_CAL_TRET_READY_OK, data);
 		break;
 
 		case CMD_DO_ALL_LIVE:

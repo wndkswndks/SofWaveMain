@@ -274,7 +274,6 @@ typedef struct
 	uint8_t pulseNowWattNum;
 	uint8_t pulseEndisBuff[5];
 	uint8_t pulseEndisChkBuff[5];
-	uint8_t pulsePreHigh;
 } RF_T;
 typedef struct
 {
@@ -556,7 +555,6 @@ typedef struct
 void Rf_Config();
 void Rx_RF_Get(uint8_t getData);
 void Rf_Init();
-void RF_Pwm_Conter();
 void RF_Eg_Exp_Conter();
 
 void LCD_Rx_Parssing(uint8_t add, uint32_t data);
