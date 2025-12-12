@@ -1004,14 +1004,14 @@ void Hand_Rx_Parssing(uint8_t add, uint32_t data, uint32_t data2, uint32_t data3
 				if(!m_eep.issuedMM)eepErr++;
 				if(!m_eep.issuedDD)eepErr++;
 				if(!m_eep.remainingShotNum)eepErr++;
-				for(int i =1 ;i <= 7;i++)
-				{
-					if(!m_eep.rfFrqBuff[i])eepErr++;
-				}
-				for(int i =1 ;i <= 77;i++)
-				{
-					if(!m_eep.rfWattBuff[i])eepErr++;
-				}
+//				for(int i =1 ;i <= 7;i++)
+//				{
+//					if(!m_eep.rfFrqBuff[i])eepErr++;
+//				}
+//				for(int i =1 ;i <= 77;i++)
+//				{
+//					if(!m_eep.rfWattBuff[i])eepErr++;
+//				}
 				if(eepErr==0)
 				{
 					LCD_Init();

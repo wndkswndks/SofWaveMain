@@ -191,7 +191,7 @@ void Rf_Init()
 	RF_Pwr_ON();
 
 
-	#if 1
+	#if 0
 	Rf_TD1_Table();
 	#else
 	Rf_TD2_Table();
