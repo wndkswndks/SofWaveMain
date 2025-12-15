@@ -1324,10 +1324,17 @@ int compare_32(const void *a, const void *b)    // 오름차순 비교 함수 (uint32_t 
     return 0;    // a와 b가 같을 때는 0 반환
 }
 
+
+int wattDa = 1;
+int trandu = 0;
+
+
 int qsortBuff[5] = {0,};
 void AutoCal_Avg()// 오름차순으로 정리
 {
+	uint8_t wattBuff[10] = {10, 20, 30, 40, 50, 60 , 70, 80 , 90, 100};
 	int sum =0, avg = 0;
+	uint16_t add;
 	qsort(qsortBuff, sizeof(qsortBuff) / sizeof(int), sizeof(int), compare_32);// u32
 	sum += qsortBuff[1];
 	sum += qsortBuff[2];
@@ -1336,11 +1343,29 @@ void AutoCal_Avg()// 오름차순으로 정리
 	avg = sum/3;
 	printf("avg : %d \r\n",avg);
 	memset(qsortBuff, 0, sizeof(qsortBuff));
+
+	if(avg>wattBuff[m_rf.autoCalWattLevel])
+	{
+		add = (CMD_TRANDU_WATT_BASE + trandu*11 +m_rf.autoCalWattLevel+1);
+		Tx_LCD_Msg(add, wattDa);
+
+		m_rf.autoCalWattLevel++;
+		if(m_rf.autoCalWattLevel == 10)
+		{
+			m_rf.autoCalWattLevel = 0;
+			Tx_RF_Watt_Zero_ALL_Module();
+			if(trandu<6)trandu++;
+			else
+			{
+				m_rf.autoCalFlag = 0;
+				Tx_LCD_Msg(CMD_AUTO_CAL_START, 0);
+			}
+		}
+	}
 }
 
 
-int wattDa = 1;
-int trandu = 0;
+
 int wattFrq = 11000;
 int wattDly = 250;
 

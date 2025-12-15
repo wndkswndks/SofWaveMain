@@ -257,10 +257,7 @@ typedef struct
 	int FeedBackWBuff[30];
 	uint8_t autoCalFlag;
 	uint8_t autoCalStep;
-	uint8_t autoCalNowDa;
-	uint8_t autoCalReTryCnt;
-	uint8_t autoCalAddr;
-	uint8_t autoCalAddrEnd;
+	uint8_t autoCalWattLevel;
 	uint8_t FeedBackCnt;
 	uint32_t lastLcdTxTime;
 	uint32_t lastRfGenTxTime;
