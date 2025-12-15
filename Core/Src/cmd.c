@@ -853,6 +853,16 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 
 		break;
 
+		case CMD_AUTO_CAL_START:
+			m_rf.autoCalFlag = data;
+			if(data==1)Debug_Printf("Autocal Start",1);
+			else Debug_Printf("Autocal End",1);
+
+		break;
+
+		case CMD_GET_WATT_CART:
+			Tx_Hand1_Msg(CMD_GET_WATT_CART, 1);
+		break;
 
 		case CMD_LCD_AUTO_CAL:
 			switch (data)
