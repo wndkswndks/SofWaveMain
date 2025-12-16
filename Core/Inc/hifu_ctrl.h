@@ -235,7 +235,6 @@ typedef struct
 	uint32_t currentShot;
 	uint16_t currentEnergy;
 	uint16_t totaEnergy;
-	uint8_t EnginerFlag;
 	uint8_t egExpOn;
 	uint8_t watt;
 	uint32_t pluseEnginerHigh;

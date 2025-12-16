@@ -681,17 +681,12 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 		break;
 
 
-		case CMD_CAIV_DURATION:
-			if(data==0xff)
-			{
+		case CMD_CALIV_SHOT:
 
-			}
-			else
-			{
-				TX_RF_Max_Ontime_Set();
-				RF_eg_Exp_On(data*100);
-			}
-			Tx_LCD_Msg(CMD_CAIV_DURATION, data);
+			TX_RF_Max_Ontime_Set();
+			Tx_RF_FRQ_ALL_Module();
+			RF_eg_Exp_On(data*100);
+			Tx_LCD_Msg(CMD_CALIV_SHOT, data);
 
 		break;
 
@@ -822,21 +817,6 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 
 		break;
 
-
-		case CMD_CAL_TRET_READY_OK:
-			if(data == READY_ON)
-			{
-				m_rf.readyFlag = READY_ON;
-				Tx_RF_FRQ_ALL_Module();
-				Tx_RF_Watt_ALL_Module_org();
-				TX_RF_Max_Ontime_Set();
-			}
-			else if(data == READY_OFF)
-			{
-				m_rf.readyFlag = READY_OFF;
-			}
-			Tx_LCD_Msg(CMD_CAL_TRET_READY_OK, data);
-		break;
 
 		case CMD_DO_ALL_LIVE:
 			CMD_Is_All_Live();
