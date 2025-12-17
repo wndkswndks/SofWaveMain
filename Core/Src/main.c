@@ -123,8 +123,6 @@ int main(void)
 
 
 #if 1
-//	IO_Test();
-//
 	Rf_Config();
 	UartRxDataProcess();
 

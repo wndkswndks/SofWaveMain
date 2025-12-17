@@ -1325,16 +1325,14 @@ int compare_32(const void *a, const void *b)    // 오름차순 비교 함수 (uint32_t 
 }
 
 
-int wattDa = 1;
+int wattDa = 0;
 int trandu = 0;
 
 
 int qsortBuff[5] = {0,};
-void AutoCal_Avg()// 오름차순으로 정리
+int AutoCal_Avg()// 오름차순으로 정리
 {
-	uint8_t wattBuff[10] = {10, 20, 30, 40, 50, 60 , 70, 80 , 90, 100};
 	int sum =0, avg = 0;
-	uint16_t add;
 	qsort(qsortBuff, sizeof(qsortBuff) / sizeof(int), sizeof(int), compare_32);// u32
 	sum += qsortBuff[1];
 	sum += qsortBuff[2];
@@ -1344,24 +1342,8 @@ void AutoCal_Avg()// 오름차순으로 정리
 	printf("avg : %d \r\n",avg);
 	memset(qsortBuff, 0, sizeof(qsortBuff));
 
-	if(avg>wattBuff[m_rf.autoCalWattLevel])
-	{
-		add = (CMD_TRANDU_WATT_BASE + trandu*11 +m_rf.autoCalWattLevel+1);
-		Tx_LCD_Msg(add, wattDa);
+	return avg;
 
-		m_rf.autoCalWattLevel++;
-		if(m_rf.autoCalWattLevel == 10)
-		{
-			m_rf.autoCalWattLevel = 0;
-			Tx_RF_Watt_Zero_ALL_Module();
-			if(trandu<6)trandu++;
-			else
-			{
-				m_rf.autoCalFlag = 0;
-				Tx_LCD_Msg(CMD_AUTO_CAL_START, 0);
-			}
-		}
-	}
 }
 
 
@@ -1511,108 +1493,98 @@ void AutoCal_Config_New_Fast()
 
 }
 
-void AutoCal_Config_New()
+void AutoCal_Config()
 {
 	static uint32_t timeStamp;
+	uint8_t wattBuff[10] = {10, 20, 30, 40, 50, 60 , 70, 80 , 90, 100};
+	int avg = 0;
+	uint16_t add;
 
 	if(m_rf.autoCalFlag==0)return;
 
-	switch (m_rf.autoCalStep)
+	memset(m_rf.FeedBackWBuff, 0, sizeof(m_rf.FeedBackWBuff));
+	m_rf.FeedBackCnt = 0;
+
+	if(wattDa<200)
 	{
-		case STEP0:
-			memset(m_rf.FeedBackWBuff, 0, sizeof(m_rf.FeedBackWBuff));
-			m_rf.FeedBackCnt = 0;
-			Tx_RF_Watt_Module(trandu, wattDa);
-//			AutoCal_Tx_Z_Msg();
-//			HAL_Delay(5000);
-			m_rf.autoCalStep = STEP1;
-		break;
+		wattDa += 1 ;
+	}
+	else
+	{
+		Debug_Printf("AutoCal Da Over Err",1);
+		trandu = 0;
+		wattDa = 0;
+		m_rf.autoCalFlag = 0;
+		m_rf.autoCalWattLevel = 0;
+	}
 
-		case STEP1:
-			for(int i =0 ;i < 5;i++)
+	Tx_RF_Watt_Module(trandu, wattDa);
+
+	for(int i =0 ;i < 5;i++)
+	{
+		AutoCal_Tx_IP_Msg();//아이들 0,2,4,6,8,
+		HAL_Delay(500);
+
+		RF_eg_Exp_On(2000);
+		HAL_Delay(1000);
+
+		AutoCal_Tx_IP_Msg();//엑티브 1,3,5,7,9
+		HAL_Delay(2000); // 휴식
+
+	}
+
+	printf("ACal %d %d -> ",trandu, wattDa);
+
+	if(m_rf.FeedBackCnt<5)// 10개중에 5개 미만일때 통신불량
+	{
+		m_err.autoCalStatus = 1;
+		Debug_Printf("AutoCal Commu Err",1);
+	}
+	else
+	{
+		m_err.autoCalStatus = 0;
+	}
+
+	qsortBuff[0] = m_rf.FeedBackWBuff[1] +(-1*m_rf.FeedBackWBuff[0]);
+	printf("%d ",qsortBuff[0]);
+
+	qsortBuff[1] = m_rf.FeedBackWBuff[3] +(-1*m_rf.FeedBackWBuff[2]);
+	printf("%d ",qsortBuff[1]);
+
+	qsortBuff[2] = m_rf.FeedBackWBuff[5] +(-1*m_rf.FeedBackWBuff[4]);
+	printf("%d ",qsortBuff[2]);
+
+	qsortBuff[3] = m_rf.FeedBackWBuff[7] +(-1*m_rf.FeedBackWBuff[6]);
+	printf("%d ",qsortBuff[3]);
+
+	qsortBuff[4] = m_rf.FeedBackWBuff[9] +(-1*m_rf.FeedBackWBuff[8]);
+	printf("%d ",qsortBuff[4]);
+
+	avg = AutoCal_Avg();
+
+	if(avg>wattBuff[m_rf.autoCalWattLevel])
+	{
+		add = (CMD_TRANDU_WATT_BASE + trandu*11 +m_rf.autoCalWattLevel+1);
+		Tx_LCD_Msg(add, wattDa);
+
+		m_rf.autoCalWattLevel++;
+		if(m_rf.autoCalWattLevel == 10)
+		{
+			m_rf.autoCalWattLevel = 0;
+			Tx_RF_Watt_Zero_ALL_Module();
+			if(trandu<6)
 			{
-				AutoCal_Tx_IP_Msg();//아이들 0,2,4,6,8,
-				HAL_Delay(500);
-
-				RF_eg_Exp_On(2000);
-				HAL_Delay(1000);
-
-				AutoCal_Tx_IP_Msg();//엑티브 1,3,5,7,9
-				HAL_Delay(2000); // 휴식
-
-			}
-
-			m_rf.autoCalStep = STEP2;
-		break;
-
-		case STEP2:
-			int watt[5] ={0,};
-			printf("ACal %d %d -> ",trandu, wattDa);
-
-			if(m_rf.FeedBackCnt<5)// 10개중에 5개 미만일때 통신불량
-			{
-				m_err.autoCalStatus = 1;
+				trandu++;
+				wattDa = 0;
 			}
 			else
 			{
-				m_err.autoCalStatus = 0;
-			}
-
-			qsortBuff[0] = m_rf.FeedBackWBuff[1] +(-1*m_rf.FeedBackWBuff[0]);
-			printf("%d ",qsortBuff[0]);
-
-			qsortBuff[1] = m_rf.FeedBackWBuff[3] +(-1*m_rf.FeedBackWBuff[2]);
-			printf("%d ",qsortBuff[1]);
-
-			qsortBuff[2] = m_rf.FeedBackWBuff[5] +(-1*m_rf.FeedBackWBuff[4]);
-			printf("%d ",qsortBuff[2]);
-
-			qsortBuff[3] = m_rf.FeedBackWBuff[7] +(-1*m_rf.FeedBackWBuff[6]);
-			printf("%d ",qsortBuff[3]);
-
-			qsortBuff[4] = m_rf.FeedBackWBuff[9] +(-1*m_rf.FeedBackWBuff[8]);
-			printf("%d ",qsortBuff[4]);
-
-			AutoCal_Avg();
-
-
-			printf("\r\n");
-
-			if(wattDa<200)
-			{
-				wattDa += 5 ;
-				m_rf.autoCalStep = STEP0;
-			}
-			else
-			{
-				Tx_RF_Watt_Zero_ALL_Module();
+				trandu = 0;
+				wattDa = 0;
 				m_rf.autoCalFlag = 0;
-
-				wattDa = 1;
-//				if(trandu<6)
-//				{
-//					trandu++;
-//					m_rf.autoCalStep = STEP0;
-//				}
-//				else
-//				{
-//					m_rf.autoCalStep = STEP3;
-//				}
-
-
+				Tx_LCD_Msg(CMD_AUTO_CAL_START, 0);
 			}
-
-
-		break;
-
-
-		case STEP3:
-
-		break;
-
-		case STEP4:
-
-		break;
+		}
 	}
 
 }
@@ -1892,7 +1864,7 @@ void Rf_Config()
 #if 1
 	LCD_Status_Tret();
 	Exp_Config();
-	AutoCal_Config_New();
+	AutoCal_Config();
 
 #else
 

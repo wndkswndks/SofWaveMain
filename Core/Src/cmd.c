@@ -126,7 +126,7 @@ void Debug_Rx_RF_Printf(uint8_t* buff)
 }
 void Debug_Tx_RF_Printf(uint8_t* buff,uint8_t len)
 {
-#if 0
+#if 1
 
 	printf("Rf Tx :");
 	for(int i =0 ;i < len;i++)
@@ -334,7 +334,6 @@ void Debug_Rx_Parssing(uint8_t add, uint32_t data)
 		break;
 
 		case CMD_RF_ALL_SETTING:
-			m_rf.readyFlag = READY_ON;
 			Tx_RF_FRQ_ALL_Module();
 			Tx_RF_Watt_Zero_ALL_Module();
 			TX_RF_Max_Ontime_Set();
@@ -364,7 +363,12 @@ void Debug_Rx_Parssing(uint8_t add, uint32_t data)
 
 		case CMD_AUTO_CAL_START:
 			m_rf.autoCalFlag = data;
-			if(data==1)Debug_Printf("Autocal Start",1);
+			if(data==1)
+			{
+				TX_RF_Max_Ontime_Set();
+				Tx_RF_FRQ_ALL_Module();
+				Debug_Printf("Autocal Start",1);
+			}
 			else Debug_Printf("Autocal End",1);
 
 		break;
@@ -835,7 +839,12 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 
 		case CMD_AUTO_CAL_START:
 			m_rf.autoCalFlag = data;
-			if(data==1)Debug_Printf("Autocal Start",1);
+			if(data==1)
+			{
+				TX_RF_Max_Ontime_Set();
+				Tx_RF_FRQ_ALL_Module();
+				Debug_Printf("Autocal Start",1);
+			}
 			else Debug_Printf("Autocal End",1);
 
 		break;

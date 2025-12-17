@@ -565,7 +565,7 @@ void TX_RF_Max_Ontime_Set();
 void Tx_RF_GenStatus_Check();
 void Error_Check_Config();
 void LCD_Init();
-void AutoCal_Avg();
+int AutoCal_Avg();
 void PulseData_Sand(uint8_t num, uint16_t data);
 void PulseEn_Sand(uint8_t num, uint16_t enDis);
 void CurrentEnergy_Cal();
