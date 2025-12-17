@@ -367,6 +367,7 @@ void Debug_Rx_Parssing(uint8_t add, uint32_t data)
 			{
 				TX_RF_Max_Ontime_Set();
 				Tx_RF_FRQ_ALL_Module();
+				Tx_RF_Watt_Zero_ALL_Module();
 				Debug_Printf("Autocal Start",1);
 			}
 			else Debug_Printf("Autocal End",1);
