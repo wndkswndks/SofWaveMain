@@ -1448,6 +1448,103 @@ void AutoCal_Config()
 }
 
 
+void AutoCal_Config_Test()
+{
+	static uint32_t timeStamp;
+	uint8_t wattBuff[10] = {10, 20, 30, 40, 50, 60 , 70, 80 , 90, 100};
+	int avg = 0;
+	uint16_t add;
+
+	if(m_rf.autoCalFlag==0)return;
+
+	memset(m_rf.FeedBackWBuff, 0, sizeof(m_rf.FeedBackWBuff));
+	m_rf.FeedBackCnt = 0;
+
+	if(wattDa<200)
+	{
+		wattDa += 5 ;
+	}
+	else
+	{
+		Debug_Printf("AutoCal ComPlete",1);
+		trandu = 0;
+		wattDa = 5;
+	}
+
+	Tx_RF_Watt_Module(trandu, wattDa);
+
+	for(int i =0 ;i < 5;i++)
+	{
+		AutoCal_Tx_IP_Msg();//아이들 0,2,4,6,8,
+		HAL_Delay(500);
+
+		RF_eg_Exp_On(2000);
+		HAL_Delay(1000);
+
+		AutoCal_Tx_IP_Msg();//엑티브 1,3,5,7,9
+		HAL_Delay(2000); // 휴식
+
+	}
+
+	printf("ACal %d %d -> ",trandu, wattDa);
+
+	if(m_rf.FeedBackCnt<5)// 10개중에 5개 미만일때 통신불량
+	{
+		m_err.autoCalStatus = 1;
+		Debug_Printf("AutoCal Commu Err",1);
+	}
+	else
+	{
+		m_err.autoCalStatus = 0;
+	}
+
+	qsortBuff[0] = m_rf.FeedBackWBuff[1] +(-1*m_rf.FeedBackWBuff[0]);
+	printf("%d ",qsortBuff[0]);
+
+	qsortBuff[1] = m_rf.FeedBackWBuff[3] +(-1*m_rf.FeedBackWBuff[2]);
+	printf("%d ",qsortBuff[1]);
+
+	qsortBuff[2] = m_rf.FeedBackWBuff[5] +(-1*m_rf.FeedBackWBuff[4]);
+	printf("%d ",qsortBuff[2]);
+
+	qsortBuff[3] = m_rf.FeedBackWBuff[7] +(-1*m_rf.FeedBackWBuff[6]);
+	printf("%d ",qsortBuff[3]);
+
+	qsortBuff[4] = m_rf.FeedBackWBuff[9] +(-1*m_rf.FeedBackWBuff[8]);
+	printf("%d ",qsortBuff[4]);
+
+	avg = AutoCal_Avg();
+
+#if 0
+	if(avg>wattBuff[m_rf.autoCalWattLevel])
+	{
+		add = (CMD_TRANDU_WATT_BASE + trandu*11 +m_rf.autoCalWattLevel+1);
+		Tx_LCD_Msg(add, wattDa);
+
+		m_rf.autoCalWattLevel++;
+		if(m_rf.autoCalWattLevel == 10)
+		{
+			m_rf.autoCalWattLevel = 0;
+			Tx_RF_Watt_Zero_ALL_Module();
+			if(trandu<6)
+			{
+				trandu++;
+				wattDa = 0;
+			}
+			else
+			{
+				trandu = 0;
+				wattDa = 0;
+				m_rf.autoCalFlag = 0;
+				Tx_LCD_Msg(CMD_AUTO_CAL_START, 0);
+			}
+		}
+	}
+
+#endif
+
+}
+
 void RF_Rx_Parssing(uint8_t rxID)
 {
 	uint32_t timeStamp;
@@ -1625,7 +1722,7 @@ void Rf_Config()
 #if 1
 	LCD_Status_Tret();
 	Exp_Config();
-	AutoCal_Config();
+	AutoCal_Config_Test();
 
 #else
 
