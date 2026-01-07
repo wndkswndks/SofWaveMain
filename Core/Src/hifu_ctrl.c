@@ -238,17 +238,17 @@ void LCD_Init()
 
 
 
-	PulseData_Sand(IDX_MAIN_P1_WATT, 2);
+	PulseData_Sand(IDX_MAIN_P1_WATT, 1);
 	PulseData_Sand(IDX_MAIN_P1_DURATION_TIME, 10);
 	PulseData_Sand(IDX_MAIN_P1_INTERVAL_TIME, 5);
-	PulseData_Sand(IDX_MAIN_P2_WATT, 4);
-	PulseData_Sand(IDX_MAIN_P2_DURATION_TIME, 15);
+	PulseData_Sand(IDX_MAIN_P2_WATT, 1);
+	PulseData_Sand(IDX_MAIN_P2_DURATION_TIME, 10);
 	PulseData_Sand(IDX_MAIN_P2_INTERVAL_TIME, 5);
-	PulseData_Sand(IDX_MAIN_P3_WATT, 6);
-	PulseData_Sand(IDX_MAIN_P3_DURATION_TIME, 20);
+	PulseData_Sand(IDX_MAIN_P3_WATT, 1);
+	PulseData_Sand(IDX_MAIN_P3_DURATION_TIME, 10);
 	PulseData_Sand(IDX_MAIN_P3_INTERVAL_TIME, 5);
-	PulseData_Sand(IDX_MAIN_P4_WATT, 8);
-	PulseData_Sand(IDX_MAIN_P4_DURATION_TIME, 25);
+	PulseData_Sand(IDX_MAIN_P4_WATT, 1);
+	PulseData_Sand(IDX_MAIN_P4_DURATION_TIME, 10);
 	PulseData_Sand(IDX_MAIN_POSTCO0L_TIME, 10);
 
 	PulseEn_Sand(1, PULSE_ENABLE);
@@ -1024,6 +1024,7 @@ void RF_Pwm_On()
 	Tx_RF_Watt_ALL_Module(pulse1Watt);
 	m_rf.pluseOn = 1;
 	m_rf.pluseLevel = PWM_H1_LEVEL;
+	Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_H1_LEVEL);
 	m_rf.pluseTimeStamp = HAL_GetTick();
 
 	m_rf.pulseEndisChkBuff[1] = 0;
@@ -1053,22 +1054,26 @@ void PulseEnDisCheck()
 		m_rf.pulseEndisChkBuff[2] = 1;
 		Tx_RF_Watt_ALL_Module(pulse2Watt);
 		m_rf.pluseLevel = PWM_H2_LEVEL;
+		Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_H2_LEVEL);
 	}
 	else if(m_rf.pulseEndisBuff[3] && !m_rf.pulseEndisChkBuff[3] )
 	{
 		m_rf.pulseEndisChkBuff[3] = 1;
 		Tx_RF_Watt_ALL_Module(pulse3Watt);
 		m_rf.pluseLevel = PWM_H3_LEVEL;
+		Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_H3_LEVEL);
 	}
 	else if(m_rf.pulseEndisBuff[4] && !m_rf.pulseEndisChkBuff[4] )
 	{
 		m_rf.pulseEndisChkBuff[4] = 1;
 		Tx_RF_Watt_ALL_Module(pulse4Watt);
 		m_rf.pluseLevel = PWM_H4_LEVEL;
+		Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_H4_LEVEL);
 	}
 	else
 	{
 		m_rf.pluseLevel = PWM_COOL_LEVEL;
+		Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_COOL_LEVEL);
 	}
 
 
@@ -1107,6 +1112,7 @@ void RF_Pwm_Conter_Individual()
 				{
 					m_rf.pluseTimeStamp = HAL_GetTick();
 					m_rf.pluseLevel = PWM_L1_LEVEL;
+					Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_L1_LEVEL);
 				}
 			break;
 
@@ -1127,6 +1133,8 @@ void RF_Pwm_Conter_Individual()
 				{
 					m_rf.pluseTimeStamp = HAL_GetTick();
 					m_rf.pluseLevel = PWM_L2_LEVEL;
+					Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_L2_LEVEL);
+
 				}
 			break;
 
@@ -1145,6 +1153,7 @@ void RF_Pwm_Conter_Individual()
 				{
 					m_rf.pluseTimeStamp = HAL_GetTick();
 					m_rf.pluseLevel = PWM_L3_LEVEL;
+					Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_L3_LEVEL);
 				}
 			break;
 
@@ -1163,6 +1172,7 @@ void RF_Pwm_Conter_Individual()
 				{
 					m_rf.pluseTimeStamp = HAL_GetTick();
 					m_rf.pluseLevel = PWM_COOL_LEVEL;
+					Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_COOL_LEVEL);
 				}
 			break;
 
@@ -1675,6 +1685,7 @@ void Exp_Nomal_Config()
 				HAL_Delay(200);
 				testExpFlag = 0;
 				Tx_LCD_Msg(CMD_LCD_EXP, LCD_EXP_START);
+				Tx_Hand1_Msg(CMD_LCD_EXP, LCD_EXP_START);
 				HAL_Delay(200);
 				RF_Pwm_On();
 				step = STEP1;
@@ -1701,6 +1712,7 @@ void Exp_Nomal_Config()
 				m_eep.remainingShotNum--;
 				Tx_LCD_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
 				Tx_LCD_Msg(CMD_LCD_EXP, LCD_EXP_END);
+				Tx_Hand1_Msg(CMD_LCD_EXP, LCD_EXP_END);
 				Tx_Hand1_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
 				step = STEP0;
 			}
@@ -1712,9 +1724,68 @@ void Exp_Nomal_Config()
 
 
 
+
+void Exp_Nomal_Config_test()
+{
+	uint16_t totalEenerge;
+
+	static uint8_t step = STEP0;
+	if(m_rf.readyFlag != READY_ON) return;
+
+	if(IS_HP1_SHOT_PUSH())
+	{
+		HAL_Delay(50);
+		testExpFlag = 1;
+	}
+	switch (step)
+	{
+		case STEP0:
+			if(testExpFlag && m_hand1.temprature > 100)
+			{
+				HAL_Delay(200);
+				testExpFlag = 0;
+				Tx_LCD_Msg(CMD_LCD_EXP, LCD_EXP_START);
+				Tx_Hand1_Msg(CMD_LCD_EXP, LCD_EXP_START);
+				HAL_Delay(200);
+				RF_Pwm_On();
+				step = STEP1;
+			}
+		break;
+
+		case STEP1:
+			RF_Pwm_Conter_Individual();
+			if(m_rf.expEndFlag) step = STEP2;
+		break;
+
+		case STEP2:
+			if(m_rf.expEndFlag)
+			{
+				m_rf.expEndFlag = 0;
+
+				m_rf.totaEnergy = m_rf.totaEnergy + m_rf.currentEnergy;
+				totalEenerge = m_rf.totaEnergy/10;
+				Tx_LCD_Msg(CMD_TOTAL_JOULE, totalEenerge);
+
+				m_rf.currentShot++;
+				Tx_LCD_Msg(CMD_CURRENT_SHOT, m_rf.currentShot);
+
+				m_eep.remainingShotNum--;
+				Tx_LCD_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
+				Tx_LCD_Msg(CMD_LCD_EXP, LCD_EXP_END);
+				Tx_Hand1_Msg(CMD_LCD_EXP, LCD_EXP_END);
+				Tx_Hand1_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
+				step = STEP0;
+			}
+		break;
+
+	}
+
+}
+
+
 void Exp_Config()
 {
-	Exp_Nomal_Config();
+	Exp_Nomal_Config_test();
 }
 void Rf_Config()
 {
@@ -1722,7 +1793,7 @@ void Rf_Config()
 #if 1
 	LCD_Status_Tret();
 	Exp_Config();
-	AutoCal_Config_Test();
+	AutoCal_Config();
 
 #else
 
