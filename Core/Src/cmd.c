@@ -822,6 +822,11 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 
 		break;
 
+		case CMD_INFOMATION:
+			m_io.rtcEn = data;
+			Tx_LCD_Msg(CMD_INFOMATION, data);
+		break;
+
 
 		case CMD_DO_ALL_LIVE:
 			CMD_Is_All_Live();

@@ -267,7 +267,7 @@ void RTC_Config(void)
 	static uint32_t timeStamp;
 
 
-	if(HAL_GetTick()-timeStamp >= 500)
+	if(HAL_GetTick()-timeStamp >= 1000)
 	{
 
 		timeStamp = HAL_GetTick();
@@ -278,6 +278,17 @@ void RTC_Config(void)
 		m_io.day = m_io.YY*10000 + m_io.MM*100 + m_io.DD;
 		m_io.time = m_io.hour*10000 + m_io.min*100 + m_io.sec;
 
+
+		if(m_io.rtcEn)
+		{
+			Tx_LCD_Msg(CMD_RTC_YY, m_io.YY);
+			Tx_LCD_Msg(CMD_RTC_MM, m_io.MM);
+			Tx_LCD_Msg(CMD_RTC_DD, m_io.DD);
+			Tx_LCD_Msg(CMD_RTC_HOUR, m_io.hour);
+			Tx_LCD_Msg(CMD_RTC_MIN, m_io.min);
+			Tx_LCD_Msg(CMD_RTC_SEC, m_io.sec);
+		}
+#if 0
 		if(m_io.min != m_io.minPre)
 		{
 			Tx_LCD_Msg(CMD_RTC_YY, m_io.YY);
@@ -288,6 +299,7 @@ void RTC_Config(void)
 			Tx_LCD_Msg(CMD_RTC_SEC, m_io.sec);
 			m_io.minPre = m_io.min;
 		}
+#endif
 		// 읽은 값 확인용 (예: UART 출력 - 실제 환경에 맞게 대체)
 //		printf("RTC Time: %02d:%02d:%02d\r\n", hour, min, sec);
 	}
@@ -317,7 +329,7 @@ void IO_Config()
 	}
 
 	Battery_Read();
-//	RTC_Config();
+	RTC_Config();
  	IO_Test();
 
  }

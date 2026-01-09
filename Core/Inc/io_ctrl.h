@@ -242,6 +242,7 @@ typedef struct
 	uint8_t min;
 	uint8_t sec;
 	uint8_t minPre;
+	uint8_t rtcEn;
 }IO_T;
 
 /*  			enum end  				*/
