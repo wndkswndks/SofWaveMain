@@ -761,6 +761,26 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 			Tx_Hand1_Msg(CMD_RTC, data);
 		break;
 
+		case CMD_INFO_UI_DESING:
+			m_io.infoUiDesing = data;
+		break;
+
+		case CMD_INFO_UI_FW:
+			m_io.infoUiFw = data;
+		break;
+
+		case CMD_INFO_MAIN_FW:
+			m_io.infoMainFw = data;
+		break;
+
+		case CMD_INFO_HP_FW:
+			m_io.infoHPFw = data;
+		break;
+
+		case CMD_INFO_RF_FW:
+			m_io.infoRfFw = data;
+		break;
+
 		case CMD_RTC_YY:
 			m_io.YY = data;
 			Tx_LCD_Msg(CMD_RTC_YY, m_io.YY);
@@ -797,6 +817,9 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 			DS1308_SetParts(RTC_REG_SEC, m_io.sec);
 		break;
 
+		case CMD_RTC_EN:
+			m_io.rtcEn = data;
+		break;
 
 		case CMD_SYS_CHK:
 			Tx_LCD_Msg(CMD_SYS_CHK, data);
@@ -823,8 +846,17 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 		break;
 
 		case CMD_INFOMATION:
-			m_io.rtcEn = data;
-			Tx_LCD_Msg(CMD_INFOMATION, data);
+			Tx_LCD_Msg(CMD_INFO_UI_DESING, m_io.infoUiDesing);
+			Tx_LCD_Msg(CMD_INFO_UI_FW, m_io.infoUiFw);
+			Tx_LCD_Msg(CMD_INFO_MAIN_FW, m_io.infoMainFw);
+			Tx_LCD_Msg(CMD_INFO_HP_FW, m_io.infoHPFw);
+			Tx_LCD_Msg(CMD_INFO_RF_FW, m_io.infoRfFw);
+			Tx_LCD_Msg(CMD_RTC_YY, m_io.YY);
+			Tx_LCD_Msg(CMD_RTC_MM, m_io.MM);
+			Tx_LCD_Msg(CMD_RTC_DD, m_io.DD);
+			Tx_LCD_Msg(CMD_RTC_HOUR, m_io.hour);
+			Tx_LCD_Msg(CMD_RTC_MIN, m_io.min);
+			Tx_LCD_Msg(CMD_RTC_SEC, m_io.sec);
 		break;
 
 

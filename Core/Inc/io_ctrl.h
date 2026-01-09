@@ -233,6 +233,11 @@ typedef struct
 	uint8_t level1Status;
 	uint8_t level2Status;
 	uint32_t day;
+	uint16_t infoUiDesing;
+	uint16_t infoUiFw;
+	uint16_t infoMainFw;
+	uint16_t infoHPFw;
+	uint16_t infoRfFw;
 	uint8_t YY;
 	uint8_t MM;
 	uint8_t DD;

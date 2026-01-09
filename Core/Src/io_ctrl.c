@@ -260,12 +260,14 @@ void IO_Init()
     HAL_Delay(1000);//
     BUZZER_L();
 	Ciller_Pwr_ON();
+	m_io.rtcEn = 1;
 }
 
 void RTC_Config(void)
 {
 	static uint32_t timeStamp;
 
+	if(!m_io.rtcEn)return;
 
 	if(HAL_GetTick()-timeStamp >= 1000)
 	{
@@ -279,15 +281,7 @@ void RTC_Config(void)
 		m_io.time = m_io.hour*10000 + m_io.min*100 + m_io.sec;
 
 
-		if(m_io.rtcEn)
-		{
-			Tx_LCD_Msg(CMD_RTC_YY, m_io.YY);
-			Tx_LCD_Msg(CMD_RTC_MM, m_io.MM);
-			Tx_LCD_Msg(CMD_RTC_DD, m_io.DD);
-			Tx_LCD_Msg(CMD_RTC_HOUR, m_io.hour);
-			Tx_LCD_Msg(CMD_RTC_MIN, m_io.min);
-			Tx_LCD_Msg(CMD_RTC_SEC, m_io.sec);
-		}
+
 #if 0
 		if(m_io.min != m_io.minPre)
 		{
