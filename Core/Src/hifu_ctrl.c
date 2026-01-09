@@ -1785,7 +1785,7 @@ void Exp_Nomal_Config_test()
 
 void Exp_Config()
 {
-	Exp_Nomal_Config_test();
+	Exp_Nomal_Config();
 }
 void Rf_Config()
 {
