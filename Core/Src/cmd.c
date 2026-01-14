@@ -82,7 +82,7 @@ void Rx_BuffClear(UART_T *uart)
 	uart->rxCnt = 0;
 }
 
-void Debug_Printf(uint8_t* str, uint8_t cr)
+void Debug_Printf(char* str, uint8_t cr)
 {
 #ifdef DEBUG_PRINT
 
@@ -166,7 +166,7 @@ void Debug_Tx_RF_All_Watt_Printf()
 	printf("> %.1f Watt \r\n", wattF);
 	for(int i =0 ;i < 7;i++)
 	{
-		printf("[%d] %u\r\n", i, m_rf.rfwattBuff[i]);
+		printf("[%d] %u\r\n", i, (unsigned int)m_rf.rfwattBuff[i]);
 
 	}
 	printf("\r\n");
@@ -194,7 +194,7 @@ void Debug_Tx_RF_All_Frq_Printf()
 	printf(">Frq\r\n");
 	for(int i =0 ;i < 7;i++)
 	{
-		printf("[%d] %u \r\n", i, m_rf.rfFrqBuff[i]);
+		printf("[%d] %u \r\n", i, (unsigned int)m_rf.rfFrqBuff[i]);
 
 	}
 	printf("\r\n");
@@ -224,20 +224,20 @@ void Tx_LCD_Msg(uint8_t add, uint16_t data)
 
 	char str[20]={0,};
 	sprintf(str,"[%d,%d]\r\n",add, data);
-	HAL_UART_Transmit(&huart5, str, strlen(str), 100);
+	HAL_UART_Transmit(&huart5, (uint8_t *)str, strlen(str), 100);
 
 	m_rf.lastLcdTxTime = HAL_GetTick();
 
 }
 void Tx_Hand1_Msg(uint8_t add, uint16_t data)
 {
-	uint8_t str[20];
+	char str[20];
 	while(HAL_GetTick() -m_hand1.lastHPTxTime<20);
 
 	sprintf(str,"[%d,%d]\r\n",add, data);
 
 	Debug_HAND_Printf(DEBUG_TX, add, data);
-	HAL_UART_Transmit(&huart2,str, strlen(str),100);
+	HAL_UART_Transmit(&huart2,(uint8_t *)str, strlen(str),100);
 	m_hand1.lastHPTxTime = HAL_GetTick();
 }
 
@@ -258,7 +258,7 @@ void Tx_RF_Msg(uint8_t* buff, uint8_t len)
 void AutoCal_Tx_IP_Msg()
 {
 	char buff[5] = "IP\r\n";
-	HAL_UART_Transmit(&huart3,buff, 4,100);
+	HAL_UART_Transmit(&huart3,(uint8_t *)buff, 4,100);
 #ifdef DEBUG_PRINT
 
 #endif
@@ -268,7 +268,7 @@ void AutoCal_Tx_IP_Msg()
 void AutoCal_Tx_Z_Msg()
 {
 	char buff[5] = "Z\r\n";
-	HAL_UART_Transmit(&huart3,buff, 3,100);
+	HAL_UART_Transmit(&huart3,(uint8_t *)buff, 3,100);
 	Debug_Printf("Z",1);
 #ifdef DEBUG_PRINT
 
@@ -316,6 +316,32 @@ void CMD_Is_All_Live()
 
 
 
+}
+
+void HP_Cartrige_Check()
+{
+	uint8_t family = 0;
+
+		for(int i =0 ;i < 10;i++)
+		{
+			if(m_eepMain.cartIdBuff[i] == m_eep.catridgeId)
+			{
+				family = 1;
+				break;
+			}
+		}
+
+		if(m_eep.remainingShotNum == 0)
+		{
+			Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CART_EVENT_EXPRATION);
+		}
+		else
+		{
+			if(family) Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CART_EVENT_DETECT);
+			else Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CART_EVENT_DETECT_NEW);
+		}
+		m_eep.catridgeId = 0;
+		m_eep.remainingShotNum = 10000;
 }
 
 void Debug_Rx_Parssing(uint8_t add, uint32_t data)
@@ -821,6 +847,14 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 			m_io.rtcEn = data;
 		break;
 
+		case CMD_CART_ALLOW:
+			if(data==1)
+			{
+				m_eep.cartAllow = 1;
+				Tx_Hand1_Msg(CMD_CART_ALLOW, 1);
+			}
+		break;
+
 		case CMD_SYS_CHK:
 			Tx_LCD_Msg(CMD_SYS_CHK, data);
 			CARTRIGE_REQ_DATA(data);
@@ -891,28 +925,6 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 			Tx_Hand1_Msg(CMD_GET_WATT_CART, 1);
 		break;
 
-		case CMD_LCD_AUTO_CAL:
-			switch (data)
-			{
-				case KEY_AUTO_CAL_1_2:
-					AutoCal_On(CMD_TRANDU1_WATT10, CMD_TRANDU2_WATT005);
-				break;
-
-				case KEY_AUTO_CAL_3_4_5:
-					AutoCal_On(CMD_TRANDU3_WATT10, CMD_TRANDU5_WATT005);
-				break;
-
-				case KEY_AUTO_CAL_6_7:
-					AutoCal_On(CMD_TRANDU6_WATT10, CMD_TRANDU7_WATT005);
-				break;
-
-				case KEY_AUTO_CAL_STOP:
-				case KEY_AUTO_CAL_BACK:
-					AutoCal_Off();
-				break;
-			}
-		break;
-
 		case CMD_TEST_PULSE:
 			Tx_LCD_Msg(CMD_TEST_PULSE, data);
 			m_rf.testPulseOption = data;
@@ -961,7 +973,6 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 
 void Hand_Rx_Parssing(uint8_t add, uint32_t data, uint32_t data2, uint32_t data3, uint32_t data4 )
 {
-	uint16_t valueTd, valueWatt;
 	if(add !=0)
 	{
 		if(add != CMD_HP1_ADD)
@@ -978,7 +989,20 @@ void Hand_Rx_Parssing(uint8_t add, uint32_t data, uint32_t data2, uint32_t data3
 
 			case CMD_CART_ID:
 				m_eep.catridgeId = data;
-				Tx_LCD_Msg(CMD_CART_ID, data);
+				if(m_eep.cartAllow)
+				{
+					for(int i =0 ;i < 10;i++)
+					{
+						if(m_eepMain.cartIdBuff[i] == 0)
+						{
+							m_eepMain.cartIdBuff[i] = data;
+							Eeprom_Byte_Write(i+1, data);
+							break;
+						}
+					}
+					Tx_LCD_Msg(CMD_CART_ID, data);
+				}
+
 			break;
 
 			case CMD_MANUFAC_YY:
@@ -1013,22 +1037,37 @@ void Hand_Rx_Parssing(uint8_t add, uint32_t data, uint32_t data2, uint32_t data3
 
 			case CMD_REMIND_SHOT:
 				m_eep.remainingShotNum = data;
-				Tx_LCD_Msg(CMD_REMIND_SHOT, data);
+				if(m_eep.cartAllow) Tx_LCD_Msg(CMD_REMIND_SHOT, data);
+
 			break;
 
 			case CMD_CATRIDGE_STATUS:
 				m_eep.catridgeStatus = data;
-				//³Ö¾î¾ßÇÔ
+				//ï¿½Ö¾ï¿½ï¿½ï¿½ï¿?
 			break;
 
 			case CMD_CATRIDGE_EVENT:
+				if(data == CATRIGE_DETECT)
+				{
+					 HP_Cartrige_Check();
+				}
+				else
+				{
+					Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CART_EVENT_UNDETECT);
+				}
+
 				m_eep.catridgeDetect = data;
-				//³Ö¾î¾ßÇÔ
+				//ï¿½Ö¾ï¿½ï¿½ï¿½ï¿?
 			break;
+
+			case CMD_CART_ALLOW:
+				if(data==0) m_eep.cartAllow = 0;
+			break;
+
 
 			case CMD_DO_ALL_LIVE:
 				m_hand1.liveChkCnt++;
-				//³Ö¾î¾ßÇÔ
+				//ï¿½Ö¾ï¿½ï¿½ï¿½ï¿?
 			break;
 
 			case CMD_GET_ALL_CART_END:
@@ -1163,7 +1202,6 @@ void UartRx5DataProcess()
 void Uart_HP_Temp_LCD_Veiw()
 {
 	static uint32_t timeStamp;
-	static uint8_t once = 1;
 
 	if(m_hand1.cartEndFlag == 1)
 	{
@@ -1335,9 +1373,6 @@ void Uart_ClearCharBuff(uint8_t* buff, uint16_t*cnt, int size)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-	uint8_t cmd = 0;
-	static uint8_t startFlag = 0;
-	static uint8_t endFlag = 0;
 
 	 if (huart == &huart1)//debug
 	 {

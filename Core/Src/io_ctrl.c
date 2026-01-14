@@ -332,7 +332,6 @@ void IO_Config()
 
 void IO_Test()
 {
-	static uint32_t timeStamp,timeStamp2;
 
 	if(m_io.test1 == 1)
 	{
@@ -363,7 +362,6 @@ void IO_Test()
 	}
 
 
-//	ddGpio(RF_GPIO_IN_GPIO_Port, RF_GPIO_IN_Pin, 0);
 
 
 }

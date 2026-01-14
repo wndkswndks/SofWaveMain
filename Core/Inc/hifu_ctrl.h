@@ -142,6 +142,10 @@ typedef enum
 	IDX_MAIN_P4_DURATION_TIME ,
 	IDX_MAIN_POSTCO0L_TIME,
 
+	CART_EVENT_UNDETECT = 0,
+	CART_EVENT_DETECT = 1,
+	CART_EVENT_DETECT_NEW = 2,
+	CART_EVENT_EXPRATION = 3,
 } RF_E;
 
 
@@ -289,7 +293,7 @@ typedef struct
 	uint16_t catridgeDetect;
 	uint16_t catridgeDetectPre;
 	uint8_t catridgeRxErrCnt;
-
+	uint8_t cartAllow;
 } EEPROM_T;
 typedef enum
 {
@@ -472,6 +476,8 @@ typedef enum
   IDX_ERROR_MAX,
   IDX_IS_CURRNTSHOT_RESET,
   IDX_IS_TOTALJULE_RESET,
+  IDX_CATRIGE_NEW,
+
 
 } ERROR_IDX_E;
 
@@ -571,6 +577,17 @@ int AutoCal_Avg();
 void PulseData_Sand(uint8_t num, uint16_t data);
 void PulseEn_Sand(uint8_t num, uint16_t enDis);
 void CurrentEnergy_Cal();
+void Tx_RF_FRQ_ALL_Module();
+void Test_Init();
+void Error_Buff_Tx();
+void Tx_RF_Watt_Zero_ALL_Module();
+void Tx_RF_Watt_Module(uint8_t ch, uint16_t watt);
+void RF_eg_Exp_On(uint32_t expTime);
+void Tx_RF_FRQ_Module(uint8_t ch, uint16_t frequency);
+void Error_Check_Main();
+void Error_Check_HP();
+void Error_Check_RF();
+void CARTRIGE_REQ_DATA(uint8_t idx);
 
 
 /*  			function end  			*/

@@ -641,12 +641,10 @@ void send_debug_info_uart(const char *function, int line)
 }
 void BL_LedDiming()//1ms ���� ȣ��
 {
-  static uint32_t timeStamp = 0;
   static uint8_t rActive10ms = 0;
   static uint8_t rActive_LED = 0;
   static uint8_t bActive_LED = 0;
   static uint8_t b10ms = 0;
-  static uint8_t sActive150ms = 0;
 
 
   if (rActive10ms >= rActive_LED)
@@ -682,31 +680,12 @@ void BL_LedDiming()//1ms ���� ȣ��
 
 void ddbugConfig()
 {
-	static uint32_t timeStamp,timeStamp2;
 #if 1
 	ddCmd_Tx();
 #endif
 
 #if 1
 	Uart_Gulobal();
-#endif
-
-
-
-
-#if 0
-	if(ddButton1())
-	{
-		ddClearCharBuff(buff,cnt,size);//wndksdebug,sizeCheck
-	}
-#endif
-
-#if 0
-	if(HAL_GetTick()-timeStamp2 >= 500)
-	{
-		timeStamp2 = HAL_GetTick();
-		HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
-	}
 #endif
 
 

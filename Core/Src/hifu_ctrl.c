@@ -362,7 +362,6 @@ uint8_t Check_CartrigeCommon(uint8_t status, uint8_t idx, uint8_t cmd, uint8_t l
 
 uint8_t Check_Max_Min(int data, int max, int min, uint8_t idx, uint8_t cmd, uint8_t level)
 {
-	uint16_t errData;
 	uint8_t status = (min <= data && data <max);
 	uint8_t returnValue = 0;
 	returnValue = Check_Common(status, idx, level, cmd);
@@ -373,7 +372,6 @@ uint8_t Check_Max_Min(int data, int max, int min, uint8_t idx, uint8_t cmd, uint
 uint8_t Check_Max(int data, int max, uint8_t idx, uint8_t cmd, uint8_t level)
 {
 
-	uint16_t errData;
 	uint8_t status = (data <max);
 	uint8_t returnValue = 0;
 	returnValue = Check_Common(status, idx, level, cmd);
@@ -384,7 +382,6 @@ uint8_t Check_Max(int data, int max, uint8_t idx, uint8_t cmd, uint8_t level)
 
 uint8_t Check_Min(int data, int min, uint8_t idx, uint8_t cmd, uint8_t level)
 {
-	uint16_t errData;
 	uint8_t status = (min <= data);
 	uint8_t returnValue = 0;
 	returnValue = Check_Common(status, idx, level, cmd);
@@ -396,7 +393,6 @@ uint8_t Check_Min(int data, int min, uint8_t idx, uint8_t cmd, uint8_t level)
 
 uint8_t Check_Status(int data, int nomalData, uint8_t idx, uint8_t cmd, uint8_t level)
 {
-	uint16_t errData;
 	uint8_t status = (data == nomalData);
 	uint8_t returnValue = 0;
 	returnValue = Check_Common(status, idx, level, cmd);
@@ -406,7 +402,6 @@ uint8_t Check_Status(int data, int nomalData, uint8_t idx, uint8_t cmd, uint8_t 
 }
 uint8_t Check_CartrigeDetect(int data, int nomalData, uint8_t idx, uint8_t cmd, uint8_t level)
 {
-	uint16_t errData;
 	uint8_t status = (data == nomalData);
 	uint8_t returnValue = 0;
 	returnValue = Check_CartrigeCommon(status, idx, level, cmd);
@@ -418,7 +413,6 @@ uint8_t Check_CartrigeDetect(int data, int nomalData, uint8_t idx, uint8_t cmd, 
 
 uint8_t Check_Day(uint16_t YY, uint16_t MM, uint16_t DD, uint8_t idx, uint8_t cmd, uint8_t level)
 {
-	uint16_t errData;
 	uint8_t yyOk = (YY_MIN <= YY && YY <=YY_MAX);
 	uint8_t mmOk = (MM_MIN <= MM && MM <=MM_MAX);
 	uint8_t ddOk = (DD_MIN <= DD && DD <=DD_MAX);
@@ -431,8 +425,6 @@ uint8_t Check_Day(uint16_t YY, uint16_t MM, uint16_t DD, uint8_t idx, uint8_t cm
 
 uint8_t Check_Time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t idx, uint8_t cmd, uint8_t level)
 {
-
-	uint16_t errData;
 	uint8_t hourOk = (HOUR_MIN <= hour && hour <=HOUR_MAX);
 	uint8_t minOk = (MIN_MIN <= min && min <=MIN_MAX);
 	uint8_t secOk = (SEC_MIN <= sec && sec <=SEC_MAX);
@@ -456,7 +448,7 @@ void Error_Buff_Clear()
 
 void Error_Check_Check(uint8_t bordID)
 {
-	uint16_t errCnt = 0,errData;
+	uint16_t errCnt = 0;
 
 
 	for(int i =0 ;i < IDX_ERROR_MAX;i++)
@@ -527,7 +519,6 @@ void Error_Check_Main()
 
 #endif
 
-	uint8_t errEvent = 0;
 	Error_Check_Check(OK_MAIN);
 
 	Error_Buff_Clear();
@@ -541,19 +532,6 @@ void Error_Check_HP()
 	uint8_t errStatus;
 	Error_Buff_Clear();
 #if 0
-	if(m_eep.catridgeDetectPre != m_eep.catridgeDetect)
-	{
-		if(m_eep.catridgeDetect == CATRIGE_DETECT)
-		{
-			Check_CartrigeDetect(m_eep.catridgeDetect, CATRIGE_DETECT, IDX_CATRIGE_DETECT, IDX_CATRIGE_DETECT, LEVEL_ERROR);//E14
-		}
-		else
-		{
-			Check_CartrigeDetect(m_eep.catridgeDetect, CATRIGE_UN_DETECT, IDX_CATRIGE_UN_DETECT, IDX_CATRIGE_UN_DETECT, LEVEL_ERROR);//E14
-		}
-
-		m_eep.catridgeDetectPre = m_eep.catridgeDetect;
-	}
 
 	m_err.handTimeout++;
 	if(m_err.handTimeout >= 5)
@@ -616,9 +594,7 @@ void Error_Check_RF()
 
 void Error_Check_Config()
 {
-	static uint8_t reCnt = 0;
 	static uint32_t timeStamp;
-	uint8_t errStatus;
 
 	if(HAL_GetTick()-timeStamp >= 2000)
 	{
@@ -708,7 +684,6 @@ void Tx_RF_FRQ_Module(uint8_t ch, uint16_t frequency)
 {
 
 	uint8_t len = 0;
-	uint8_t dataLen = 0;
 
 	len = RF_NUM_FIX + 3;
 	m_rf.txBuff[RF_INDEX_STX] = STX;
@@ -719,7 +694,6 @@ void Tx_RF_FRQ_Module(uint8_t ch, uint16_t frequency)
 	m_rf.txBuff[RF_INDEX_DATA] = ch+1;
 	m_rf.txBuff[RF_INDEX_DATA+1] = (frequency>>8)&0xff;
 	m_rf.txBuff[RF_INDEX_DATA+2] = (frequency)&0xff;
-	dataLen = 3;
 
 
 	for(int i =0 ;i <= RF_INDEX_DATA+2 ;i++)
@@ -740,7 +714,6 @@ void Tx_RF_Watt_Module(uint8_t ch, uint16_t watt)
 {
 
 	uint8_t len = 0;
-	uint8_t dataLen = 0;
 
 	len = RF_NUM_FIX + 3;
 	m_rf.txBuff[RF_INDEX_STX] = STX;
@@ -751,7 +724,6 @@ void Tx_RF_Watt_Module(uint8_t ch, uint16_t watt)
 	m_rf.txBuff[RF_INDEX_DATA] = ch+1;
 	m_rf.txBuff[RF_INDEX_DATA+1] = (watt>>8)&0xff;
 	m_rf.txBuff[RF_INDEX_DATA+2] = (watt)&0xff;
-	dataLen = 3;
 
 
 	for(int i =0 ;i <= RF_INDEX_DATA+2 ;i++)
@@ -760,7 +732,6 @@ void Tx_RF_Watt_Module(uint8_t ch, uint16_t watt)
 	}
 
 	m_rf.txBuff[RF_INDEX_DATA+4] = ETX;
-	int indData = 0;
 	Debug_Tx_RF_Watt_Printf(ch+1, watt);
 	Tx_RF_Msg(m_rf.txBuff, len);
 	memset(m_rf.txBuff, 0, 30);
@@ -1093,10 +1064,6 @@ void RF_Pwm_Conter_Individual()
 	uint32_t pulseCooltime = m_rf.pulseBuff[IDX_MAIN_POSTCO0L_TIME]* TIME_100MS;
 
 
-	uint16_t pulse2Watt = m_rf.pulseBuff[IDX_MAIN_P2_WATT];
-	uint16_t pulse3Watt = m_rf.pulseBuff[IDX_MAIN_P3_WATT];
-	uint16_t pulse4Watt = m_rf.pulseBuff[IDX_MAIN_P4_WATT];
-
 	if(pulse1Ltime>109)pulse1Ltime -= 109;
 	if(pulse2Ltime>109)pulse2Ltime -= 109;
 	if(pulse3Ltime>109)pulse3Ltime -= 109;
@@ -1207,14 +1174,6 @@ void RF_Eg_Exp_Conter()
 }
 
 
-void AutoCal_On(uint8_t startTd, uint8_t endTd)
-{
-	uint8_t trandu;
-}
-void AutoCal_Off()
-{
-
-}
 
 
 void LCD_Status_Tret()
@@ -1363,7 +1322,6 @@ int wattDly = 250;
 
 void AutoCal_Config()
 {
-	static uint32_t timeStamp;
 	uint8_t wattBuff[10] = {10, 20, 30, 40, 50, 60 , 70, 80 , 90, 100};
 	int avg = 0;
 	uint16_t add;
@@ -1460,10 +1418,7 @@ void AutoCal_Config()
 
 void AutoCal_Config_Test()
 {
-	static uint32_t timeStamp;
-	uint8_t wattBuff[10] = {10, 20, 30, 40, 50, 60 , 70, 80 , 90, 100};
 	int avg = 0;
-	uint16_t add;
 
 	if(m_rf.autoCalFlag==0)return;
 
@@ -1636,11 +1591,6 @@ int testTriger=1;
 void Rf_Test()
 {
 
-	if(testTriger)
-	{
-		testTriger = 0;
-		AutoCal_On(0,6);
-	}
 }
 
 

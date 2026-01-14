@@ -267,6 +267,8 @@ void Ciller_Pwr_ON();
 void Ciller_Pwr_OFF();
 void IO_Init();
 void IO_Test();
+void RF_Pwr_ON();
+void IO_Config();
 
 
 /*  			function end  			*/

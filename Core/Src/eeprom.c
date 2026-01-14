@@ -5,6 +5,7 @@
  *      Author: Cellah_SW
  */
 #include "eeprom.h"
+EEPROM_MAIN_T m_eepMain;
 
 static inline uint8_t CAT24C16_MemAddr8(uint16_t abs_addr)
 {
@@ -50,31 +51,71 @@ HAL_StatusTypeDef CAT24C16_ReadByte(I2C_HandleTypeDef *hi2c, uint16_t abs_addr, 
 
 
 uint8_t bufQQ[255] = {0};
-void eeprom_test(void)
+void Eeprom_All_Read(void)
 {
-//    // 1) 0x000 ~ 0x00Aï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿?
-//    for (uint16_t i = 0; i <= 250; ++i)
-//    {
-//        uint8_t w = i;  // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
-//        if (CAT24C16_WriteByte(&hi2c1, i, w) != HAL_OK)
-//        {
-//            // ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
-//            return;
-//        }
-//    }
 
-    // 2) ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ð±ï¿½
-    for (uint16_t i = 0; i <= 250; ++i)
+    for (uint16_t i = 0; i <= 200; ++i)
     {
-        if (CAT24C16_ReadByte(&hi2c1, i, &bufQQ[i]) != HAL_OK)
+        if (CAT24C16_ReadByte(&hi2c1, i, &m_eepMain.buff[i]) != HAL_OK)
         {
-            // ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
+            //¿¡·¯Ã³¸®
             return;
         }
     }
+	if(m_eepMain.buff[IDX_HP1_IS_FLASH_FIRST] != FLASHA_FIRST_FLAG)
+	{
+		m_eepMain.flashFirst = FLASHA_FIRST_FLAG;
+
+		m_eepMain.buff[IDX_HP1_IS_FLASH_FIRST] = m_eepMain.flashFirst;
+		for(int i =0 ;i < 10;i++)
+		{
+			m_eepMain.cartIdBuff[i] = 0;
+			m_eepMain.buff[i+1] = 0;
+		}
+
+		for (uint16_t i = 0; i < 200; ++i)
+	    {
+	        if (CAT24C16_WriteByte(&hi2c1, i, m_eepMain.buff[i]) != HAL_OK)
+	        {
+	            // ¿¡·¯ Ã³¸®
+	            return;
+	        }
+	    }
+	}
+	else
+	{
+		for(int i =0 ;i < 10;i++)
+		{
+			m_eepMain.cartIdBuff[i] = m_eepMain.buff[i+IDX_HP1_CART_ID1_START];
+		}
+	}
 
 
 }
+
+
+
+void Eeprom_Byte_Write(uint8_t Idx, uint8_t data)
+{
+	if(Idx >= MAX_EEPROM_SIZE) return;
+	m_eepMain.buff[Idx] = (uint8_t)data;
+	CAT24C16_WriteByte(&hi2c1, Idx, data);
+}
+
+void Eeprom_Word_Write(uint8_t startIdx, uint16_t data)
+{
+	uint8_t lsb,msb;
+	if(startIdx >= MAX_EEPROM_SIZE-1) return;
+
+	msb = (data>>8)&0xff;
+	lsb = (data)&0xff;
+	m_eepMain.buff[startIdx] = msb;
+	m_eepMain.buff[startIdx+1] = lsb;
+	CAT24C16_WriteByte(&hi2c1, startIdx, msb);
+	CAT24C16_WriteByte(&hi2c1, startIdx+1, lsb);
+}
+
+
 
 #define DS1308_ADDR    (0x68 << 1)
 
@@ -138,11 +179,17 @@ void DS1308_SetDay(uint8_t dayOfWeek, uint8_t DD, uint8_t MM , uint8_t YY)
 
 void RTC_Init(void)
 {
-	// ï¿½×½ï¿½Æ®: 12ï¿½ï¿½ 12ï¿½ï¿½ 12ï¿½Ê·ï¿½ ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½ï¿½
-	DS1308_SetTime(23, 59, 40);
-	DS1308_SetDay(1,28,9,90);
-	HAL_Delay(500); // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½à°£ï¿½ï¿½ ï¿½ï¿½ï¿?
-//	BAT_CHG_ON_H();
+
+	//2601131722 start,
+	//m_io.battery  : 2.06V
+	// no charge
+
+#if 0
+		DS1308_SetTime(17, 21, 40);
+		DS1308_SetDay(3,13,1,26);
+		HAL_Delay(500); //
+		BAT_CHG_ON_H();
+#endif
 }
 
 uint8_t hour, min, sec;

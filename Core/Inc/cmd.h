@@ -78,6 +78,7 @@ typedef enum
 	CMD_RTC_MIN = 48,
 	CMD_RTC_SEC = 49,
 	CMD_RTC_EN = 50,
+	CMD_CART_ALLOW = 51,
 
 	CMD_CATRIDGE_STATUS    = 56,
 	CMD_CATRIDGE_EVENT= 57,
@@ -293,6 +294,13 @@ void Tx_RF_Msg(uint8_t* buff, uint8_t len);
 void AutoCal_Tx_IP_Msg();
 void AutoCal_Tx_Z_Msg();
 void CMD_Is_All_Live();
+
+void UartRx2DataProcess();
+void Uart_Init();
+void Debug_Tx_RF_Frq_Printf(uint8_t ch, uint16_t frq);
+void Debug_Tx_RF_Watt_Printf(uint8_t ch, uint16_t watt);
+void Debug_Tx_RF_All_Zero_Watt_Printf();
+void Debug_Printf(char* str, uint8_t cr);
 
 /*  			extern start  			*/
 

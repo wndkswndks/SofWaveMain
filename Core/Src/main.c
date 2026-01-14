@@ -108,6 +108,7 @@ int main(void)
   LCD_Init();
   Test_Init();
   RTC_Init();
+  Eeprom_All_Read();
 
 
 
