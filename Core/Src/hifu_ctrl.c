@@ -227,7 +227,7 @@ void Rf_Init()
 
 
 }
-void Hand_Init()
+void Hand_Init()//
 {
 	m_eep.catridgeDetectPre = CATRIGE_DETECT;
 	m_eep.catridgeDetect = CATRIGE_DETECT;
