@@ -232,6 +232,7 @@ void Hand_Init()//
 	m_eep.catridgeDetectPre = CATRIGE_DETECT;
 	m_eep.catridgeDetect = CATRIGE_DETECT;
 	m_eep.cartAllow = 1;// temp
+	m_hand1.tempDutyEn = 1;
 }
 void LCD_Init()
 {

@@ -95,6 +95,7 @@ typedef enum
 	CMD_TEST_PULSE = 73,
 	CMD_GET_WATT_CART = 74,
 	CMD_TEST_FORCE_PAGE_CHANGE = 75,
+	CMD_TEMP_DUTY_ON = 76,
 
 	CMD_LCD_EXP = 85,
 	CMD_LCD_AUTO_CAL = 87,
@@ -115,8 +116,6 @@ typedef enum
 	CMD_DEBUG_PUMP = 193,
 	CMD_DEBUG_CHILLER = 194,
 	CMD_DEBUG_PELTIER = 195,
-	CMD_DEGUG_TEMP_DUTY_ON = 196,
-	CMD_DEGUG_LCD_TEMP_DUTY_ON = 197,
 
 	CMD_HP1_ADD = 200,
 
@@ -290,6 +289,8 @@ void Debug_Tx_GenStatus_Check_Printf();
 
 void Tx_Hand1_Msg(uint8_t add, uint16_t data);
 void Tx_LCD_Msg(uint8_t add, uint16_t data);
+void Tx_LCD_Msg_NoDebug(uint8_t add, uint16_t data);
+
 void Tx_RF_Msg(uint8_t* buff, uint8_t len);
 void AutoCal_Tx_IP_Msg();
 void AutoCal_Tx_Z_Msg();

@@ -229,6 +229,19 @@ void Tx_LCD_Msg(uint8_t add, uint16_t data)
 	m_rf.lastLcdTxTime = HAL_GetTick();
 
 }
+
+void Tx_LCD_Msg_NoDebug(uint8_t add, uint16_t data)
+{
+	while(HAL_GetTick() -m_rf.lastLcdTxTime<20);
+
+	char str[20]={0,};
+	sprintf(str,"[%d,%d]\r\n",add, data);
+	HAL_UART_Transmit(&huart5, (uint8_t *)str, strlen(str), 100);
+
+	m_rf.lastLcdTxTime = HAL_GetTick();
+
+}
+
 void Tx_Hand1_Msg(uint8_t add, uint16_t data)
 {
 	char str[20];
@@ -356,6 +369,7 @@ void Debug_Rx_Parssing(uint8_t add, uint32_t data)
 		break;
 
 		case CMD_TEST_FORCE_PAGE_CHANGE:
+			LCD_Init();
 			Tx_LCD_Msg(CMD_TEST_FORCE_PAGE_CHANGE, data);
 		break;
 
@@ -376,13 +390,11 @@ void Debug_Rx_Parssing(uint8_t add, uint32_t data)
 			Tx_RF_Watt_Module(tdu, da);
 			RF_eg_Exp_On(3000);
 		break;
-		case CMD_DEGUG_TEMP_DUTY_ON:
-			Tx_Hand1_Msg(CMD_GET_ALL_CART_END, data);
+		case CMD_TEMP_DUTY_ON:
+			Tx_Hand1_Msg(CMD_TEMP_DUTY_ON, data);
+			m_hand1.tempDutyEn = data;
 		break;
 
-		case CMD_DEGUG_LCD_TEMP_DUTY_ON:
-			m_hand1.cartEndFlag = data;
-		break;
 		case CMD_RF_WATT_MEATER_IP:
 			AutoCal_Tx_IP_Msg();
 		break;
@@ -711,6 +723,10 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 			CurrentEnergy_Cal();
 		break;
 
+		case CMD_TEST_FORCE_PAGE_CHANGE:
+			LCD_Init();
+			Tx_LCD_Msg(CMD_TEST_FORCE_PAGE_CHANGE, data);
+		break;
 
 		case CMD_CALIV_SHOT:
 
@@ -925,6 +941,12 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 			Tx_Hand1_Msg(CMD_GET_WATT_CART, 1);
 		break;
 
+
+		case CMD_TEMP_DUTY_ON:
+			Tx_Hand1_Msg(CMD_TEMP_DUTY_ON, data);
+			m_hand1.tempDutyEn = data;
+		break;
+
 		case CMD_TEST_PULSE:
 			Tx_LCD_Msg(CMD_TEST_PULSE, data);
 			m_rf.testPulseOption = data;
@@ -1092,8 +1114,8 @@ void Hand_Rx_Parssing(uint8_t add, uint32_t data, uint32_t data2, uint32_t data3
 				{
 					LCD_Init();
 					Tx_LCD_Msg(CMD_GET_ALL_CART_END, 1);
-
-					m_hand1.cartEndFlag = 1;
+					Debug_Printf("CartAllOk",1);
+					m_hand1.cartAllOk = 1;
 				}
 				else
 				{
@@ -1103,12 +1125,12 @@ void Hand_Rx_Parssing(uint8_t add, uint32_t data, uint32_t data2, uint32_t data3
 						HAL_Delay(1000);
 						Debug_Printf("CartErrReCall",1);
 						Tx_Hand1_Msg(CMD_GET_ALL_CART, 0);
-						m_hand1.cartEndFlag = 2;
+						m_hand1.cartAllOk = 2;
 					}
 					else
 					{
 						Debug_Printf("Cart Fail",1);
-						m_hand1.cartEndFlag = 3;
+						m_hand1.cartAllOk = 3;
 						m_err.handComuErr = 1;
 					}
 
@@ -1203,12 +1225,12 @@ void Uart_HP_Temp_LCD_Veiw()
 {
 	static uint32_t timeStamp;
 
-	if(m_hand1.cartEndFlag == 1)
+	if(m_hand1.tempDutyEn == 1)
 	{
 		if(HAL_GetTick()-timeStamp >= 1000)
 		{
-			Tx_LCD_Msg(CMD_TEMPERATURE_SHOT, m_hand1.temprature);
-			Tx_LCD_Msg(CMD_PELTIER_DUTY, m_hand1.pwmDuty);
+			Tx_LCD_Msg_NoDebug(CMD_TEMPERATURE_SHOT, m_hand1.temprature);
+			Tx_LCD_Msg_NoDebug(CMD_PELTIER_DUTY, m_hand1.pwmDuty);
 			timeStamp = HAL_GetTick();
 		}
 	}
