@@ -1283,7 +1283,7 @@ void Uart_Passing(UART_T* uart, uint8_t* ptr)//stm32��
 			sscanf(ptr,"[%d,%d]",&(uart->rxCmdAdd[rxRingCnt]),&(uart->rxCmdData[rxRingCnt]));
 
 		if(uart->rxCmdRingCnt< 9)uart->rxCmdRingCnt++;
-
+		else uart->rxCmdRingCnt = 0;
 
 
 	}
@@ -1335,24 +1335,10 @@ void Uart_Passing_STX_ETX_Config(UART_T* uart, uint8_t data, char startChar, cha
 uint8_t ddQ[5];
 void TxTest()
 {
-	static uint32_t timeStamp;
-
-	if(HAL_GetTick()-timeStamp >= 500 )
+	if(dd.d1)
 	{
-		timeStamp = HAL_GetTick();
-//	    HAL_UART_Transmit(&huart1,"11111111\r\n",10,100);
-//	    HAL_UART_Transmit(&huart2,"22222222\r\n",10,100);
-//	    HAL_UART_Transmit(&huart3,"33333333\r\n",10,100);
-//	    HAL_UART_Transmit(&huart4,"44444444\r\n",10,100);
-//		HAL_UART_Transmit(&huart5,"55555555\r\n",10,100);
-	}
-
-
-	if(ddQ[0])
-	{
-		ddQ[0] = 0;
-		Tx_LCD_Msg(ddQ[1],(uint16_t)ddQ[2]);
-
+		dd.d1 = 0;
+		MX_UART5_Init();
 	}
 }
 void Uart_RxBuff_View(UART_T* uart, uint8_t data)

@@ -126,11 +126,11 @@ int main(void)
 #if 1
 	Rf_Config();
 	UartRxDataProcess();
-  	IO_Config();
+	TxTest();
 
 #else
+  IO_Config();
   Error_Check_Config();
-  TxTest();
   IO_Test();
   RTC_Test();
 
