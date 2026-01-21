@@ -533,10 +533,10 @@ typedef struct
 	uint8_t errStandBuff[50];
 	uint8_t errDataBuff[50];
 	uint8_t errNowBuff[50];
+	uint16_t errStatus[4];
 	uint8_t errTraceCnt;
 	uint16_t errChkCnt;
 	uint16_t okChkCnt;
-	uint16_t errStatus;
 	uint8_t statusTx;
 	uint8_t txEn;
 

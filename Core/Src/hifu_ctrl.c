@@ -296,6 +296,57 @@ uint8_t Check_Common(uint8_t status, uint8_t idx, uint8_t level, uint8_t cmd)
 
 }
 #else
+
+void Set_Err_StatusBitFlag(uint8_t cmd, uint8_t status)
+{
+	if(status)
+	{
+		if(cmd<=15) m_err.errStatus[0] |= 1<<cmd;
+		else if(cmd<=31) m_err.errStatus[1] |= 1<<cmd;
+		else if(cmd<=47) m_err.errStatus[2] |= 1<<cmd;
+		else m_err.errStatus[3] |= 1<<cmd;
+	}
+	else
+	{
+		if(cmd<=15) m_err.errStatus[0] &= ~(1<<cmd);
+		else if(cmd<=31) m_err.errStatus[1] &= ~(1<<cmd);
+		else if(cmd<=47) m_err.errStatus[2] &= ~(1<<cmd);
+		else m_err.errStatus[3] |= ~(1<<cmd);
+	}
+
+
+	Eeprom_Word_Write(IDX_EEP_ERROR_STATUS_1, m_err.errStatus[0]);
+	Eeprom_Word_Write(IDX_EEP_ERROR_STATUS_2, m_err.errStatus[1]);
+	Eeprom_Word_Write(IDX_EEP_ERROR_STATUS_3, m_err.errStatus[2]);
+	Eeprom_Word_Write(IDX_EEP_ERROR_STATUS_4, m_err.errStatus[3]);
+
+}
+
+void Get_Err_StatusBitFlag()
+{
+	for(int i =0 ;i <= 15;i++)
+	{
+		if((m_err.errStatus[0]>>i)&0x01) m_err.errDataBuff[i] = i;
+		else m_err.errDataBuff[i] = 0;
+
+	}
+	for(int i =0 ;i <= 15;i++)
+	{
+		if((m_err.errStatus[1]>>i)&0x01) m_err.errDataBuff[i+16] = i;
+		else m_err.errDataBuff[i+16] = 0;
+	}
+	for(int i =0 ;i <= 15;i++)
+	{
+		if((m_err.errStatus[2]>>i)&0x01) m_err.errDataBuff[i+32] = i;
+		else m_err.errDataBuff[i+32] = 0;
+	}
+	for(int i =0 ;i <= 1;i++)
+	{
+		if((m_err.errStatus[3]>>i)&0x01) m_err.errDataBuff[i+48] = i;
+		else m_err.errDataBuff[i+48] = 0;
+	}
+}
+
 uint8_t Check_Common(uint8_t status, uint8_t cmd)
 {
 
@@ -305,6 +356,7 @@ uint8_t Check_Common(uint8_t status, uint8_t cmd)
 		{
 			m_err.errTxDoneBuff[cmd] = 0;
 			m_err.errDataBuff[cmd] = 0;
+//			Set_Err_StatusBitFlag(cmd, 0);
 		}
 		m_err.errNowBuff[cmd] = 0;
 		m_err.errCntBuff[cmd] = 0;
@@ -318,6 +370,7 @@ uint8_t Check_Common(uint8_t status, uint8_t cmd)
 			{
 				m_err.errCntBuff[cmd] = 0;
 				m_err.errDataBuff[cmd] = cmd;
+//				Set_Err_StatusBitFlag(cmd, 1);
 				if(m_eepMain.errCntBuff[cmd]<999)m_eepMain.errCntBuff[cmd]++;
 				Eeprom_Word_Write(IDX_EEP_ERROR+cmd*2, m_eepMain.errCntBuff[cmd]);
 			}
