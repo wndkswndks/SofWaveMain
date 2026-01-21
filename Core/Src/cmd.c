@@ -59,7 +59,7 @@ uint8_t Uart_RxBuff_Get(UART_T* uart, uint8_t data,char startChar, char endChar)
 	{
 		uart->rxBuff[uart->rxCnt] = data;
 		uart->rxCnt++;
-		uart->rxCnt%=RX_BUFF_SIZE;
+		uart->rxCnt %= RX_BUFF_SIZE;
 	}
 
 	if(uart->startFlag&&uart->endFlag)
@@ -678,13 +678,13 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 		break;
 
 		case CMD_PLUSE_NUM:
-			if(data == 0) break;
+			if(data == 0 ||data > 12 ) break;
 			m_rf.pulseNum = data;
 			Tx_LCD_Msg(CMD_PLUSE_NUM, data);
 		break;
 
 		case CMD_PLUSE_EN:
-			if(data == 0) break;
+			if(data == 0 || data > 4) break;
 			uint8_t endisValue;
 			if(m_rf.pulseEndisBuff[data])
 			{
@@ -703,7 +703,7 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 
 		case CMD_PLUSE_BTN_UP_DN:
 			uint16_t pulseData = 0;
-			if(m_rf.pulseNum == 0) break;
+			if(m_rf.pulseNum == 0 ||m_rf.pulseNum > 12 ) break;
 			if(data == BUTTON_UP)
 			{
 				if(m_rf.pulseBuff[m_rf.pulseNum]< m_rf.pulseMaxBuff[m_rf.pulseNum])
@@ -741,13 +741,13 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 			switch (data)
 			{
 				case ERR_CHK_MAIN:
-					Error_Check_Main();
+					Error_Buff_Main_Tx();
 				break;
 				case ERR_CHK_HP:
-					Error_Check_HP();
+					Error_Buff_HP_Tx();
 				break;
 				case ERR_CHK_RF:
-					Error_Check_RF();
+					Error_Buff_Rf_Tx();
 				break;
 			}
 		break;
@@ -909,6 +909,21 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 			Tx_LCD_Msg(CMD_RTC_SEC, m_io.sec);
 		break;
 
+		case CMD_DEVICE_STATUS:
+			m_err.statusTx = data;
+		break;
+
+		case CMD_ERR_EVENT:
+			uint16_t txErrData;//1000~50999 ÃæºÐ
+			if (data)
+			{
+				for(int i =1 ;i < 42;i++)
+				{
+					txErrData = i*1000 + m_eepMain.errCntBuff[i];
+					Tx_LCD_Msg(CMD_ERR_EVENT, txErrData);
+				}
+			}
+		break;
 
 		case CMD_DO_ALL_LIVE:
 			CMD_Is_All_Live();
@@ -1115,6 +1130,7 @@ void Hand_Rx_Parssing(uint8_t add, uint32_t data, uint32_t data2, uint32_t data3
 					LCD_Init();
 					Tx_LCD_Msg(CMD_GET_ALL_CART_END, 1);
 					Debug_Printf("CartAllOk",1);
+					m_err.txEn = 1;
 					m_hand1.cartAllOk = 1;
 				}
 				else
@@ -1132,6 +1148,7 @@ void Hand_Rx_Parssing(uint8_t add, uint32_t data, uint32_t data2, uint32_t data3
 						Debug_Printf("Cart Fail",1);
 						m_hand1.cartAllOk = 3;
 						m_err.handComuErr = 1;
+						m_err.txEn = 1;
 					}
 
 				}
@@ -1221,9 +1238,9 @@ void UartRx5DataProcess()
 
 }
 
-void Uart_HP_Temp_LCD_Veiw()
+void Uart_Tx_Polling_Status()
 {
-	static uint32_t timeStamp;
+	static uint32_t timeStamp, timeStamp2;
 
 	if(m_hand1.tempDutyEn == 1)
 	{
@@ -1234,6 +1251,30 @@ void Uart_HP_Temp_LCD_Veiw()
 			timeStamp = HAL_GetTick();
 		}
 	}
+	if(m_err.statusTx)
+	{
+
+		if(HAL_GetTick()-timeStamp2 >= 1000)
+		{
+			uint16_t txData;
+			txData = 1000 + m_hand1.temprature;
+			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
+			txData = 3000 + m_err.handTimeout;
+			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
+			txData = 4000 + m_err.rfTimeout;
+			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
+			txData = 5000 + m_err.rfStatus;
+			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
+			txData = 6000 + m_io.battery*10;
+			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
+			txData = 7000 + m_io.flowSensorFrq;
+			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
+			txData = 8000 + m_io.level1Status;
+			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
+			timeStamp2 = HAL_GetTick();
+		}
+
+	}
 }
 
 void UartRxDataProcess()
@@ -1243,7 +1284,7 @@ void UartRxDataProcess()
 	UartRx2DataProcess();//hp
 	UartRx4DataProcess();//gen
 	UartRx5DataProcess();//lcd
-	Uart_HP_Temp_LCD_Veiw();
+	Uart_Tx_Polling_Status();
 }
 
 
@@ -1340,7 +1381,7 @@ void Uart3_Passing(uint8_t data)//stm32ï¿½ï¿½
 	{
 		m_uart3.rxBuff[m_uart3.rxCnt] = data;
 		m_uart3.rxCnt++;
-		m_uart3.rxCnt%=RX_BUFF_SIZE;
+		m_uart3.rxCnt %= RX_BUFF_SIZE;
 	}
 
 }

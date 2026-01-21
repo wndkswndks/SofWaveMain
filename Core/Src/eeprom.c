@@ -54,7 +54,7 @@ uint8_t bufQQ[255] = {0};
 void Eeprom_All_Read(void)
 {
 
-    for (uint16_t i = 0; i <= 200; ++i)
+    for (uint16_t i = 0; i < 200; ++i)
     {
         if (CAT24C16_ReadByte(&hi2c1, i, &m_eepMain.buff[i]) != HAL_OK)
         {
@@ -73,6 +73,13 @@ void Eeprom_All_Read(void)
 			m_eepMain.buff[i+1] = 0;
 		}
 
+		for(int i =0 ;i < 50;i++)
+		{
+			m_eepMain.errCntBuff[i] = 0;
+			m_eepMain.buff[IDX_EEP_ERROR+i*2] = 0;
+			m_eepMain.buff[IDX_EEP_ERROR+i*2+1] = 0;
+		}
+
 		for (uint16_t i = 0; i < 200; ++i)
 	    {
 	        if (CAT24C16_WriteByte(&hi2c1, i, m_eepMain.buff[i]) != HAL_OK)
@@ -87,6 +94,11 @@ void Eeprom_All_Read(void)
 		for(int i =0 ;i < 10;i++)
 		{
 			m_eepMain.cartIdBuff[i] = m_eepMain.buff[i+IDX_HP1_CART_ID1_START];
+		}
+
+		for(int i =0 ;i < 50;i++)
+		{
+			m_eepMain.errCntBuff[i] = (m_eepMain.buff[IDX_EEP_ERROR+i*2]<<8)|(m_eepMain.buff[IDX_EEP_ERROR+i*2+1]);
 		}
 	}
 
@@ -180,16 +192,16 @@ void DS1308_SetDay(uint8_t dayOfWeek, uint8_t DD, uint8_t MM , uint8_t YY)
 void RTC_Init(void)
 {
 
-	//2601131722 start,
+	//2601201648 start
 	//m_io.battery  : 2.06V
 	// no charge
 
 #if 0
-		DS1308_SetTime(17, 21, 40);
-		DS1308_SetDay(3,13,1,26);
+		DS1308_SetTime(16, 48, 0);
+		DS1308_SetDay(4,20,1,26);
 		HAL_Delay(500); //
-		BAT_CHG_ON_H();
 #endif
+	BAT_CHG_ON_L();
 }
 
 uint8_t hour, min, sec;

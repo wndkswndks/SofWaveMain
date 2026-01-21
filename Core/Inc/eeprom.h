@@ -18,7 +18,7 @@
 #define CAT24C16_PAGE_BYTES  16U    // 페이지 크기(참고용)
 #define CAT24C16_TOTAL_BYTES 2048U
 #define CAT24C16_ADDRESS_ID   0x50U<<1
-#define FLASHA_FIRST_FLAG   33
+#define FLASHA_FIRST_FLAG   55
 
 /*  			define end  			*/
 
@@ -52,6 +52,7 @@ typedef enum
 	IDX_HP1_CART_ID8_START = 8,
 	IDX_HP1_CART_ID8_END = 8,
 
+	IDX_EEP_ERROR = 50,
 	MAX_EEPROM_SIZE = 200,
 } EEPROM_E;
 
@@ -66,6 +67,7 @@ typedef struct
 	uint8_t saveFlag;
 	uint8_t buff[MAX_EEPROM_SIZE];
 	uint8_t cartIdBuff[10];
+	uint16_t errCntBuff[50];
 } EEPROM_MAIN_T;
 
 /*  			stuct end  				*/

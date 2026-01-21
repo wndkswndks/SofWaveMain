@@ -2,38 +2,7 @@
 
 #include "hifu_ctrl.h"
 uint8_t testExpFlag;
-ERROR_T m_err = {
-    .errBuffMsg = {
-        "DUMY",
-        "TEMP_OUT",
-        "TEMP_LIMIT_UNDER",
-        "TEMP_LOW",
-        "FLOW_LIMIT_UNDER",
-        "FLOW_ZERO_IDX",
-        "LEVEL_LOW",
-        "AUTO_CAL_COMU_ERR",
-        "BATTRY_LIMIT_OVER",
-        "BATTRY_LIMIT_UNDER",
-        "BATTRY_LIMIT_LOW",
-        "RTC_ERR",
-        "PRE_COOL_ERR",
-        "HAND_COMU_ERR",
-        "CATRIGE_ID_ERR",
-        "CATRIGE_MANU_ERR",
-        "CATRIGE_MANU_OVER_ERR",
-        "CATRIGE_ISUE_ERR",
-        "CATRIGE_ISUE_OVER_ERR",
-        "CATRIGE_WATT_ERR",
-        "CATRIGE_FRQ_ERR",
-        "CATRIGE_RESHOT_ERR",
-        "CATRIGE_RESHOT_LOW",
-        "CATRIGE_RESHOT_ZERO",
-        "CATRIGE_DETECT",
-        "CATRIGE_UN_DETECT",
-        "RF_COMU_ERR",
-        "RF_STATUS_ERR"
-    }
-};
+ERROR_T m_err;
 
 
 RF_T m_rf;
@@ -268,6 +237,14 @@ void LCD_Init()
 
 }
 
+
+void Err_Init()
+{
+	for(int i =0 ;i < 16;i++)
+	{
+		m_err.errStandBuff[i] = 5;
+	}
+}
 void PulseData_Sand(uint8_t num, uint16_t data)
 {
 	uint16_t pulseData;
@@ -281,7 +258,7 @@ void PulseData_Sand(uint8_t num, uint16_t data)
 void PulseEn_Sand(uint8_t num, uint16_t enDis)
 {
 	uint16_t pulseData;
-	if(num>12)return;
+	if(num>4)return;
 
 	pulseData = num*10 + enDis;
 	m_rf.pulseEndisBuff[num] = enDis;
@@ -319,113 +296,109 @@ uint8_t Check_Common(uint8_t status, uint8_t idx, uint8_t level, uint8_t cmd)
 
 }
 #else
-uint8_t Check_Common(uint8_t status, uint8_t idx, uint8_t level, uint8_t cmd)
+uint8_t Check_Common(uint8_t status, uint8_t cmd)
 {
-	uint16_t errData;
 
 	if(status)//Nomal
 	{
-		if(m_err.errBuff[idx]==1)
+		if(m_err.errDataBuff[cmd])
 		{
-			m_err.errDataBuff[idx] = 0;
-			m_err.errMemoryBuff[idx] = 0;
+			m_err.errTxDoneBuff[cmd] = 0;
+			m_err.errDataBuff[cmd] = 0;
 		}
-		m_err.errBuff[idx] = 0;
+		m_err.errNowBuff[cmd] = 0;
+		m_err.errCntBuff[cmd] = 0;
 	}
 	else//errs
 	{
-		if(m_err.errBuff[idx] == 0)
+		if(!m_err.errDataBuff[cmd])
 		{
-			errData = level*LEVEL_UNIT +cmd;
-			m_err.errDataBuff[idx] = errData;
-			m_err.errMemoryBuff[idx] = errData;
+			m_err.errCntBuff[cmd]++;
+			if(m_err.errStandBuff[cmd] < m_err.errCntBuff[cmd])
+			{
+				m_err.errCntBuff[cmd] = 0;
+				m_err.errDataBuff[cmd] = cmd;
+				if(m_eepMain.errCntBuff[cmd]<999)m_eepMain.errCntBuff[cmd]++;
+				Eeprom_Word_Write(IDX_EEP_ERROR+cmd*2, m_eepMain.errCntBuff[cmd]);
+			}
 		}
-		m_err.errBuff[idx] = 1;
+		m_err.errNowBuff[cmd] = cmd;
 	}
-	return m_err.errBuff[idx];
+	return m_err.errDataBuff[cmd];
 
 }
 
 #endif
 
-uint8_t Check_CartrigeCommon(uint8_t status, uint8_t idx, uint8_t cmd, uint8_t level)
+uint8_t Check_CartrigeCommon(uint8_t status, uint8_t cmd)
 {
 	uint16_t errData;
 
 	if(status)
 	{
-		errData = level*LEVEL_UNIT + ERR_DISABLE +cmd;
-		m_err.errDataBuff[idx] = errData;
+		errData = ERR_DISABLE +cmd;
+		m_err.errDataBuff[cmd] = errData;
 	}
 
 	return 0;
 
 }
 
-uint8_t Check_Max_Min(int data, int max, int min, uint8_t idx, uint8_t cmd, uint8_t level)
+uint8_t Check_Max_Min(int data, int max, int min, uint8_t cmd)
 {
 	uint8_t status = (min <= data && data <max);
 	uint8_t returnValue = 0;
-	returnValue = Check_Common(status, idx, level, cmd);
+	returnValue = Check_Common(status, cmd);
 
 	return returnValue;
 }
 
-uint8_t Check_Max(int data, int max, uint8_t idx, uint8_t cmd, uint8_t level)
+uint8_t Check_Max(int data, int max, uint8_t cmd)
 {
 
 	uint8_t status = (data <max);
 	uint8_t returnValue = 0;
-	returnValue = Check_Common(status, idx, level, cmd);
+	returnValue = Check_Common(status, cmd);
 
 	return returnValue;
 
 }
 
-uint8_t Check_Min(int data, int min, uint8_t idx, uint8_t cmd, uint8_t level)
+uint8_t Check_Min(int data, int min, uint8_t cmd)
 {
 	uint8_t status = (min <= data);
 	uint8_t returnValue = 0;
-	returnValue = Check_Common(status, idx, level, cmd);
+	returnValue = Check_Common(status,cmd);
 
 	return returnValue;
 
 }
 
 
-uint8_t Check_Status(int data, int nomalData, uint8_t idx, uint8_t cmd, uint8_t level)
+uint8_t Check_Status(int data, int nomalData, uint8_t cmd)
 {
 	uint8_t status = (data == nomalData);
 	uint8_t returnValue = 0;
-	returnValue = Check_Common(status, idx, level, cmd);
-
-	return returnValue;
-
-}
-uint8_t Check_CartrigeDetect(int data, int nomalData, uint8_t idx, uint8_t cmd, uint8_t level)
-{
-	uint8_t status = (data == nomalData);
-	uint8_t returnValue = 0;
-	returnValue = Check_CartrigeCommon(status, idx, level, cmd);
+	returnValue = Check_Common(status, cmd);
 
 	return returnValue;
 
 }
 
 
-uint8_t Check_Day(uint16_t YY, uint16_t MM, uint16_t DD, uint8_t idx, uint8_t cmd, uint8_t level)
+uint8_t Check_Day(uint16_t YY, uint16_t MM, uint16_t DD, uint8_t cmd)
 {
 	uint8_t yyOk = (YY_MIN <= YY && YY <=YY_MAX);
 	uint8_t mmOk = (MM_MIN <= MM && MM <=MM_MAX);
 	uint8_t ddOk = (DD_MIN <= DD && DD <=DD_MAX);
 	uint8_t status = (yyOk && mmOk && ddOk);
 	uint8_t returnValue = 0;
-	returnValue = Check_Common(status, idx, level, cmd);
+	returnValue = Check_Common(status, cmd);
 
 	return returnValue;
 }
 
-uint8_t Check_Time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t idx, uint8_t cmd, uint8_t level)
+uint8_t Check_Time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t cmd)
 {
 	uint8_t hourOk = (HOUR_MIN <= hour && hour <=HOUR_MAX);
 	uint8_t minOk = (MIN_MIN <= min && min <=MIN_MAX);
@@ -433,7 +406,7 @@ uint8_t Check_Time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t idx, uint8_t 
 	uint8_t status = (hourOk && minOk && secOk);
 	uint8_t returnValue = 0;
 
-	returnValue = Check_Common(status, idx, level, cmd);
+	returnValue = Check_Common(status, cmd);
 
 	return returnValue;
 
@@ -442,88 +415,93 @@ uint8_t Check_Time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t idx, uint8_t 
 void Error_Buff_Clear()
 {
 	memset(m_err.errDataBuff, 0, sizeof(m_err.errDataBuff));
-	memset(m_err.errTraceBuff, 0, sizeof(m_err.errTraceBuff));
-	m_err.errTraceCnt = 0;
 }
 
 
-
-void Error_Check_Check(uint8_t bordID)
+void Error_Buff_Main_Tx()
 {
-	uint16_t errCnt = 0;
-
-
-	for(int i =0 ;i < IDX_ERROR_MAX;i++)
+	uint8_t errCnt = 0;
+	for(int i =IDX_MAIN_EVENT_START ;i < IDX_MAIN_EVENT_END; i++)
 	{
 		if(m_err.errDataBuff[i])
 		{
-//			errData = m_err.errDataBuff[i];
-//			m_err.errTraceBuff[m_err.errTraceCnt++] = errData;
-//			m_err.errTraceCnt %= 50;
 			errCnt++;
-		}
-	}
-
-	if(errCnt)
-	{
-		m_err.okChkCnt++;
-		m_err.errStatus = 0;
-		Tx_LCD_Msg(CMD_OK, bordID/* +NONE_OK_ADDR*/);
-		HAL_Delay(1000);
-		Error_Buff_Tx();
-	}
-	else
-	{
-		m_err.errChkCnt++;
-		m_err.errStatus = 1;
-		Tx_LCD_Msg(CMD_OK, bordID);
-	}
-
-}
-
-void Error_Buff_Tx()
-{
-	uint16_t errData;
-	for(int i =0 ;i < 50; i++)
-	{
-		errData = m_err.errDataBuff[i];
-		errData %= 100;
-		if(errData)
-		{
-//			Debug_Printf("Err ",0);
-//			Debug_Printf(m_err.errBuffMsg[errData], 1);
-			Tx_LCD_Msg(CMD_ERR, errData);
+			Tx_LCD_Msg(CMD_ERR, m_err.errDataBuff[i]);
 			HAL_Delay(1500);
 		}
 	}
+	if(errCnt==0)
+	{
+		Tx_LCD_Msg(CMD_OK, OK_MAIN);
+	}
 }
+
+void Error_Buff_HP_Tx()
+{
+	uint8_t errCnt = 0;
+	for(int i =IDX_HP_EVENT_START ;i < IDX_HP_EVENT_END; i++)
+	{
+		if(m_err.errDataBuff[i])
+		{
+			errCnt++;
+			if(!m_err.errTxDoneBuff[i])
+			{
+				Tx_LCD_Msg(CMD_ERR, m_err.errDataBuff[i]);
+				m_err.errTxDoneBuff[i] = 1;
+				HAL_Delay(1500);
+			}
+		}
+	}
+	if(errCnt==0)
+	{
+		Tx_LCD_Msg(CMD_OK, OK_HP);
+	}
+}
+
+void Error_Buff_Rf_Tx()
+{
+	uint8_t errCnt = 0;
+	for(int i =IDX_RF_EVENT_START ;i < IDX_RF_EVENT_END; i++)
+	{
+		if(m_err.errDataBuff[i])
+		{
+			errCnt++;
+			Tx_LCD_Msg(CMD_ERR, m_err.errDataBuff[i]);
+			HAL_Delay(1500);
+		}
+	}
+	if(errCnt==0)
+	{
+		Tx_LCD_Msg(CMD_OK, OK_RF);
+	}
+}
+
 
 
 void Error_Check_Main()
 {
-	Error_Buff_Clear();
-#if 0
-	Check_Max_Min(m_hand1.temprature, TEMP_OUT_MAX, TEMP_OUT_MIN, IDX_TEMP_OUT, IDX_TEMP_OUT, LEVEL_ERROR);//E05
-	Check_Min(m_hand1.temprature, TEMP_MIN, IDX_TEMP_LIMIT_UNDER, IDX_TEMP_LIMIT_UNDER, LEVEL_ERROR);//E06
+#if 1
+	Check_Max_Min(m_hand1.temprature, TEMP_OUT_MAX, TEMP_OUT_MIN,IDX_TEMP_OUT);
+	Check_Min(m_hand1.temprature, TEMP_MIN, IDX_TEMP_LIMIT_UNDER);
+	Check_Min(m_hand1.temprature, TEMP_LOW_VALUE, IDX_TEMP_LOW);
 
-	Check_Status(m_io.level1Status, 0, IDX_LEVEL_LOW, IDX_LEVEL_LOW, LEVEL_ERROR);//E07
-	Check_Min(m_io.flowSensorFrq, FLOW_LOW_MIN, IDX_FLOW_ZERO_IDX, IDX_FLOW_ZERO_IDX, LEVEL_ERROR);//E08
-	Check_Max_Min(m_io.flowSensorFrq, FLOW_LOW_MAX, FLOW_LOW_MIN, IDX_FLOW_LIMIT_UNDER, IDX_FLOW_LIMIT_UNDER, LEVEL_ERROR);//E09
+	Check_Status(m_io.level1Status, 0, IDX_LEVEL_LOW);
+	Check_Min(m_io.flowSensorFrq, FLOW_LOW_MIN, IDX_FLOW_ZERO_IDX);
+	Check_Max_Min(m_io.flowSensorFrq, FLOW_LOW_MAX, FLOW_LOW_MIN, IDX_FLOW_LIMIT_UNDER);
 
-	Check_Max(m_io.battery, BATTRY_LIMIT_MAX, IDX_BATTRY_LIMIT_OVER, IDX_BATTRY_LIMIT_OVER, LEVEL_ERROR);//E10
-	Check_Min(m_io.battery, BATTRY_LIMIT_MIN, IDX_BATTRY_LIMIT_UNDER, IDX_BATTRY_LIMIT_UNDER, LEVEL_ERROR);//E11
+	Check_Max(m_io.battery, BATTRY_LIMIT_MAX, IDX_BATTRY_LIMIT_OVER);
+	Check_Min(m_io.battery, BATTRY_LIMIT_MIN, IDX_BATTRY_LIMIT_UNDER);
+	Check_Min(m_io.battery, BATTRY_NOMAL_MIN, IDX_BATTRY_LIMIT_LOW);
 
-	Check_Status(m_err.autoCalStatus, 0, IDX_AUTO_CAL_COMU_ERR, IDX_AUTO_CAL_COMU_ERR, LEVEL_ERROR);//E12
-	Check_Time(m_io.hour, m_io.min, m_io.sec, IDX_RTC_ERR, IDX_RTC_ERR, LEVEL_ERROR);//E22
+	Check_Status(m_err.autoCalStatus, 0, IDX_AUTO_CAL_COMU_ERR);
+	Check_Time(m_io.hour, m_io.min, m_io.sec, IDX_RTC_ERR);
 
-	Check_Min(m_hand1.temprature, TEMP_LOW_VALUE, IDX_TEMP_LOW, IDX_TEMP_LOW, LEVEL_ALRAM);//A01
-	Check_Min(m_io.battery, BATTRY_NOMAL_MIN, IDX_BATTRY_LIMIT_LOW, IDX_BATTRY_LIMIT_LOW, LEVEL_ALRAM);//A04
 
 #endif
 
-	Error_Check_Check(OK_MAIN);
+	if(m_err.txEn)Error_Buff_Main_Tx();
 
-	Error_Buff_Clear();
+
 
 
 
@@ -532,65 +510,57 @@ void Error_Check_Main()
 void Error_Check_HP()
 {
 	uint8_t errStatus;
-	Error_Buff_Clear();
-#if 0
+#if 1
 
 	m_err.handTimeout++;
-	if(m_err.handTimeout >= 5)
-	{
-//		m_err.handTimeout = 0;
-		Check_Max(m_err.handTimeout, COMU_MAX_CNT, IDX_HAND_COMU_ERR, IDX_HAND_COMU_ERR, LEVEL_ERROR);//E04
-	}
-
-	m_eep.manufacDay = m_eep.manufacYY*10000 + m_eep.manufacMM*100 + m_eep.manufacDD;
-	m_eep.issuedDay = m_eep.issuedYY*10000 + m_eep.issuedMM*100 + m_eep.issuedDD;
+	Check_Max(m_err.handTimeout, COMU_MAX_CNT, IDX_HAND_COMU_ERR);
 
 
-	Check_Day(m_eep.manufacYY, m_eep.manufacMM, m_eep.manufacDD, IDX_CATRIGE_MANU_ERR, IDX_CATRIGE_MANU_ERR, LEVEL_ERROR);//E16
-	Check_Day(m_eep.issuedYY, m_eep.issuedMM, m_eep.issuedDD, IDX_CATRIGE_ISUE_ERR, IDX_CATRIGE_ISUE_ERR, LEVEL_ERROR);//E17
+
+	Check_Day(m_eep.manufacYY, m_eep.manufacMM, m_eep.manufacDD, IDX_CATRIGE_MANU_ERR);
+	Check_Day(m_eep.issuedYY, m_eep.issuedMM, m_eep.issuedDD, IDX_CATRIGE_ISUE_ERR);
 
 	for(int i = 1; i <= 7; i++)
 	{
-		errStatus = Check_Max_Min(m_eep.rfFrqBuff[i], CATRIDGE_FRQ_MAX, CATRIDGE_FRQ_MIN, IDX_CATRIGE_FRQ_ERR, IDX_CATRIGE_FRQ_ERR, LEVEL_ERROR);//E18
+		errStatus = Check_Max_Min(m_eep.rfFrqBuff[i], CATRIDGE_FRQ_MAX, CATRIDGE_FRQ_MIN, IDX_CATRIGE_FRQ_ERR);
 		if(errStatus) break;
 	}
 	for(int i = 1; i <= 77; i++)
 	{
-		errStatus = Check_Max_Min(m_eep.rfWattBuff[i], CATRIDGE_WATT_MAX, CATRIDGE_WATT_MIN, IDX_CATRIGE_WATT_ERR, IDX_CATRIGE_WATT_ERR, LEVEL_ERROR);//E19
+		errStatus = Check_Max_Min(m_eep.rfWattBuff[i], CATRIDGE_WATT_MAX, CATRIDGE_WATT_MIN, IDX_CATRIGE_WATT_ERR);
 		if(errStatus) break;
 	}
-	Check_Max(m_eep.remainingShotNum, CATRIDGE_REMAIN_MAX, IDX_CATRIGE_RESHOT_ERR, IDX_CATRIGE_RESHOT_ERR, LEVEL_ERROR);//E21
+	Check_Max(m_eep.remainingShotNum, CATRIDGE_REMAIN_MAX, IDX_CATRIGE_RESHOT_ERR);
+	Check_Min(m_eep.remainingShotNum, CATRIDGE_REMAIN_LOW_3, IDX_CATRIGE_RESHOT_LOW);
+	Check_Min(m_eep.remainingShotNum, CATRIDGE_REMAIN_MIN, IDX_CATRIGE_RESHOT_ZERO);
 
-	Check_Max(m_eep.catridgeId, CATRIDGE_ID_MAX, IDX_CATRIGE_ID_ERR, IDX_CATRIGE_ID_ERR, LEVEL_ERROR);//E23
+	Check_Max(m_eep.catridgeId, CATRIDGE_ID_MAX, IDX_CATRIGE_ID_ERR);
 
-	Check_Max(m_io.day, m_eep.manufacDay + DAY_MAX, IDX_CATRIGE_MANU_OVER_ERR, IDX_CATRIGE_MANU_OVER_ERR, LEVEL_ERROR);//E24
-	Check_Max(m_io.day, m_eep.issuedDay + DAY_MAX, IDX_CATRIGE_ISUE_OVER_ERR, IDX_CATRIGE_ISUE_OVER_ERR, LEVEL_ERROR);//E25
-	Check_Status(m_err.preCoolStatus, 0, IDX_PRE_COOL_ERR, IDX_PRE_COOL_ERR, LEVEL_ERROR);//E15
+	Check_Status(m_err.preCoolStatus, 0, IDX_PRE_COOL_ERR);
 
-	Check_Min(m_eep.remainingShotNum, CATRIDGE_REMAIN_LOW_3, IDX_CATRIGE_RESHOT_LOW, IDX_CATRIGE_RESHOT_LOW, LEVEL_ERROR);//A02
-	Check_Min(m_eep.remainingShotNum, CATRIDGE_REMAIN_MIN, IDX_CATRIGE_RESHOT_ZERO, IDX_CATRIGE_RESHOT_ZERO, LEVEL_ERROR);//A06
+	m_eep.manufacDay = m_eep.manufacYY*10000 + m_eep.manufacMM*100 + m_eep.manufacDD;
+	m_eep.issuedDay = m_eep.issuedYY*10000 + m_eep.issuedMM*100 + m_eep.issuedDD;
+	Check_Max(m_io.day, m_eep.manufacDay + DAY_MAX, IDX_CATRIGE_MANU_OVER_ERR);
+	Check_Max(m_io.day, m_eep.issuedDay + DAY_MAX, IDX_CATRIGE_ISUE_OVER_ERR);
+
 
 #endif
 
-	Error_Check_Check(OK_HP);
-	Error_Buff_Clear();
+	if(m_err.txEn)Error_Buff_HP_Tx();
 
 }
 
 void Error_Check_RF()
 {
-	Error_Buff_Clear();
-#if 0
+#if 1
 	m_err.rfTimeout++;
 	Tx_RF_GenStatus_Check();
-	Check_Max(m_err.rfTimeout, COMU_MAX_CNT, IDX_RF_COMU_ERR, IDX_RF_COMU_ERR, LEVEL_ERROR);//E02
-	if(m_err.rfTimeout > 5) m_err.rfTimeout = 0;
+	Check_Max(m_err.rfTimeout, COMU_MAX_CNT, IDX_RF_COMU_ERR);//E02
 
-	Check_Status(m_err.rfStatus, 0, IDX_RF_STATUS_ERR, IDX_RF_STATUS_ERR, LEVEL_ERROR);//E14
+	Check_Status(m_err.rfStatus, 0, IDX_RF_STATUS_ERR);//E14
 #endif
 
-	Error_Check_Check(OK_RF);
-	Error_Buff_Clear();
+	if(m_err.txEn)Error_Buff_Rf_Tx();
 
 }
 
@@ -598,6 +568,7 @@ void Error_Check_Config()
 {
 	static uint32_t timeStamp;
 
+	if(m_rf.pluseOn) return;
 	if(HAL_GetTick()-timeStamp >= 2000)
 	{
 		Error_Check_Main();

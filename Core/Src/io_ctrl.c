@@ -310,7 +310,7 @@ void IO_Config()
 	m_io.level1Status = IS_LEVEL_SENSOR1_ON() ;
 	m_io.level2Status = IS_LEVEL_SENSOR2_ON() ;
 
-
+#if 0
 	if(is_flowOk && is_pumpOn &&  !is_cillerOn && m_io.level1Status && m_io.level2Status )
 	{
 
@@ -321,6 +321,8 @@ void IO_Config()
 		if(is_cillerOn) Ciller_Pwr_OFF();
 		if(is_pumpOn) WaterPump_Pwr_OFF();
 	}
+
+#endif
 
 	Battery_Read();
 	RTC_Config();
