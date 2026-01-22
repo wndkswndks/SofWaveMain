@@ -262,6 +262,20 @@ void IO_Init()
 	Ciller_Pwr_ON();
 	m_io.rtcEn = 1;
 }
+void RTC_Init(void)
+{
+
+	//2601220918 start
+	//m_io.battery  : 2.06V
+	// no charge
+
+#if 0
+		DS1308_SetTime(9, 18, 0);
+		DS1308_SetDay(4,22,1,26);
+		HAL_Delay(500); //
+#endif
+	BAT_CHG_ON_L();
+}
 
 void RTC_Config(void)
 {

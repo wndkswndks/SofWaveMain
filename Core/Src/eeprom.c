@@ -189,20 +189,7 @@ void DS1308_SetDay(uint8_t dayOfWeek, uint8_t DD, uint8_t MM , uint8_t YY)
     DS1308_Write(0x06, DEC2BCD(YY));
 }
 
-void RTC_Init(void)
-{
 
-	//2601220918 start
-	//m_io.battery  : 2.06V
-	// no charge
-
-#if 0
-		DS1308_SetTime(9, 18, 0);
-		DS1308_SetDay(4,22,1,26);
-		HAL_Delay(500); //
-#endif
-	BAT_CHG_ON_L();
-}
 
 uint8_t hour, min, sec;
 void RTC_Test(void)///

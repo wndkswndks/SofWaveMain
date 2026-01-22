@@ -83,7 +83,6 @@ typedef struct
 void eeprom_test(void);
 void Eeprom_All_Read(void);
 
-void RTC_Init(void);
 void RTC_Test(void);
 void DS1308_GetTime(uint8_t *hour, uint8_t *min, uint8_t *sec);
 void DS1308_GetDay(uint8_t *dayOfWeek, uint8_t *DD, uint8_t *MM,  uint8_t *YY);

@@ -269,6 +269,7 @@ void IO_Init();
 void IO_Test();
 void RF_Pwr_ON();
 void IO_Config();
+void RTC_Init(void);
 
 
 /*  			function end  			*/
