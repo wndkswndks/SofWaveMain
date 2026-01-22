@@ -357,8 +357,11 @@ void HP_Cartrige_Check()
 		m_eep.remainingShotNum = 10000;
 }
 
+//static
+uint8_t agingCnt, updn;
 void Debug_Rx_Parssing(uint8_t add, uint32_t data)
 {
+
 	if(add==0)return;
 	switch (add)
 	{
@@ -431,44 +434,57 @@ void Debug_Rx_Parssing(uint8_t add, uint32_t data)
 		case CMD_FRQ_CH0:
 			m_rf.rfFrqBuff[RF_FRQ_CH0] = data;
 			Tx_RF_FRQ_Module(RF_FRQ_CH0, data);
-			Tx_LCD_Msg(CMD_FRQ_CH0, data);
 		break;
 
 		case CMD_FRQ_CH1:
 			m_rf.rfFrqBuff[RF_FRQ_CH1] = data;
 			Tx_RF_FRQ_Module(RF_FRQ_CH1, data);
-			Tx_LCD_Msg(CMD_FRQ_CH1, data);
 		break;
 
 		case CMD_FRQ_CH2:
 			m_rf.rfFrqBuff[RF_FRQ_CH2] = data;
 			Tx_RF_FRQ_Module(RF_FRQ_CH2, data);
-			Tx_LCD_Msg(CMD_FRQ_CH2, data);
 		break;
 
 		case CMD_FRQ_CH3:
 			m_rf.rfFrqBuff[RF_FRQ_CH3] = data;
 			Tx_RF_FRQ_Module(RF_FRQ_CH3, data);
-			Tx_LCD_Msg(CMD_FRQ_CH3, data);
 		break;
 
 		case CMD_FRQ_CH4:
 			m_rf.rfFrqBuff[RF_FRQ_CH4] = data;
 			Tx_RF_FRQ_Module(RF_FRQ_CH4, data);
-			Tx_LCD_Msg(CMD_FRQ_CH4, data);
 		break;
 
 		case CMD_FRQ_CH5:
 			m_rf.rfFrqBuff[RF_FRQ_CH5] = data;
 			Tx_RF_FRQ_Module(RF_FRQ_CH5, data);
-			Tx_LCD_Msg(CMD_FRQ_CH5, data);
 		break;
 
 		case CMD_FRQ_CH6:
 			m_rf.rfFrqBuff[RF_FRQ_CH6] = data;
 			Tx_RF_FRQ_Module(RF_FRQ_CH6, data);
-			Tx_LCD_Msg(CMD_FRQ_CH6, data);
 		break;
+
+		case CMD_AGING_BUTTON:
+			if(data<=30)
+			{
+				Tx_LCD_Msg(CMD_AGING_BUTTON, data);
+				printf("Aging Button %d\r\n",data);
+			}
+			else
+			{
+				m_rf.agingUpDn = data%100;
+				m_rf.agingCnt = data/100;
+			}
+
+		break;
+
+		case CMD_AUTO_EXP:
+			testExpFlag  = 1;
+			printf("Auto Exp\r\n");
+		break;
+
 
 	}
 
@@ -593,94 +609,44 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 			Tx_Hand1_Msg(CMD_REMIND_SHOT, data);
 		break;
 
-		case CMD_FRQ_CH0:
-			m_rf.rfFrqBuff[RF_FRQ_CH0] = data;
-			Tx_RF_FRQ_Module(RF_FRQ_CH0, data);
-			Tx_LCD_Msg(CMD_FRQ_CH0, data);
-		break;
-
-		case CMD_FRQ_CH1:
-			m_rf.rfFrqBuff[RF_FRQ_CH1] = data;
-			Tx_RF_FRQ_Module(RF_FRQ_CH1, data);
-			Tx_LCD_Msg(CMD_FRQ_CH1, data);
-		break;
-
-		case CMD_FRQ_CH2:
-			m_rf.rfFrqBuff[RF_FRQ_CH2] = data;
-			Tx_RF_FRQ_Module(RF_FRQ_CH2, data);
-			Tx_LCD_Msg(CMD_FRQ_CH2, data);
-		break;
-
-		case CMD_FRQ_CH3:
-			m_rf.rfFrqBuff[RF_FRQ_CH3] = data;
-			Tx_RF_FRQ_Module(RF_FRQ_CH3, data);
-			Tx_LCD_Msg(CMD_FRQ_CH3, data);
-		break;
-
-		case CMD_FRQ_CH4:
-			m_rf.rfFrqBuff[RF_FRQ_CH4] = data;
-			Tx_RF_FRQ_Module(RF_FRQ_CH4, data);
-			Tx_LCD_Msg(CMD_FRQ_CH4, data);
-		break;
-
-		case CMD_FRQ_CH5:
-			m_rf.rfFrqBuff[RF_FRQ_CH5] = data;
-			Tx_RF_FRQ_Module(RF_FRQ_CH5, data);
-			Tx_LCD_Msg(CMD_FRQ_CH5, data);
-		break;
-
-		case CMD_FRQ_CH6:
-			m_rf.rfFrqBuff[RF_FRQ_CH6] = data;
-			Tx_RF_FRQ_Module(RF_FRQ_CH6, data);
-			Tx_LCD_Msg(CMD_FRQ_CH6, data);
-		break;
-
 		case CMD_WATT_CH0:
 			m_rf.rfwattBuff[RF_WATT_CH0] = data;
 			Tx_RF_Watt_Module(RF_WATT_CH0, data);
-			Tx_LCD_Msg(CMD_WATT_CH0, data);
 		break;
 
 		case CMD_WATT_CH1:
 			m_rf.rfwattBuff[RF_WATT_CH1] = data;
 			Tx_RF_Watt_Module(RF_WATT_CH1, data);
-			Tx_LCD_Msg(CMD_WATT_CH1, data);
 		break;
 
 		case CMD_WATT_CH2:
 			m_rf.rfwattBuff[RF_WATT_CH2] = data;
 			Tx_RF_Watt_Module(RF_WATT_CH2, data);
-			Tx_LCD_Msg(CMD_WATT_CH2, data);
 		break;
 
 		case CMD_WATT_CH3:
 			m_rf.rfwattBuff[RF_WATT_CH3] = data;
 			Tx_RF_Watt_Module(RF_WATT_CH3, data);
-			Tx_LCD_Msg(CMD_WATT_CH3, data);
 		break;
 
 		case CMD_WATT_CH4:
 			m_rf.rfwattBuff[RF_WATT_CH4] = data;
 			Tx_RF_Watt_Module(RF_WATT_CH4, data);
-			Tx_LCD_Msg(CMD_WATT_CH4, data);
 		break;
 
 		case CMD_WATT_CH5:
 			m_rf.rfwattBuff[RF_WATT_CH5] = data;
 			Tx_RF_Watt_Module(RF_WATT_CH5, data);
-			Tx_LCD_Msg(CMD_WATT_CH5, data);
 		break;
 
 		case CMD_WATT_CH6:
 			m_rf.rfwattBuff[RF_WATT_CH6] = data;
 			Tx_RF_Watt_Module(RF_WATT_CH6, data);
-			Tx_LCD_Msg(CMD_WATT_CH6, data);
 		break;
 
 		case CMD_PLUSE_NUM:
 			if(data == 0 ||data > 12 ) break;
 			m_rf.pulseNum = data;
-			Tx_LCD_Msg(CMD_PLUSE_NUM, data);
 		break;
 
 		case CMD_PLUSE_EN:
@@ -733,8 +699,6 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 			TX_RF_Max_Ontime_Set();
 			Tx_RF_FRQ_ALL_Module();
 			RF_eg_Exp_On(data*100);
-			Tx_LCD_Msg(CMD_CALIV_SHOT, data);
-
 		break;
 
 		case CMD_OK:
@@ -930,7 +894,6 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 		break;
 
 		case CMD_GET_ALL_CART:
-			Tx_LCD_Msg(CMD_GET_ALL_CART, 0);
 			Tx_Hand1_Msg(CMD_GET_ALL_CART, 0);
 		break;
 
@@ -996,7 +959,6 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 					reqAdd = add-CMD_TRANDU_WATT_BASE;
 					m_eep.rfWattBuff[reqAdd] = data;
 				}
-				Tx_LCD_Msg(add, data);
 				Tx_Hand1_Msg(add, data);
 			}
 
@@ -1274,6 +1236,18 @@ void Uart_Tx_Polling_Status()
 			timeStamp2 = HAL_GetTick();
 		}
 
+	}
+	if(m_rf.agingCnt)
+	{
+		static uint32_t timeStamp;
+
+		if(HAL_GetTick()-timeStamp >= 200)
+		{
+			timeStamp = HAL_GetTick();
+			Tx_LCD_Msg(CMD_AGING_BUTTON, m_rf.agingUpDn);
+			printf("Aging Button %d\r\n",m_rf.agingUpDn);
+			m_rf.agingCnt--;
+		}
 	}
 }
 

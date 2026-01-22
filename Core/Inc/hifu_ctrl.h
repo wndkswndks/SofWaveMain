@@ -208,100 +208,14 @@ typedef enum
 	PULSE_ENABLE = 1,
 
 } LCD_NUM_E;
-/*  			enum end  				*/
 
-
-
-/*  			stuct start  			*/
-typedef struct
-{
-	char cmd;
-	uint8_t txBuff[30];
-	uint8_t fBuff[16];
-	uint8_t rxBuff[30];
-	uint8_t rxCnt;
-	uint8_t rxBuffPassing[30];
-	uint32_t lastTimeStamp;
-	uint8_t rxCallBackCmd;
-	uint8_t rxCallBackData[20];
-
-	uint8_t expEndFlag;
-
-	uint8_t pluseOn;
-	uint8_t pluseLevel;
-	uint32_t pluseTimeStamp;
-	uint32_t pluseEgTimeStamp;
-
-	uint8_t energy;
-	uint32_t pulseDuration;
-	uint32_t postCooling;
-	uint32_t interval;
-	uint32_t currentShot;
-	uint16_t currentEnergy;
-	uint16_t totaEnergy;
-	uint8_t egExpOn;
-	uint8_t watt;
-	uint32_t pluseEnginerHigh;
-	uint8_t treatStatus;
-	uint32_t preCooltime;
-	uint8_t sysChkFlag;
-
-
-	uint32_t rfFrqBuff[8];
-	uint32_t rfwattBuff[8];
-	uint8_t rfFrqFlag;
-	uint8_t rfWattFlag;
-	uint8_t rfFrqCh;
-	uint8_t rfWattCh;
-	uint8_t maxOntimeFlag;
-	uint8_t readyFlag;
-	uint8_t rfTxFlag;
-	int FeedBackW;
-	int FeedBackWBuff[30];
-	uint8_t autoCalFlag;
-	uint8_t autoCalStep;
-	uint8_t autoCalWattLevel;
-	uint8_t FeedBackCnt;
-	uint32_t lastLcdTxTime;
-	uint32_t lastRfGenTxTime;
-	uint8_t liveChkCnt;
-	uint8_t liveOk;
-	uint8_t testPulseOption;
-	uint8_t pulseNum;
-	uint8_t pulseBuff[13];
-	uint8_t pulseMaxBuff[13];
-	uint8_t pulseMinBuff[13];
-	uint8_t pulseNowWattNum;
-	uint8_t pulseEndisBuff[5];
-	uint8_t pulseEndisChkBuff[5];
-} RF_T;
-typedef struct
-{
-	uint16_t catridgeId;
-	uint16_t manufacYY;
-	uint16_t manufacMM;
-	uint16_t manufacDD;
-	uint32_t manufacDay;
-	uint16_t issuedYY;
-	uint16_t issuedMM;
-	uint16_t issuedDD;
-	uint32_t issuedDay;
-	uint16_t rfFrqBuff[8];
-	uint16_t rfWattBuff[78];
-	uint16_t remainingShotNum;
-	uint16_t catridgeStatus;
-	uint16_t catridgeDetect;
-	uint16_t catridgeDetectPre;
-	uint8_t catridgeRxErrCnt;
-	uint8_t cartAllow;
-} EEPROM_T;
 typedef enum
 {
 	TEMP_MAX   = 40,
 	TEMP_MIN = -10,
 	TEMP_LOW_VALUE = -5,
 
-	TEMP_OUT_MAX   = 200,
+	TEMP_OUT_MAX   = 260,
 	TEMP_OUT_MIN = -100,
 
 
@@ -310,10 +224,10 @@ typedef enum
 	FLOW_LOW_MAX = 5,
 	FLOW_LOW_MIN = 1,
 
-	BATTRY_LIMIT_MAX = 20,
-	BATTRY_LIMIT_MIN = 1,
-	BATTRY_NOMAL_MAX = 15,
-	BATTRY_NOMAL_MIN = 5,
+	BATTRY_LIMIT_MAX = 42,
+	BATTRY_LIMIT_MIN = 15,
+	BATTRY_NOMAL_MAX = 38,
+	BATTRY_NOMAL_MIN = 18,
 
 	CATRIDGE_REMAIN_LOW_30 = 3000,
 	CATRIDGE_REMAIN_LOW_20 = 2000,
@@ -321,13 +235,13 @@ typedef enum
 	CATRIDGE_REMAIN_LOW_3 = 300,
 
 	CATRIDGE_REMAIN_MIN = 1,
-	CATRIDGE_REMAIN_MAX = 10000,
+	CATRIDGE_REMAIN_MAX = 10001,
 
 
 	CATRIDGE_WATT_MAX = 300,
 	CATRIDGE_WATT_MIN = 0,
-	CATRIDGE_FRQ_MAX = 11000,
-	CATRIDGE_FRQ_MIN = 13000,
+	CATRIDGE_FRQ_MAX = 13000,
+	CATRIDGE_FRQ_MIN = 9000,
 
 	CATRIDGE_ID_MAX = 100,
 
@@ -484,6 +398,101 @@ typedef enum
 
 } ERROR_IDX_E;
 
+/*  			enum end  				*/
+
+
+
+/*  			stuct start  			*/
+typedef struct
+{
+	char cmd;
+	uint8_t txBuff[30];
+	uint8_t fBuff[16];
+	uint8_t rxBuff[30];
+	uint8_t rxCnt;
+	uint8_t rxBuffPassing[30];
+	uint32_t lastTimeStamp;
+	uint8_t rxCallBackCmd;
+	uint8_t rxCallBackData[20];
+
+	uint8_t expEndFlag;
+
+	uint8_t pluseOn;
+	uint8_t pluseLevel;
+	uint32_t pluseTimeStamp;
+	uint32_t pluseEgTimeStamp;
+
+	uint8_t energy;
+	uint32_t pulseDuration;
+	uint32_t postCooling;
+	uint32_t interval;
+	uint32_t currentShot;
+	uint16_t currentEnergy;
+	uint16_t totaEnergy;
+	uint8_t egExpOn;
+	uint8_t watt;
+	uint32_t pluseEnginerHigh;
+	uint8_t treatStatus;
+	uint32_t preCooltime;
+	uint8_t sysChkFlag;
+
+
+	uint32_t rfFrqBuff[8];
+	uint32_t rfwattBuff[8];
+	uint8_t rfFrqFlag;
+	uint8_t rfWattFlag;
+	uint8_t rfFrqCh;
+	uint8_t rfWattCh;
+	uint8_t maxOntimeFlag;
+	uint8_t readyFlag;
+	uint8_t rfTxFlag;
+	int FeedBackW;
+	int FeedBackWBuff[30];
+	uint8_t autoCalFlag;
+	uint8_t autoCalStep;
+	uint8_t autoCalWattLevel;
+	uint8_t FeedBackCnt;
+	uint32_t lastLcdTxTime;
+	uint32_t lastRfGenTxTime;
+	uint8_t liveChkCnt;
+	uint8_t liveOk;
+	uint8_t testPulseOption;
+	uint8_t pulseNum;
+	uint8_t pulseBuff[13];
+	uint8_t pulseMaxBuff[13];
+	uint8_t pulseMinBuff[13];
+	uint8_t pulseNowWattNum;
+	uint8_t pulseEndisBuff[5];
+	uint8_t pulseEndisChkBuff[5];
+	uint8_t agingCnt;
+	uint8_t agingUpDn;
+	uint32_t trigTemeStamp[10];
+	uint8_t trigCnt;
+	uint8_t getWattBuff[10];
+	uint8_t getWattCnt;
+} RF_T;
+typedef struct
+{
+	uint16_t catridgeId;
+	uint16_t manufacYY;
+	uint16_t manufacMM;
+	uint16_t manufacDD;
+	uint32_t manufacDay;
+	uint16_t issuedYY;
+	uint16_t issuedMM;
+	uint16_t issuedDD;
+	uint32_t issuedDay;
+	uint16_t rfFrqBuff[8];
+	uint16_t rfWattBuff[78];
+	uint16_t remainingShotNum;
+	uint16_t catridgeStatus;
+	uint16_t catridgeDetect;
+	uint16_t catridgeDetectPre;
+	uint8_t catridgeRxErrCnt;
+	uint8_t cartAllow;
+} EEPROM_T;
+
+
 typedef struct
 {
 	uint8_t rfComuErr;
@@ -603,6 +612,7 @@ extern RF_T m_rf;
 extern EEPROM_T m_eep;
 extern ERROR_T m_err;
 extern HAND_T m_hand1;
+extern uint8_t testExpFlag;
 
 /*  			extern end  			*/
 
