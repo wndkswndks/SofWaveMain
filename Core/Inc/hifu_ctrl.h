@@ -470,6 +470,7 @@ typedef struct
 	uint8_t trigCnt;
 	uint8_t getWattBuff[10];
 	uint8_t getWattCnt;
+	uint8_t feedBackTest;
 } RF_T;
 typedef struct
 {

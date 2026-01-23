@@ -1619,6 +1619,82 @@ void AutoCal_Config_Test()
 
 }
 
+
+
+void RF_Borad_FeedBack_Test()
+{
+	static uint8_t step = STEP0;
+	static uint32_t timeStamp;
+
+	if(m_rf.feedBackTest==0)return;
+
+
+	switch (step)
+	{
+		case STEP0:
+
+			Tx_RF_Watt_Zero_ALL_Module();
+			Tx_RF_Watt_Module(1, wattDa);
+			RF_eg_Exp_On(1000);
+			printf("wattDa = %d \r\n",wattDa);
+			timeStamp = HAL_GetTick();
+			step = STEP1;
+		break;
+
+		case STEP1:
+
+			if(HAL_GetTick()-timeStamp >= 2000)
+			{
+				Tx_RF_FeedBack_Check();
+
+				if(wattDa<200)
+				{
+					wattDa += 10;
+					step = STEP0;
+				}
+				else
+				{
+					Debug_Printf(" RF_Borad_FeedBack_Test End",1);
+					step = STEP2;
+				}
+			}
+		break;
+
+		case STEP2:
+
+		break;
+
+
+
+	}
+	if(wattDa<200)
+	{
+		wattDa += 10 ;
+	}
+	else
+	{
+		Debug_Printf("AutoCal Da Over Err",1);
+		trandu = 0;
+		wattDa = 0;
+	}
+
+	Tx_RF_Watt_Module(trandu, wattDa);
+
+	for(int i =0 ;i < 5;i++)
+	{
+		HAL_Delay(500);
+
+		RF_eg_Exp_On(2000);
+		HAL_Delay(1000);
+
+		HAL_Delay(2000); // ÈÞ½Ä
+
+	}
+
+
+
+}
+
 void RF_Rx_Parssing(uint8_t rxID)
 {
 	uint32_t timeStamp;
