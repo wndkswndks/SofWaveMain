@@ -1655,6 +1655,7 @@ void RF_Borad_FeedBack_Test()
 				else
 				{
 					Debug_Printf(" RF_Borad_FeedBack_Test End",1);
+					m_rf.feedBackTest = 0;
 					step = STEP2;
 				}
 			}
@@ -1664,32 +1665,8 @@ void RF_Borad_FeedBack_Test()
 
 		break;
 
-
-
-	}
-	if(wattDa<200)
-	{
-		wattDa += 10 ;
-	}
-	else
-	{
-		Debug_Printf("AutoCal Da Over Err",1);
-		trandu = 0;
-		wattDa = 0;
 	}
 
-	Tx_RF_Watt_Module(trandu, wattDa);
-
-	for(int i =0 ;i < 5;i++)
-	{
-		HAL_Delay(500);
-
-		RF_eg_Exp_On(2000);
-		HAL_Delay(1000);
-
-		HAL_Delay(2000); // ÈÞ½Ä
-
-	}
 
 
 
@@ -1930,6 +1907,7 @@ void Rf_Config()
 	LCD_Status_Tret();
 	Exp_Config();
 	AutoCal_Config();
+	RF_Borad_FeedBack_Test();
 
 #else
 

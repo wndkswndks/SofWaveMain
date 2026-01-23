@@ -437,7 +437,9 @@ void Debug_Rx_Parssing(uint8_t add, uint32_t data)
 		break;
 
 		case CMD_WATT_FEEDBACK:
-			Tx_RF_FeedBack_Check();
+//			Tx_RF_FeedBack_Check();
+			m_rf.feedBackTest = data;
+			Debug_Printf("CMD_WATT_FEEDBACK START",1);
 		break;
 
 
