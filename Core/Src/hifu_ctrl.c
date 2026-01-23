@@ -1403,7 +1403,7 @@ int compare_32(const void *a, const void *b)    // 오름차순 비교 함수 (uint32_t 
 }
 
 
-int wattDa = 0;
+int wattDa = 10;
 int trandu = 0;
 
 
@@ -1650,14 +1650,14 @@ void RF_Borad_FeedBack_Test()
 				if(wattDa<200)
 				{
 					wattDa += 10;
-					step = STEP0;
 				}
 				else
 				{
 					Debug_Printf(" RF_Borad_FeedBack_Test End",1);
 					m_rf.feedBackTest = 0;
-					step = STEP2;
+					wattDa = 10;
 				}
+				step = STEP0;
 			}
 		break;
 
