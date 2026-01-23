@@ -1403,7 +1403,7 @@ int compare_32(const void *a, const void *b)    // 오름차순 비교 함수 (uint32_t 
 }
 
 
-int wattDa = 10;
+int wattDa = 110;
 int trandu = 0;
 
 
@@ -1525,24 +1525,42 @@ void AutoCal_Config()
 }
 
 
-void AutoCal_Config_Test()
+
+void AutoCal_Config_test()
 {
+	uint8_t wattBuff[10] = {10, 20, 30, 40, 50, 60 , 70, 80 , 90, 100};
 	int avg = 0;
+	uint16_t add;
 
 	if(m_rf.autoCalFlag==0)return;
 
 	memset(m_rf.FeedBackWBuff, 0, sizeof(m_rf.FeedBackWBuff));
 	m_rf.FeedBackCnt = 0;
 
-	if(wattDa<200)
+	if(wattDa<150)
 	{
-		wattDa += 5 ;
+//		wattDa += 2 ;
 	}
 	else
 	{
-		Debug_Printf("AutoCal ComPlete",1);
-		trandu = 0;
-		wattDa = 5;
+//		Debug_Printf("AutoCal Da Over Err",1);
+//		trandu = 0;
+//		wattDa = 0;
+//		m_rf.autoCalFlag = 0;
+//		m_rf.autoCalWattLevel = 0;
+		if(trandu<4)
+		{
+			trandu++;
+			wattDa = 120;
+		}
+		else
+		{
+			trandu = 0;
+			wattDa = 0;
+			m_rf.autoCalFlag = 0;
+			Tx_LCD_Msg(CMD_AUTO_CAL_START, 0);
+		}
+
 	}
 
 	Tx_RF_Watt_Module(trandu, wattDa);
@@ -1589,7 +1607,9 @@ void AutoCal_Config_Test()
 
 	avg = AutoCal_Avg();
 
+
 #if 0
+
 	if(avg>wattBuff[m_rf.autoCalWattLevel])
 	{
 		add = (CMD_TRANDU_WATT_BASE + trandu*11 +m_rf.autoCalWattLevel+1);
@@ -1600,7 +1620,7 @@ void AutoCal_Config_Test()
 		{
 			m_rf.autoCalWattLevel = 0;
 			Tx_RF_Watt_Zero_ALL_Module();
-			if(trandu<6)
+			if(trandu<1)
 			{
 				trandu++;
 				wattDa = 0;
@@ -1614,12 +1634,9 @@ void AutoCal_Config_Test()
 			}
 		}
 	}
-
 #endif
 
 }
-
-
 
 void RF_Borad_FeedBack_Test()
 {
@@ -1910,7 +1927,7 @@ void Rf_Config()
 #if 1
 	LCD_Status_Tret();
 	Exp_Config();
-	AutoCal_Config();
+	AutoCal_Config_test();
 	RF_Borad_FeedBack_Test();
 
 #else
