@@ -586,6 +586,8 @@ void Hand_Init();
 void Hand1_Poling_Ctrl(int add, int data1, int data2, int data3, int data4);
 void TX_RF_Max_Ontime_Set();
 void Tx_RF_GenStatus_Check();
+void Tx_RF_FeedBack_Check();
+
 void Error_Check_Config();
 void LCD_Init();
 int AutoCal_Avg();

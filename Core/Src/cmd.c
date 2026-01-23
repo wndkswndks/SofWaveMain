@@ -116,11 +116,17 @@ void Debug_LCD_Printf(uint8_t rxtx, uint8_t cmd, uint16_t data)
 }
 
 
-void Debug_Rx_RF_Printf(uint8_t* buff)
+void Debug_Rx_RF_Printf(uint8_t* buff, uint8_t cnt)
 {
 #if 1
 	printf("[RX_RF] ");
-	printf("%02X %02X %02X %02X %02X %02X %02X\r\n",buff[0], buff[1], buff[2], buff[3], buff[4], buff[5], buff[6] );
+	for(int i =0 ;i < cnt;i++)
+	{
+		printf("%02X ", buff[i]);
+	}
+	printf("\r\n");
+
+	//printf("%02X %02X %02X %02X %02X %02X %02X\r\n",buff[0], buff[1], buff[2], buff[3], buff[4], buff[5], buff[6] );
 #endif
 
 }
@@ -428,6 +434,10 @@ void Debug_Rx_Parssing(uint8_t add, uint32_t data)
 
 		case CMD_DEBUG_PELTIER:
 			Tx_Hand1_Msg(CMD_HP1_ADD, data);
+		break;
+
+		case CMD_WATT_FEEDBACK:
+			Tx_RF_FeedBack_Check();
 		break;
 
 

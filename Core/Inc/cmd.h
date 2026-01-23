@@ -120,6 +120,7 @@ typedef enum
 	CMD_DEBUG_PUMP = 193,
 	CMD_DEBUG_CHILLER = 194,
 	CMD_DEBUG_PELTIER = 195,
+	CMD_WATT_FEEDBACK = 196,
 
 	CMD_HP1_ADD = 200,
 
@@ -282,7 +283,7 @@ void TxTest();
 void Uart_Gulobal();
 void UartRxDataProcess();
 
-void Debug_Rx_RF_Printf(uint8_t* buff);
+void Debug_Rx_RF_Printf(uint8_t* buff, uint8_t cnt);
 void Debug_Tx_RF_Printf(uint8_t* buff,uint8_t len);
 void Debug_LCD_Printf(uint8_t rxtx, uint8_t cmd, uint16_t data);
 void Debug_HAND_Printf(uint8_t rxtx, uint8_t cmd, uint16_t data);

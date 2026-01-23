@@ -705,6 +705,33 @@ void Tx_RF_GenStatus_Check()
 
 }
 
+void Tx_RF_FeedBack_Check()
+{
+
+	uint8_t len = 0;
+	uint8_t dataLen = 0;
+
+	len = RF_NUM_FIX + 1;
+	m_rf.txBuff[RF_INDEX_STX] = STX;
+	m_rf.txBuff[RF_INDEX_LEN] = len;
+	m_rf.txBuff[RF_INDEX_ADDR] = 'B';//���ʷ����� B, �ý��� b
+	m_rf.txBuff[RF_INDEX_CMD] = GEN_RF_VOLTAGE_REQ;
+
+	m_rf.txBuff[RF_INDEX_DATA] = 0x00;
+	dataLen = 3;
+
+
+	for(int i =0 ;i <= RF_INDEX_DATA ;i++)
+	{
+		m_rf.txBuff[RF_INDEX_DATA+1] ^= m_rf.txBuff[i];
+	}
+
+	m_rf.txBuff[RF_INDEX_DATA+2] = ETX;
+	Debug_Tx_GenStatus_Check_Printf();
+	Tx_RF_Msg(m_rf.txBuff, len);
+	memset(m_rf.txBuff, 0, 30);
+
+}
 
 
 
@@ -1621,7 +1648,7 @@ void RF_Rx_Parssing(uint8_t rxID)
 		memcpy(m_rf.rxBuffPassing, m_rf.rxBuff, 30);
 		memset(m_rf.rxBuff, 0, 30);
 
-		Debug_Rx_RF_Printf(m_rf.rxBuffPassing);
+		Debug_Rx_RF_Printf(m_rf.rxBuffPassing, m_rf.rxCnt);
 
 		m_rf.rxCnt = 0;
 		m_rf.rxCallBackCmd = m_rf.rxBuffPassing[RF_INDEX_CMD];
