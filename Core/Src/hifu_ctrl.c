@@ -1653,9 +1653,13 @@ void RF_Borad_FeedBack_Test()
 				}
 				else
 				{
-					Debug_Printf(" RF_Borad_FeedBack_Test End",1);
-					m_rf.feedBackTest = 0;
+					Debug_Printf("End",1);
 					wattDa = 10;
+					m_rf.feedBackTest--;
+					if(!m_rf.feedBackTest)
+					{
+						Debug_Printf("Final End",1);
+					}
 				}
 				step = STEP0;
 			}
