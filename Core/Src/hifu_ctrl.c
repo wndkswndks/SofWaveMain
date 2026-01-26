@@ -47,6 +47,7 @@ void Rf_TD1_Table()
 	m_eep.rfFrqBuff[5] = 11062;
 	m_eep.rfFrqBuff[6] = 11045;
 	m_eep.rfFrqBuff[7] = 11060;
+
 }
 
 void Rf_TD2_Table()
@@ -1057,6 +1058,7 @@ void RF_Pwm_On()
 	m_rf.pulseEndisChkBuff[3] = 0;
 	m_rf.pulseEndisChkBuff[4] = 0;
 	Pulse_Trig_TimeSave();
+	Get_PluseWatt(pulse1Watt);
 	m_rf.pluseLevel = PWM_H1_LEVEL;
 }
 
@@ -1090,8 +1092,16 @@ void Exp_Total_Log()
 		for(int i =0 ;i < m_rf.trigCnt-1;i++)
 		{
 			timeGap = m_rf.trigTemeStamp[i+1] -m_rf.trigTemeStamp[i];
-			if(i%2==0)printf(">>High Time %d \r\n",timeGap);
-			else printf(">>Low Time %d \r\n",timeGap);
+			if(i == m_rf.trigCnt-2)
+			{
+				printf(">>Cool Time %d \r\n",timeGap);
+			}
+			else
+			{
+				if(i%2==0)printf(">>High Time %d \r\n",timeGap);
+				else printf(">>Low Time %d \r\n",timeGap);
+			}
+
 		}
 	}
 	memset(m_rf.trigTemeStamp, 0, sizeof(m_rf.trigTemeStamp));
@@ -1120,7 +1130,7 @@ void PulseEnDisCheck()
 	{
 		m_rf.pulseEndisChkBuff[2] = 1;
 		Tx_RF_Watt_ALL_Module(pulse2Watt);
-		Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_H2_LEVEL);
+//		Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_H2_LEVEL);
 		Pulse_Trig_TimeSave();
 		Get_PluseWatt(pulse2Watt);
 		m_rf.pluseLevel = PWM_H2_LEVEL;
@@ -1129,7 +1139,7 @@ void PulseEnDisCheck()
 	{
 		m_rf.pulseEndisChkBuff[3] = 1;
 		Tx_RF_Watt_ALL_Module(pulse3Watt);
-		Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_H3_LEVEL);
+//		Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_H3_LEVEL);
 		Pulse_Trig_TimeSave();
 		Get_PluseWatt(pulse3Watt);
 		m_rf.pluseLevel = PWM_H3_LEVEL;
@@ -1138,16 +1148,15 @@ void PulseEnDisCheck()
 	{
 		m_rf.pulseEndisChkBuff[4] = 1;
 		Tx_RF_Watt_ALL_Module(pulse4Watt);
-		Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_H4_LEVEL);
+//		Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_H4_LEVEL);
 		Pulse_Trig_TimeSave();
 		Get_PluseWatt(pulse4Watt);
 		m_rf.pluseLevel = PWM_H4_LEVEL;
 	}
 	else
 	{
-		Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_COOL_LEVEL);
+//		Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_COOL_LEVEL);
 		Pulse_Trig_TimeSave();
-		Get_PluseWatt(0);
 		m_rf.pluseLevel = PWM_COOL_LEVEL;
 	}
 
@@ -1182,7 +1191,7 @@ void RF_Pwm_Conter_Individual()
 				if(HAL_GetTick() - m_rf.pluseTimeStamp> pulse1Htime)
 				{
 					m_rf.pluseTimeStamp = HAL_GetTick();
-					Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_L1_LEVEL);
+//					Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_L1_LEVEL);
 					Pulse_Trig_TimeSave();
 					m_rf.pluseLevel = PWM_L1_LEVEL;
 				}
@@ -1204,7 +1213,7 @@ void RF_Pwm_Conter_Individual()
 				if(HAL_GetTick() - m_rf.pluseTimeStamp> pulse2Htime)
 				{
 					m_rf.pluseTimeStamp = HAL_GetTick();
-					Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_L2_LEVEL);
+//					Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_L2_LEVEL);
 					Pulse_Trig_TimeSave();
 					m_rf.pluseLevel = PWM_L2_LEVEL;
 				}
@@ -1224,7 +1233,7 @@ void RF_Pwm_Conter_Individual()
 				if(HAL_GetTick() - m_rf.pluseTimeStamp> pulse3Htime)
 				{
 					m_rf.pluseTimeStamp = HAL_GetTick();
-					Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_L3_LEVEL);
+//					Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_L3_LEVEL);
 					Pulse_Trig_TimeSave();
 					m_rf.pluseLevel = PWM_L3_LEVEL;
 				}
@@ -1244,7 +1253,7 @@ void RF_Pwm_Conter_Individual()
 				if(HAL_GetTick() - m_rf.pluseTimeStamp> pulse4Htime)
 				{
 					m_rf.pluseTimeStamp = HAL_GetTick();
-					Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_COOL_LEVEL);
+//					Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_COOL_LEVEL);
 					Pulse_Trig_TimeSave();
 					m_rf.pluseLevel = PWM_COOL_LEVEL;
 				}
@@ -1523,98 +1532,89 @@ void AutoCal_Config()
 	}
 
 }
-
-
-void AutoCal_Config_Test()
+void AutoCal_Config_test()
 {
-	int avg = 0;
+  uint8_t wattBuff[10] = {10, 20, 30, 40, 50, 60 , 70, 80 , 90, 100};
+  int avg = 0;
+  uint16_t add;
 
-	if(m_rf.autoCalFlag==0)return;
+  if(m_rf.autoCalFlag==0)return;
 
-	memset(m_rf.FeedBackWBuff, 0, sizeof(m_rf.FeedBackWBuff));
-	m_rf.FeedBackCnt = 0;
+  memset(m_rf.FeedBackWBuff, 0, sizeof(m_rf.FeedBackWBuff));
+  m_rf.FeedBackCnt = 0;
 
-	if(wattDa<200)
-	{
-		wattDa += 5 ;
-	}
-	else
-	{
-		Debug_Printf("AutoCal ComPlete",1);
-		trandu = 0;
-		wattDa = 5;
-	}
 
-	Tx_RF_Watt_Module(trandu, wattDa);
+  Tx_RF_Watt_Module(trandu, wattDa);
 
-	for(int i =0 ;i < 5;i++)
-	{
-		AutoCal_Tx_IP_Msg();//아이들 0,2,4,6,8,
-		HAL_Delay(500);
+  for(int i =0 ;i < 5;i++)
+  {
+    AutoCal_Tx_IP_Msg();//아이들 0,2,4,6,8,
+    HAL_Delay(500);
 
-		RF_eg_Exp_On(2000);
-		HAL_Delay(1000);
+    RF_eg_Exp_On(2000);
+    HAL_Delay(1000);
 
-		AutoCal_Tx_IP_Msg();//엑티브 1,3,5,7,9
-		HAL_Delay(2000); // 휴식
+    AutoCal_Tx_IP_Msg();//엑티브 1,3,5,7,9
+    HAL_Delay(4000); // 휴식
 
-	}
+  }
 
-	printf("ACal %d %d -> ",trandu, wattDa);
+  printf("ACal %d %d -> \r\n",trandu, wattDa);
 
-	if(m_rf.FeedBackCnt<5)// 10개중에 5개 미만일때 통신불량
-	{
-		m_err.autoCalStatus = 1;
-		Debug_Printf("AutoCal Commu Err",1);
-	}
-	else
-	{
-		m_err.autoCalStatus = 0;
-	}
+  if(m_rf.FeedBackCnt<5)// 10개중에 5개 미만일때 통신불량
+  {
+    m_err.autoCalStatus = 1;
+    Debug_Printf("AutoCal Commu Err",1);
+  }
+  else
+  {
+    m_err.autoCalStatus = 0;
+  }
 
-	qsortBuff[0] = m_rf.FeedBackWBuff[1] +(-1*m_rf.FeedBackWBuff[0]);
-	printf("%d ",qsortBuff[0]);
+  qsortBuff[0] = m_rf.FeedBackWBuff[1] +(-1*m_rf.FeedBackWBuff[0]);
+  printf(">>> %d\r\n",qsortBuff[0]);
 
-	qsortBuff[1] = m_rf.FeedBackWBuff[3] +(-1*m_rf.FeedBackWBuff[2]);
-	printf("%d ",qsortBuff[1]);
+  qsortBuff[1] = m_rf.FeedBackWBuff[3] +(-1*m_rf.FeedBackWBuff[2]);
+  printf(">>> %d\r\n",qsortBuff[1]);
 
-	qsortBuff[2] = m_rf.FeedBackWBuff[5] +(-1*m_rf.FeedBackWBuff[4]);
-	printf("%d ",qsortBuff[2]);
+  qsortBuff[2] = m_rf.FeedBackWBuff[5] +(-1*m_rf.FeedBackWBuff[4]);
+  printf(">>> %d\r\n",qsortBuff[2]);
 
-	qsortBuff[3] = m_rf.FeedBackWBuff[7] +(-1*m_rf.FeedBackWBuff[6]);
-	printf("%d ",qsortBuff[3]);
+  qsortBuff[3] = m_rf.FeedBackWBuff[7] +(-1*m_rf.FeedBackWBuff[6]);
+  printf(">>> %d\r\n",qsortBuff[3]);
 
-	qsortBuff[4] = m_rf.FeedBackWBuff[9] +(-1*m_rf.FeedBackWBuff[8]);
-	printf("%d ",qsortBuff[4]);
+  qsortBuff[4] = m_rf.FeedBackWBuff[9] +(-1*m_rf.FeedBackWBuff[8]);
+  printf(">>> %d\r\n",qsortBuff[4]);
 
-	avg = AutoCal_Avg();
+  avg = AutoCal_Avg();
+
 
 #if 0
-	if(avg>wattBuff[m_rf.autoCalWattLevel])
-	{
-		add = (CMD_TRANDU_WATT_BASE + trandu*11 +m_rf.autoCalWattLevel+1);
-		Tx_LCD_Msg(add, wattDa);
 
-		m_rf.autoCalWattLevel++;
-		if(m_rf.autoCalWattLevel == 10)
-		{
-			m_rf.autoCalWattLevel = 0;
-			Tx_RF_Watt_Zero_ALL_Module();
-			if(trandu<6)
-			{
-				trandu++;
-				wattDa = 0;
-			}
-			else
-			{
-				trandu = 0;
-				wattDa = 0;
-				m_rf.autoCalFlag = 0;
-				Tx_LCD_Msg(CMD_AUTO_CAL_START, 0);
-			}
-		}
-	}
+  if(avg>wattBuff[m_rf.autoCalWattLevel])
+  {
+    add = (CMD_TRANDU_WATT_BASE + trandu*11 +m_rf.autoCalWattLevel+1);
+    Tx_LCD_Msg(add, wattDa);
 
+    m_rf.autoCalWattLevel++;
+    if(m_rf.autoCalWattLevel == 10)
+    {
+      m_rf.autoCalWattLevel = 0;
+      Tx_RF_Watt_Zero_ALL_Module();
+      if(trandu<1)
+      {
+        trandu++;
+        wattDa = 0;
+      }
+      else
+      {
+        trandu = 0;
+        wattDa = 0;
+        m_rf.autoCalFlag = 0;
+        Tx_LCD_Msg(CMD_AUTO_CAL_START, 0);
+      }
+    }
+  }
 #endif
 
 }
