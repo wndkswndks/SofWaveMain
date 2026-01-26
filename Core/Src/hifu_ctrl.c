@@ -48,6 +48,79 @@ void Rf_TD1_Table()
 	m_eep.rfFrqBuff[6] = 11045;
 	m_eep.rfFrqBuff[7] = 11060;
 
+	//no1
+	m_eep.rfFrqBuff[0] = 0;
+	m_eep.rfFrqBuff[1] = 1;
+	m_eep.rfFrqBuff[2] = 16;
+	m_eep.rfFrqBuff[3] = 32;
+	m_eep.rfFrqBuff[4] = 46;
+	m_eep.rfFrqBuff[5] = 64;
+	m_eep.rfFrqBuff[6] = 78;
+	m_eep.rfFrqBuff[7] = 91;
+	m_eep.rfFrqBuff[8] = 103;
+	m_eep.rfFrqBuff[9] = 118;
+	m_eep.rfFrqBuff[11] = 129;
+	//no2
+	m_eep.rfFrqBuff[12] = 1;
+	m_eep.rfFrqBuff[13] = 19;
+	m_eep.rfFrqBuff[14] = 37;
+	m_eep.rfFrqBuff[15] = 54;
+	m_eep.rfFrqBuff[16] = 69;
+	m_eep.rfFrqBuff[17] = 80;
+	m_eep.rfFrqBuff[18] = 96;
+	m_eep.rfFrqBuff[19] = 110;
+	m_eep.rfFrqBuff[20] = 123;
+	m_eep.rfFrqBuff[21] = 138;
+	m_eep.rfFrqBuff[22] = 150;
+	//no3
+	m_eep.rfFrqBuff[23] = 1;
+	m_eep.rfFrqBuff[24] = 13;
+	m_eep.rfFrqBuff[25] = 31;
+	m_eep.rfFrqBuff[26] = 45;
+	m_eep.rfFrqBuff[27] = 60;
+	m_eep.rfFrqBuff[28] = 72;
+	m_eep.rfFrqBuff[29] = 86;
+	m_eep.rfFrqBuff[30] = 97;
+	m_eep.rfFrqBuff[31] = 114;
+	m_eep.rfFrqBuff[32] = 125;
+	m_eep.rfFrqBuff[33] = 140;
+	////no4
+	m_eep.rfFrqBuff[34] = 1;
+	m_eep.rfFrqBuff[35] = 15;
+	m_eep.rfFrqBuff[36] = 32;
+	m_eep.rfFrqBuff[37] = 46;
+	m_eep.rfFrqBuff[38] = 61;
+	m_eep.rfFrqBuff[39] = 75;
+	m_eep.rfFrqBuff[40] = 86;
+	m_eep.rfFrqBuff[41] = 101;
+	m_eep.rfFrqBuff[42] = 113;
+	m_eep.rfFrqBuff[43] = 127;
+	m_eep.rfFrqBuff[44] = 142;
+	//no5
+	m_eep.rfFrqBuff[45] = 1;
+	m_eep.rfFrqBuff[46] = 19;
+	m_eep.rfFrqBuff[47] = 38;
+	m_eep.rfFrqBuff[48] = 55;
+	m_eep.rfFrqBuff[49] = 68;
+	m_eep.rfFrqBuff[50] = 85;
+	m_eep.rfFrqBuff[51] = 97;
+	m_eep.rfFrqBuff[52] = 110;
+	m_eep.rfFrqBuff[53] = 122;
+	m_eep.rfFrqBuff[54] = 136;
+	m_eep.rfFrqBuff[55] = 150;
+	//no6
+	m_eep.rfFrqBuff[56] = 1;
+	m_eep.rfFrqBuff[57] = 21;
+	m_eep.rfFrqBuff[58] = 35;
+	m_eep.rfFrqBuff[59] = 50;
+	m_eep.rfFrqBuff[60] = 64;
+	m_eep.rfFrqBuff[61] = 80;
+	m_eep.rfFrqBuff[62] = 91;
+	m_eep.rfFrqBuff[63] = 104;
+	m_eep.rfFrqBuff[64] = 117;
+	m_eep.rfFrqBuff[65] = 128;
+	m_eep.rfFrqBuff[66] = 150;
+
 }
 
 void Rf_TD2_Table()
@@ -161,7 +234,7 @@ void Rf_Init()
 	RF_Pwr_ON();
 
 
-	#if 0
+	#if 1
 	Rf_TD1_Table();
 	#else
 	Rf_TD2_Table();
