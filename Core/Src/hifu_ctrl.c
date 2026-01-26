@@ -47,6 +47,7 @@ void Rf_TD1_Table()
 	m_eep.rfFrqBuff[5] = 11062;
 	m_eep.rfFrqBuff[6] = 11045;
 	m_eep.rfFrqBuff[7] = 11060;
+
 }
 
 void Rf_TD2_Table()
@@ -1057,6 +1058,7 @@ void RF_Pwm_On()
 	m_rf.pulseEndisChkBuff[3] = 0;
 	m_rf.pulseEndisChkBuff[4] = 0;
 	Pulse_Trig_TimeSave();
+	Get_PluseWatt(pulse1Watt);
 	m_rf.pluseLevel = PWM_H1_LEVEL;
 }
 
@@ -1090,8 +1092,16 @@ void Exp_Total_Log()
 		for(int i =0 ;i < m_rf.trigCnt-1;i++)
 		{
 			timeGap = m_rf.trigTemeStamp[i+1] -m_rf.trigTemeStamp[i];
-			if(i%2==0)printf(">>High Time %d \r\n",timeGap);
-			else printf(">>Low Time %d \r\n",timeGap);
+			if(i == m_rf.trigCnt-2)
+			{
+				printf(">>Cool Time %d \r\n",timeGap);
+			}
+			else
+			{
+				if(i%2==0)printf(">>High Time %d \r\n",timeGap);
+				else printf(">>Low Time %d \r\n",timeGap);
+			}
+
 		}
 	}
 	memset(m_rf.trigTemeStamp, 0, sizeof(m_rf.trigTemeStamp));
@@ -1120,7 +1130,7 @@ void PulseEnDisCheck()
 	{
 		m_rf.pulseEndisChkBuff[2] = 1;
 		Tx_RF_Watt_ALL_Module(pulse2Watt);
-		Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_H2_LEVEL);
+//		Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_H2_LEVEL);
 		Pulse_Trig_TimeSave();
 		Get_PluseWatt(pulse2Watt);
 		m_rf.pluseLevel = PWM_H2_LEVEL;
@@ -1129,7 +1139,7 @@ void PulseEnDisCheck()
 	{
 		m_rf.pulseEndisChkBuff[3] = 1;
 		Tx_RF_Watt_ALL_Module(pulse3Watt);
-		Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_H3_LEVEL);
+//		Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_H3_LEVEL);
 		Pulse_Trig_TimeSave();
 		Get_PluseWatt(pulse3Watt);
 		m_rf.pluseLevel = PWM_H3_LEVEL;
@@ -1138,16 +1148,15 @@ void PulseEnDisCheck()
 	{
 		m_rf.pulseEndisChkBuff[4] = 1;
 		Tx_RF_Watt_ALL_Module(pulse4Watt);
-		Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_H4_LEVEL);
+//		Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_H4_LEVEL);
 		Pulse_Trig_TimeSave();
 		Get_PluseWatt(pulse4Watt);
 		m_rf.pluseLevel = PWM_H4_LEVEL;
 	}
 	else
 	{
-		Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_COOL_LEVEL);
+//		Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_COOL_LEVEL);
 		Pulse_Trig_TimeSave();
-		Get_PluseWatt(0);
 		m_rf.pluseLevel = PWM_COOL_LEVEL;
 	}
 
@@ -1182,7 +1191,7 @@ void RF_Pwm_Conter_Individual()
 				if(HAL_GetTick() - m_rf.pluseTimeStamp> pulse1Htime)
 				{
 					m_rf.pluseTimeStamp = HAL_GetTick();
-					Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_L1_LEVEL);
+//					Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_L1_LEVEL);
 					Pulse_Trig_TimeSave();
 					m_rf.pluseLevel = PWM_L1_LEVEL;
 				}
@@ -1204,7 +1213,7 @@ void RF_Pwm_Conter_Individual()
 				if(HAL_GetTick() - m_rf.pluseTimeStamp> pulse2Htime)
 				{
 					m_rf.pluseTimeStamp = HAL_GetTick();
-					Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_L2_LEVEL);
+//					Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_L2_LEVEL);
 					Pulse_Trig_TimeSave();
 					m_rf.pluseLevel = PWM_L2_LEVEL;
 				}
@@ -1224,7 +1233,7 @@ void RF_Pwm_Conter_Individual()
 				if(HAL_GetTick() - m_rf.pluseTimeStamp> pulse3Htime)
 				{
 					m_rf.pluseTimeStamp = HAL_GetTick();
-					Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_L3_LEVEL);
+//					Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_L3_LEVEL);
 					Pulse_Trig_TimeSave();
 					m_rf.pluseLevel = PWM_L3_LEVEL;
 				}
@@ -1244,7 +1253,7 @@ void RF_Pwm_Conter_Individual()
 				if(HAL_GetTick() - m_rf.pluseTimeStamp> pulse4Htime)
 				{
 					m_rf.pluseTimeStamp = HAL_GetTick();
-					Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_COOL_LEVEL);
+//					Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_COOL_LEVEL);
 					Pulse_Trig_TimeSave();
 					m_rf.pluseLevel = PWM_COOL_LEVEL;
 				}
@@ -1523,7 +1532,6 @@ void AutoCal_Config()
 	}
 
 }
-
 
 
 void AutoCal_Config_test()
