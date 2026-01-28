@@ -49,77 +49,80 @@ void Rf_TD1_Table()
 	m_eep.rfFrqBuff[7] = 11060;
 
 	//no1
-	m_eep.rfFrqBuff[0] = 0;
-	m_eep.rfFrqBuff[1] = 1;
-	m_eep.rfFrqBuff[2] = 16;
-	m_eep.rfFrqBuff[3] = 32;
-	m_eep.rfFrqBuff[4] = 46;
-	m_eep.rfFrqBuff[5] = 64;
-	m_eep.rfFrqBuff[6] = 78;
-	m_eep.rfFrqBuff[7] = 91;
-	m_eep.rfFrqBuff[8] = 103;
-	m_eep.rfFrqBuff[9] = 118;
-	m_eep.rfFrqBuff[11] = 129;
+	m_eep.rfWattBuff[0] = 0;	   //0
+	m_eep.rfWattBuff[1] = 1;    //0.1w
+	m_eep.rfWattBuff[2] = 16;   //0.2w
+	m_eep.rfWattBuff[3] = 32;   //0.3w
+	m_eep.rfWattBuff[4] = 46;   //0.4w
+	m_eep.rfWattBuff[5] = 64;   //0.5w
+	m_eep.rfWattBuff[6] = 78;   //0.6w
+	m_eep.rfWattBuff[7] = 91;   //0.7w
+	m_eep.rfWattBuff[8] = 103;  //0.8w
+	m_eep.rfWattBuff[9] = 118;  //0.9w
+	m_eep.rfWattBuff[10] = 129;  //1.0w
+	m_eep.rfWattBuff[11] = 150;  //1.1w
 	//no2
-	m_eep.rfFrqBuff[12] = 1;
-	m_eep.rfFrqBuff[13] = 19;
-	m_eep.rfFrqBuff[14] = 37;
-	m_eep.rfFrqBuff[15] = 54;
-	m_eep.rfFrqBuff[16] = 69;
-	m_eep.rfFrqBuff[17] = 80;
-	m_eep.rfFrqBuff[18] = 96;
-	m_eep.rfFrqBuff[19] = 110;
-	m_eep.rfFrqBuff[20] = 123;
-	m_eep.rfFrqBuff[21] = 138;
-	m_eep.rfFrqBuff[22] = 150;
+	m_eep.rfWattBuff[12] = 1;   //0.1w
+	m_eep.rfWattBuff[13] = 19;  //0.2w
+	m_eep.rfWattBuff[14] = 37;  //0.3w
+	m_eep.rfWattBuff[15] = 54;  //0.4w
+	m_eep.rfWattBuff[16] = 69;  //0.5w
+	m_eep.rfWattBuff[17] = 80;  //0.6w
+	m_eep.rfWattBuff[18] = 96;  //0.7w
+	m_eep.rfWattBuff[19] = 110; 	//0.8w
+	m_eep.rfWattBuff[20] = 123;  //0.9w
+	m_eep.rfWattBuff[21] = 138;  //1.0w
+	m_eep.rfWattBuff[22] = 150;  //1.1w
 	//no3
-	m_eep.rfFrqBuff[23] = 1;
-	m_eep.rfFrqBuff[24] = 13;
-	m_eep.rfFrqBuff[25] = 31;
-	m_eep.rfFrqBuff[26] = 45;
-	m_eep.rfFrqBuff[27] = 60;
-	m_eep.rfFrqBuff[28] = 72;
-	m_eep.rfFrqBuff[29] = 86;
-	m_eep.rfFrqBuff[30] = 97;
-	m_eep.rfFrqBuff[31] = 114;
-	m_eep.rfFrqBuff[32] = 125;
-	m_eep.rfFrqBuff[33] = 140;
+	m_eep.rfWattBuff[23] = 1;   //0.1w
+	m_eep.rfWattBuff[24] = 13;  //0.2w
+	m_eep.rfWattBuff[25] = 31;  //0.3w
+	m_eep.rfWattBuff[26] = 45;  //0.4w
+	m_eep.rfWattBuff[27] = 60;  //0.5w
+	m_eep.rfWattBuff[28] = 72;  //0.6w
+	m_eep.rfWattBuff[29] = 86;  //0.7w
+	m_eep.rfWattBuff[30] = 97;  //0.8w
+	m_eep.rfWattBuff[31] = 114;  //0.9w
+	m_eep.rfWattBuff[32] = 125;  //1.0w
+	m_eep.rfWattBuff[33] = 140;  //1.1w
 	////no4
-	m_eep.rfFrqBuff[34] = 1;
-	m_eep.rfFrqBuff[35] = 15;
-	m_eep.rfFrqBuff[36] = 32;
-	m_eep.rfFrqBuff[37] = 46;
-	m_eep.rfFrqBuff[38] = 61;
-	m_eep.rfFrqBuff[39] = 75;
-	m_eep.rfFrqBuff[40] = 86;
-	m_eep.rfFrqBuff[41] = 101;
-	m_eep.rfFrqBuff[42] = 113;
-	m_eep.rfFrqBuff[43] = 127;
-	m_eep.rfFrqBuff[44] = 142;
+	m_eep.rfWattBuff[34] = 1;   //0.1w
+	m_eep.rfWattBuff[35] = 15;  //0.2w
+	m_eep.rfWattBuff[36] = 32;  //0.3w
+	m_eep.rfWattBuff[37] = 46;  //0.4w
+	m_eep.rfWattBuff[38] = 61;  //0.5w
+	m_eep.rfWattBuff[39] = 75;  //0.6w
+	m_eep.rfWattBuff[40] = 86;  //0.7w
+	m_eep.rfWattBuff[41] = 101;  //0.8w
+	m_eep.rfWattBuff[42] = 113;  //0.9w
+	m_eep.rfWattBuff[43] = 127;  //1.0w
+	m_eep.rfWattBuff[44] = 142;  //1.1w
 	//no5
-	m_eep.rfFrqBuff[45] = 1;
-	m_eep.rfFrqBuff[46] = 19;
-	m_eep.rfFrqBuff[47] = 38;
-	m_eep.rfFrqBuff[48] = 55;
-	m_eep.rfFrqBuff[49] = 68;
-	m_eep.rfFrqBuff[50] = 85;
-	m_eep.rfFrqBuff[51] = 97;
-	m_eep.rfFrqBuff[52] = 110;
-	m_eep.rfFrqBuff[53] = 122;
-	m_eep.rfFrqBuff[54] = 136;
-	m_eep.rfFrqBuff[55] = 150;
+	m_eep.rfWattBuff[45] = 1;   //0.1w
+	m_eep.rfWattBuff[46] = 19;  //0.2w
+	m_eep.rfWattBuff[47] = 38;  //0.3w
+	m_eep.rfWattBuff[48] = 55;  //0.4w
+	m_eep.rfWattBuff[49] = 68;  //0.5w
+	m_eep.rfWattBuff[50] = 85;  //0.6w
+	m_eep.rfWattBuff[51] = 97;  //0.7w
+	m_eep.rfWattBuff[52] = 110;  //0.8w
+	m_eep.rfWattBuff[53] = 122;  //0.9w
+	m_eep.rfWattBuff[54] = 136;  //1.0w
+	m_eep.rfWattBuff[55] = 150;  //1.1w
 	//no6
-	m_eep.rfFrqBuff[56] = 1;
-	m_eep.rfFrqBuff[57] = 21;
-	m_eep.rfFrqBuff[58] = 35;
-	m_eep.rfFrqBuff[59] = 50;
-	m_eep.rfFrqBuff[60] = 64;
-	m_eep.rfFrqBuff[61] = 80;
-	m_eep.rfFrqBuff[62] = 91;
-	m_eep.rfFrqBuff[63] = 104;
-	m_eep.rfFrqBuff[64] = 117;
-	m_eep.rfFrqBuff[65] = 128;
-	m_eep.rfFrqBuff[66] = 150;
+	m_eep.rfWattBuff[56] = 1;   //0.1w
+	m_eep.rfWattBuff[57] = 21;  //0.2w
+	m_eep.rfWattBuff[58] = 35;  //0.3w
+	m_eep.rfWattBuff[59] = 50;  //0.4w
+	m_eep.rfWattBuff[60] = 64;  //0.5w
+	m_eep.rfWattBuff[61] = 80;  //0.6w
+	m_eep.rfWattBuff[62] = 91;  //0.7w
+	m_eep.rfWattBuff[63] = 104;  //0.8w
+	m_eep.rfWattBuff[64] = 117;  //0.9w
+	m_eep.rfWattBuff[65] = 128;  //1.0w
+	m_eep.rfWattBuff[66] = 150;  //1.1w
+
+
 
 }
 
@@ -1485,21 +1488,25 @@ int compare_32(const void *a, const void *b)    // 오름차순 비교 함수 (uint32_t 
 }
 
 
-int wattDa = 110;
+int wattDa = 1;
 int trandu = 0;
 
 
 int qsortBuff[5] = {0,};
 int AutoCal_Avg()// 오름차순으로 정리
 {
-	int sum =0, avg = 0;
+	int sum =0;
+	float avg = 0;
 	qsort(qsortBuff, sizeof(qsortBuff) / sizeof(int), sizeof(int), compare_32);// u32
+	sum += qsortBuff[0];
 	sum += qsortBuff[1];
 	sum += qsortBuff[2];
 	sum += qsortBuff[3];
+	sum += qsortBuff[4];
 
-	avg = sum/3;
-	printf("avg : %d \r\n",avg);
+	avg = sum/5;
+	avg +=0.5
+	printf("avg : %f \r\n",avg);
 	memset(qsortBuff, 0, sizeof(qsortBuff));
 
 	return avg;
@@ -1546,7 +1553,7 @@ void AutoCal_Config()
 		HAL_Delay(1000);
 
 		AutoCal_Tx_IP_Msg();//엑티브 1,3,5,7,9
-		HAL_Delay(2000); // 휴식
+		HAL_Delay(3000); // 휴식
 
 	}
 
@@ -1615,7 +1622,14 @@ void AutoCal_Config_test()
 
   memset(m_rf.FeedBackWBuff, 0, sizeof(m_rf.FeedBackWBuff));
   m_rf.FeedBackCnt = 0;
-
+#if 0
+  wattDa++;
+  if(wattDa>=120)
+  {
+	  trandu++;
+	  wattDa = 100;
+  }
+#endif
 
   Tx_RF_Watt_Module(trandu, wattDa);
 
@@ -1661,34 +1675,7 @@ void AutoCal_Config_test()
 
   avg = AutoCal_Avg();
 
-
-#if 0
-
-  if(avg>wattBuff[m_rf.autoCalWattLevel])
-  {
-    add = (CMD_TRANDU_WATT_BASE + trandu*11 +m_rf.autoCalWattLevel+1);
-    Tx_LCD_Msg(add, wattDa);
-
-    m_rf.autoCalWattLevel++;
-    if(m_rf.autoCalWattLevel == 10)
-    {
-      m_rf.autoCalWattLevel = 0;
-      Tx_RF_Watt_Zero_ALL_Module();
-      if(trandu<1)
-      {
-        trandu++;
-        wattDa = 0;
-      }
-      else
-      {
-        trandu = 0;
-        wattDa = 0;
-        m_rf.autoCalFlag = 0;
-        Tx_LCD_Msg(CMD_AUTO_CAL_START, 0);
-      }
-    }
-  }
-#endif
+  m_rf.autoCalFlag = 0;
 
 }
 
@@ -1981,7 +1968,7 @@ void Rf_Config()
 #if 1
 	LCD_Status_Tret();
 	Exp_Config();
-	AutoCal_Config_test();
+	AutoCal_Config();
 	RF_Borad_FeedBack_Test();
 
 #else
