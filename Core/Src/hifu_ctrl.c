@@ -1,5 +1,6 @@
 
 
+
 #include "hifu_ctrl.h"
 uint8_t testExpFlag;
 ERROR_T m_err;
@@ -309,6 +310,7 @@ void LCD_Init()
 	m_rf.totaEnergy = 0;
 	Tx_LCD_Msg(CMD_TOTAL_JOULE, m_rf.totaEnergy);
 	Tx_LCD_Msg(CMD_CURRENT_SHOT, m_rf.currentShot);
+	Tx_LCD_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
 
 	Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_STNBY);
 
@@ -606,6 +608,42 @@ void Error_Buff_Rf_Tx()
 	}
 }
 
+/*
+m_err.errDataBuff[IDX_TEMP_OUT]
+m_err.errDataBuff[IDX_TEMP_LIMIT_UNDER]
+m_err.errDataBuff[IDX_TEMP_LOW]
+m_err.errDataBuff[IDX_FLOW_LIMIT_UNDER]
+m_err.errDataBuff[IDX_FLOW_ZERO_IDX]
+m_err.errDataBuff[IDX_LEVEL_LOW]
+m_err.errDataBuff[IDX_AUTO_CAL_COMU_ERR]
+m_err.errDataBuff[IDX_BATTRY_LIMIT_OVER]
+m_err.errDataBuff[IDX_BATTRY_LIMIT_UNDER]
+m_err.errDataBuff[IDX_BATTRY_LIMIT_LOW]
+m_err.errDataBuff[IDX_RTC_ERR]
+m_err.errDataBuff[IDX_PRE_COOL_ERR]
+m_err.errDataBuff[IDX_HAND_COMU_ERR]
+m_err.errDataBuff[IDX_CATRIGE_ID_ERR]
+m_err.errDataBuff[IDX_CATRIGE_MANU_ERR]
+m_err.errDataBuff[IDX_CATRIGE_MANU_OVER_ERR]
+m_err.errDataBuff[IDX_CATRIGE_ISUE_ERR]
+m_err.errDataBuff[IDX_CATRIGE_ISUE_OVER_ERR]
+m_err.errDataBuff[IDX_CATRIGE_WATT_ERR]
+m_err.errDataBuff[IDX_CATRIGE_FRQ_ERR]
+m_err.errDataBuff[IDX_CATRIGE_RESHOT_ERR]
+m_err.errDataBuff[IDX_CATRIGE_RESHOT_LOW]
+m_err.errDataBuff[IDX_CATRIGE_RESHOT_ZERO]
+m_err.errDataBuff[IDX_CATRIGE_DETECT]
+m_err.errDataBuff[IDX_CATRIGE_UN_DETEC]
+m_err.errDataBuff[IDX_HAND_TIMEOUT]
+m_err.errDataBuff[IDX_RF_COMU_ERR]
+m_err.errDataBuff[IDX_RF_STATUS_ERR]
+m_err.errDataBuff[IDX_RF_EVENT_END]
+m_err.errDataBuff[IDX_LCD_COMU_ERR]
+m_err.errDataBuff[IDX_LCD_TIMEOUT]
+m_err.errDataBuff[IDX_IS_CURRNTSHOT_RESET]
+m_err.errDataBuff[IDX_IS_TOTALJULE_RESET]
+m_err.errDataBuff[IDX_CATRIGE_NEW]
+*/
 
 
 void Error_Check_Main()
@@ -621,9 +659,9 @@ void Error_Check_Main()
 	Check_Max_Min(m_io.flowSensorFrq, FLOW_LOW_MAX, FLOW_LOW_MIN, IDX_FLOW_LIMIT_UNDER);
 #endif
 
-	Check_Max(m_io.battery, BATTRY_LIMIT_MAX, IDX_BATTRY_LIMIT_OVER);
-	Check_Min(m_io.battery, BATTRY_LIMIT_MIN, IDX_BATTRY_LIMIT_UNDER);
-	Check_Min(m_io.battery, BATTRY_NOMAL_MIN, IDX_BATTRY_LIMIT_LOW);
+	Check_Max(m_io.battery*10, BATTRY_LIMIT_MAX, IDX_BATTRY_LIMIT_OVER);
+	Check_Min(m_io.battery*10, BATTRY_LIMIT_MIN, IDX_BATTRY_LIMIT_UNDER);
+	Check_Min(m_io.battery*10, BATTRY_NOMAL_MIN, IDX_BATTRY_LIMIT_LOW);
 
 	Check_Status(m_err.autoCalStatus, 0, IDX_AUTO_CAL_COMU_ERR);
 	Check_Time(m_io.hour, m_io.min, m_io.sec, IDX_RTC_ERR);
@@ -663,8 +701,15 @@ void Error_Check_HP()
 		if(errStatus) break;
 	}
 	Check_Max(m_eep.remainingShotNum, CATRIDGE_REMAIN_MAX, IDX_CATRIGE_RESHOT_ERR);
-	Check_Min(m_eep.remainingShotNum, CATRIDGE_REMAIN_LOW_3, IDX_CATRIGE_RESHOT_LOW);
-	Check_Min(m_eep.remainingShotNum, CATRIDGE_REMAIN_MIN, IDX_CATRIGE_RESHOT_ZERO);
+	if(!m_rf.remainingShotNegative)
+	{
+		Check_Min(m_eep.remainingShotNum, CATRIDGE_REMAIN_LOW_3, IDX_CATRIGE_RESHOT_LOW);
+	}
+	else
+	{
+		Check_Max(m_rf.remainingShotNegative, m_eepMain.remainingShotRandom, IDX_CATRIGE_RESHOT_ZERO);
+	}
+
 
 	Check_Max(m_eep.catridgeId, CATRIDGE_ID_MAX, IDX_CATRIGE_ID_ERR);
 
@@ -1884,68 +1929,15 @@ void Exp_Nomal_Config()
 
 				m_rf.currentShot++;
 				Tx_LCD_Msg(CMD_CURRENT_SHOT, m_rf.currentShot);
+				if(m_eep.remainingShotNum > 0)
+				{
+					m_eep.remainingShotNum--;
+				}
+				else
+				{
+					m_rf.remainingShotNegative++;
+				}
 
-				m_eep.remainingShotNum--;
-				Tx_LCD_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
-				Tx_LCD_Msg(CMD_LCD_EXP, LCD_EXP_END);
-				Tx_Hand1_Msg(CMD_LCD_EXP, LCD_EXP_END);
-				Tx_Hand1_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
-				step = STEP0;
-			}
-		break;
-
-	}
-
-}
-
-
-
-
-void Exp_Nomal_Config_test()
-{
-	uint16_t totalEenerge;
-
-	static uint8_t step = STEP0;
-	if(m_rf.readyFlag != READY_ON) return;
-
-	if(IS_HP1_SHOT_PUSH())
-	{
-		HAL_Delay(50);
-		testExpFlag = 1;
-	}
-	switch (step)
-	{
-		case STEP0:
-			if(testExpFlag && m_hand1.temprature > 100)
-			{
-				HAL_Delay(200);
-				testExpFlag = 0;
-				Tx_LCD_Msg(CMD_LCD_EXP, LCD_EXP_START);
-				Tx_Hand1_Msg(CMD_LCD_EXP, LCD_EXP_START);
-				HAL_Delay(200);
-				RF_Pwm_On();
-				step = STEP1;
-			}
-		break;
-
-		case STEP1:
-			RF_Pwm_Conter_Individual();
-			if(m_rf.expEndFlag) step = STEP2;
-		break;
-
-		case STEP2:
-			if(m_rf.expEndFlag)
-			{
-				m_rf.expEndFlag = 0;
-
-				m_rf.totaEnergy = m_rf.totaEnergy + m_rf.currentEnergy;
-				totalEenerge = m_rf.totaEnergy/10;
-				Tx_LCD_Msg(CMD_TOTAL_JOULE, totalEenerge);
-
-				m_rf.currentShot++;
-				Tx_LCD_Msg(CMD_CURRENT_SHOT, m_rf.currentShot);
-
-				m_eep.remainingShotNum--;
 				Tx_LCD_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
 				Tx_LCD_Msg(CMD_LCD_EXP, LCD_EXP_END);
 				Tx_Hand1_Msg(CMD_LCD_EXP, LCD_EXP_END);

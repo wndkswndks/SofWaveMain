@@ -5,6 +5,9 @@
  *      Author: Cellah_SW
  */
 #include "eeprom.h"
+
+
+
 EEPROM_MAIN_T m_eepMain;
 
 static inline uint8_t CAT24C16_MemAddr8(uint16_t abs_addr)
@@ -79,7 +82,13 @@ void Eeprom_All_Read(void)
 			m_eepMain.buff[IDX_EEP_ERROR+i*2] = 0;
 			m_eepMain.buff[IDX_EEP_ERROR+i*2+1] = 0;
 		}
-
+		uint32_t seed = HAL_GetTick();
+		srand(seed);
+		int randValue;
+		randValue = rand();
+		randValue %= 255;
+		m_eepMain.buff[IDX_REMIND_RANDOM] = randValue;
+		m_eepMain.remainingShotRandom = randValue;
 		for (uint16_t i = 0; i < 200; ++i)
 	    {
 	        if (CAT24C16_WriteByte(&hi2c1, i, m_eepMain.buff[i]) != HAL_OK)
@@ -100,6 +109,8 @@ void Eeprom_All_Read(void)
 		{
 			m_eepMain.errCntBuff[i] = (m_eepMain.buff[IDX_EEP_ERROR+i*2]<<8)|(m_eepMain.buff[IDX_EEP_ERROR+i*2+1]);
 		}
+
+		m_eepMain.remainingShotRandom =  m_eepMain.buff[IDX_REMIND_RANDOM];
 	}
 
 

@@ -471,6 +471,7 @@ typedef struct
 	uint8_t getWattBuff[10];
 	uint8_t getWattCnt;
 	uint8_t feedBackTest;
+	uint16_t remainingShotNegative;
 } RF_T;
 typedef struct
 {
@@ -605,6 +606,7 @@ void Error_Check_Main();
 void Error_Check_HP();
 void Error_Check_RF();
 void CARTRIGE_REQ_DATA(uint8_t idx);
+void Err_Init();
 
 
 /*  			function end  			*/

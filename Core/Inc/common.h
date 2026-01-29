@@ -9,6 +9,7 @@
 #include <math.h>
 #include <stdarg.h>
 #include <stdint.h>
+#include <time.h>
 
 #include "main.h"
 #include "usart.h"

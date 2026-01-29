@@ -109,6 +109,7 @@ int main(void)
   Test_Init();
   RTC_Init();
   Eeprom_All_Read();
+  Err_Init();
 
 
 
@@ -127,9 +128,9 @@ int main(void)
 	Rf_Config();
 	UartRxDataProcess();
 	TxTest();
-	IO_Config();
+	  Error_Check_Config();
 #else
-  Error_Check_Config();
+  IO_Config();
 
   IO_Test();
   RTC_Test();
