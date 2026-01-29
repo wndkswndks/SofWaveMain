@@ -237,7 +237,7 @@ void Rf_Init()
 	RF_Pwr_ON();
 
 
-	#if 1
+	#if 0
 	Rf_TD1_Table();
 	#else
 	Rf_TD2_Table();
@@ -1495,7 +1495,7 @@ int trandu = 0;
 int qsortBuff[5] = {0,};
 int AutoCal_Avg()// 오름차순으로 정리
 {
-	int sum =0;
+	int sum =0, avgInt;
 	float avg = 0;
 	qsort(qsortBuff, sizeof(qsortBuff) / sizeof(int), sizeof(int), compare_32);// u32
 	sum += qsortBuff[0];
@@ -1504,9 +1504,10 @@ int AutoCal_Avg()// 오름차순으로 정리
 	sum += qsortBuff[3];
 	sum += qsortBuff[4];
 
-	avg = sum/5;
-	avg +=0.5
-	printf("avg : %f \r\n",avg);
+	avg = (float)(sum)/5;
+	avg +=0.5;
+	avgInt = avg;
+	printf("avg : %d \r\n",avgInt);
 	memset(qsortBuff, 0, sizeof(qsortBuff));
 
 	return avg;
@@ -1531,7 +1532,7 @@ void AutoCal_Config()
 
 	if(wattDa<200)
 	{
-		wattDa += 1 ;
+		wattDa += 2 ;
 	}
 	else
 	{
