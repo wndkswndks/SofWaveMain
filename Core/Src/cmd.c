@@ -842,6 +842,16 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 		case CMD_CART_ALLOW:
 			if(data==1)
 			{
+				m_eep.issuedYY = m_io.YY;
+				m_eep.issuedMM = m_io.MM;
+				m_eep.issuedDD = m_io.DD;
+				Tx_Hand1_Msg(CMD_ISSUED_YY, m_eep.issuedYY);
+				Tx_Hand1_Msg(CMD_ISSUED_MM, m_eep.issuedMM);
+				Tx_Hand1_Msg(CMD_ISSUED_DD, m_eep.issuedDD);
+				Tx_LCD_Msg(CMD_ISSUED_YY, m_eep.issuedYY);
+				Tx_LCD_Msg(CMD_ISSUED_MM, m_eep.issuedMM);
+				Tx_LCD_Msg(CMD_ISSUED_DD, m_eep.issuedDD);
+
 				m_eep.cartAllow = 1;
 				Tx_Hand1_Msg(CMD_CART_ALLOW, 1);
 			}
