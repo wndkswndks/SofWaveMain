@@ -713,6 +713,30 @@ void LCD_Init()
 {
 	HAL_Delay(500);
 
+	m_rf.energy = 10;
+	m_rf.pulseDuration = 20;
+	m_rf.postCooling = 12;
+	m_rf.interval = 20;
+
+
+	Tx_LCD_Msg(CMD_ENERGY, m_rf.energy);
+	Tx_LCD_Msg(CMD_PULSE_DURATION, m_rf.pulseDuration);
+	Tx_LCD_Msg(CMD_POST_COOLING, m_rf.postCooling);
+	Tx_LCD_Msg(CMD_INTERVAL, m_rf.interval);
+
+	m_rf.currentShot = 0;
+	m_rf.totaEnergy = 0;
+	Tx_LCD_Msg(CMD_TOTAL_JOULE, m_rf.totaEnergy);
+	Tx_LCD_Msg(CMD_CURRENT_SHOT, m_rf.currentShot);
+	Tx_LCD_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
+
+	Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_STNBY);
+
+}
+void LCD_Max_Init()
+{
+	HAL_Delay(500);
+
 
 
 	PulseData_Sand(IDX_MAIN_P1_WATT, 1);
