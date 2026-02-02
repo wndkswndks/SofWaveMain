@@ -266,7 +266,7 @@ void Tx_RF_Msg(uint8_t* buff, uint8_t len)
 	while(HAL_GetTick() -m_rf.lastRfGenTxTime<50);
 	HAL_UART_Transmit(&huart4,buff, len,100);
 #ifdef DEBUG_PRINT
-	Debug_Tx_RF_Printf(buff, len);
+	//Debug_Tx_RF_Printf(buff, len);
 #endif
 	m_rf.lastRfGenTxTime = HAL_GetTick();
 	RF_Rx_Parssing(RF_RX_CALLBACK);
@@ -1115,7 +1115,7 @@ void Hand_Rx_Parssing(uint8_t add, uint32_t data, uint32_t data2, uint32_t data3
 					LCD_Init();
 					Tx_LCD_Msg(CMD_GET_ALL_CART_END, 1);
 					Debug_Printf("CartAllOk",1);
-					m_err.txEn = 1;
+//					m_err.txEn = 1;
 					m_hand1.cartAllOk = 1;
 				}
 				else
@@ -1133,7 +1133,7 @@ void Hand_Rx_Parssing(uint8_t add, uint32_t data, uint32_t data2, uint32_t data3
 						Debug_Printf("Cart Fail",1);
 						m_hand1.cartAllOk = 3;
 						m_err.handComuErr = 1;
-						m_err.txEn = 1;
+//						m_err.txEn = 1;
 					}
 
 				}
@@ -1369,7 +1369,7 @@ void Uart3_Passing(uint8_t data)//stm32��
 			m_rf.FeedBackW = FeedBackWtemp;
 			m_rf.FeedBackWBuff[m_rf.FeedBackCnt] = m_rf.FeedBackW;
 			m_rf.FeedBackCnt++;
-			m_rf.FeedBackCnt %= 30;
+			m_rf.FeedBackCnt %= 50;
 		}
 
 		Rx_BuffClear(&m_uart3);

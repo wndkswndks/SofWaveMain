@@ -447,7 +447,7 @@ typedef struct
 	uint8_t readyFlag;
 	uint8_t rfTxFlag;
 	int FeedBackW;
-	int FeedBackWBuff[30];
+	int FeedBackWBuff[50];
 	uint8_t autoCalFlag;
 	uint8_t autoCalStep;
 	uint8_t autoCalWattLevel;
