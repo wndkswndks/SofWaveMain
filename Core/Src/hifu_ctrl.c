@@ -1400,7 +1400,7 @@ void Rx_RF_Get(uint8_t getData)
 
 	m_rf.lastTimeStamp = HAL_GetTick();
 }
-void RF_Pwm_On()
+void RF_Max_Pwm_On()
 {
 	uint16_t pulse1Watt = m_rf.pulseBuff[IDX_MAIN_P1_WATT];
 	Tx_RF_Watt_ALL_Module(pulse1Watt);
@@ -1415,6 +1415,15 @@ void RF_Pwm_On()
 	Pulse_Trig_TimeSave();
 	Get_PluseWatt(pulse1Watt);
 	m_rf.pluseLevel = PWM_H1_LEVEL;
+}
+
+void RF_Pwm_On()
+{
+	m_rf.pluseOn = 1;
+	m_rf.pluseTimeStamp = HAL_GetTick();
+
+	Pulse_Trig_TimeSave();
+	m_rf.pluseLevel = PWM_H_LEVEL;
 }
 
 void RF_eg_Exp_On(uint32_t expTime)
@@ -1631,6 +1640,56 @@ void RF_Pwm_Conter_Individual()
 }
 
 
+void RF_Pwm_Conter_Common(uint8_t pulseNum)
+{
+	static uint8_t pulseCnt;
+	if(m_rf.pluseOn)
+	{
+		switch (m_rf.pluseLevel)
+		{
+			case PWM_H_LEVEL:
+				HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_HIGH);
+				if(HAL_GetTick() - m_rf.pluseTimeStamp> (m_rf.pulseDuration/pulseNum *TIME_100MS))
+				{
+					m_rf.pluseTimeStamp = HAL_GetTick();
+					pulseCnt++;
+					if(pulseCnt == pulseNum)
+					{
+						m_rf.pluseLevel = PWM_POST_LEVEL;
+						pulseCnt = 0;
+					}
+					else
+					{
+						m_rf.pluseLevel = PWM_L_LEVEL;
+					}
+
+				}
+			break;
+
+			case PWM_L_LEVEL:
+				if(m_rf.interval != 0)HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_LOW);
+				if(HAL_GetTick() - m_rf.pluseTimeStamp> m_rf.interval*TIME_100MS)
+				{
+					m_rf.pluseTimeStamp = HAL_GetTick();
+
+					m_rf.pluseLevel = PWM_H_LEVEL;
+				}
+			break;
+
+			case PWM_POST_LEVEL:
+				HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_LOW);
+				if(HAL_GetTick() - m_rf.pluseTimeStamp> m_rf.postCooling*TIME_100MS)
+				{
+					m_rf.pluseLevel = PWM_H1_LEVEL;
+					m_rf.expEndFlag = 1;
+
+					m_rf.pluseOn = 0;
+				}
+			break;
+
+		}
+	}
+}
 
 
 void RF_Eg_Exp_Conter()
@@ -1659,6 +1718,7 @@ void LCD_Status_Tret()
 			m_rf.readyFlag = READY_ON;
 
 			Tx_RF_FRQ_ALL_Module();
+			Tx_RF_Watt_ALL_Module_org();
 			TX_RF_Max_Ontime_Set();
 
 			Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_TRET);
@@ -2245,7 +2305,11 @@ void Exp_Nomal_Config()
 		break;
 
 		case STEP1:
+#if 0
 			RF_Pwm_Conter_Individual();
+#else
+			RF_Pwm_Conter_Common(m_rf.testPulseOption);
+#endif
 			if(m_rf.expEndFlag) step = STEP2;
 		break;
 
