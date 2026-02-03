@@ -453,7 +453,7 @@ void Rf_Init()
 	#else
 	Rf_TD2_Table_New();
 	#endif
-	m_rf.testPulseOption = 2;
+
 
 	m_rf.pulseMaxBuff[IDX_MAIN_P1_WATT]			= 10;
 	m_rf.pulseMaxBuff[IDX_MAIN_P1_DURATION_TIME]= 50;
@@ -498,7 +498,7 @@ void LCD_Init()
 	m_rf.energy = 10;
 	m_rf.pulseDuration = 20;
 	m_rf.postCooling = 12;
-	m_rf.interval = 20;
+	m_rf.interval = 1;
 
 
 	Tx_LCD_Msg(CMD_ENERGY, m_rf.energy);
@@ -511,6 +511,8 @@ void LCD_Init()
 	Tx_LCD_Msg(CMD_TOTAL_JOULE, m_rf.totaEnergy);
 	Tx_LCD_Msg(CMD_CURRENT_SHOT, m_rf.currentShot);
 	Tx_LCD_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
+	m_rf.testPulseOption = 2;
+	Tx_LCD_Msg(CMD_TEST_PULSE, m_rf.testPulseOption);
 
 	Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_STNBY);
 
@@ -1083,7 +1085,7 @@ void Tx_RF_FeedBack_Check()
 	}
 
 	m_rf.txBuff[RF_INDEX_DATA+2] = ETX;
-	Debug_Tx_GenStatus_Check_Printf();
+	Debug_Tx_FeedBack_Check_Printf();
 	Tx_RF_Msg(m_rf.txBuff, len);
 	memset(m_rf.txBuff, 0, 30);
 
@@ -1421,9 +1423,9 @@ void RF_Pwm_On()
 {
 	m_rf.pluseOn = 1;
 	m_rf.pluseTimeStamp = HAL_GetTick();
-
 	Pulse_Trig_TimeSave();
 	m_rf.pluseLevel = PWM_H_LEVEL;
+
 }
 
 void RF_eg_Exp_On(uint32_t expTime)
@@ -1438,7 +1440,7 @@ void RF_eg_Exp_On(uint32_t expTime)
 void Pulse_Trig_TimeSave()
 {
 	m_rf.trigTemeStamp[m_rf.trigCnt++] = HAL_GetTick();
-	m_rf.trigCnt %= 10;
+	m_rf.trigCnt %= 30;
 }
 void Get_PluseWatt(uint16_t watt)
 {
@@ -1451,36 +1453,35 @@ void Exp_Total_Log()
 	int timeGap;
 
 	printf(">>================================ \r\n");
+
+	printf("%d W ",m_rf.watt);
 	if(m_rf.trigCnt>=2)
 	{
 		for(int i =0 ;i < m_rf.trigCnt-1;i++)
 		{
 			timeGap = m_rf.trigTemeStamp[i+1] -m_rf.trigTemeStamp[i];
-			if(i == m_rf.trigCnt-2)
-			{
-				printf(">>Cool Time %d \r\n",timeGap);
-			}
-			else
-			{
-				if(i%2==0)printf(">>High Time %d \r\n",timeGap);
-				else printf(">>Low Time %d \r\n",timeGap);
-			}
+
+			printf("%d sec ",timeGap);
+
 
 		}
 	}
 	memset(m_rf.trigTemeStamp, 0, sizeof(m_rf.trigTemeStamp));
 	m_rf.trigCnt = 0;
 
-
+#if 0
 	for(int i =0 ;i < m_rf.getWattCnt;i++)
 	{
 		printf("[%d] Watt %u \r\n",i, m_rf.getWattBuff[i]);
 	}
 	memset(m_rf.getWattBuff, 0, sizeof(m_rf.getWattBuff));
 	m_rf.getWattCnt = 0;
+#endif
 
-	printf("CurrentEnergy = %d \r\n",m_rf.currentEnergy);
-	printf("TotaEnergy = %d \r\n",m_rf.totaEnergy);
+	printf("%d TotEng ",m_rf.totaEnergy);
+	printf("\r\n");
+
+	Tx_RF_FeedBack_Check();
 	printf(">>================================ \r\n");
 
 }
@@ -1649,8 +1650,9 @@ void RF_Pwm_Conter_Common(uint8_t pulseNum)
 		{
 			case PWM_H_LEVEL:
 				HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_HIGH);
-				if(HAL_GetTick() - m_rf.pluseTimeStamp> (m_rf.pulseDuration/pulseNum *TIME_100MS))
+				if(HAL_GetTick() - m_rf.pluseTimeStamp >= ((float)m_rf.pulseDuration/pulseNum *TIME_100MS))
 				{
+					Pulse_Trig_TimeSave();
 					m_rf.pluseTimeStamp = HAL_GetTick();
 					pulseCnt++;
 					if(pulseCnt == pulseNum)
@@ -1668,8 +1670,9 @@ void RF_Pwm_Conter_Common(uint8_t pulseNum)
 
 			case PWM_L_LEVEL:
 				if(m_rf.interval != 0)HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_LOW);
-				if(HAL_GetTick() - m_rf.pluseTimeStamp> m_rf.interval*TIME_100MS)
+				if(HAL_GetTick() - m_rf.pluseTimeStamp >= m_rf.interval*TIME_1000MS)
 				{
+					Pulse_Trig_TimeSave();
 					m_rf.pluseTimeStamp = HAL_GetTick();
 
 					m_rf.pluseLevel = PWM_H_LEVEL;
@@ -1678,8 +1681,10 @@ void RF_Pwm_Conter_Common(uint8_t pulseNum)
 
 			case PWM_POST_LEVEL:
 				HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_LOW);
-				if(HAL_GetTick() - m_rf.pluseTimeStamp> m_rf.postCooling*TIME_100MS)
+				if(HAL_GetTick() - m_rf.pluseTimeStamp >= m_rf.postCooling*TIME_100MS)
 				{
+					Pulse_Trig_TimeSave();
+
 					m_rf.pluseLevel = PWM_H1_LEVEL;
 					m_rf.expEndFlag = 1;
 
@@ -2318,8 +2323,8 @@ void Exp_Nomal_Config()
 			{
 				m_rf.expEndFlag = 0;
 
-				m_rf.totaEnergy = m_rf.totaEnergy + m_rf.currentEnergy;
-				totalEenerge = m_rf.totaEnergy/10;
+				m_rf.totaEnergy = m_rf.totaEnergy + m_rf.energy;
+				totalEenerge = m_rf.totaEnergy;
 				Tx_LCD_Msg(CMD_TOTAL_JOULE, totalEenerge);
 
 				m_rf.currentShot++;
@@ -2337,6 +2342,8 @@ void Exp_Nomal_Config()
 				Tx_LCD_Msg(CMD_LCD_EXP, LCD_EXP_END);
 				Tx_Hand1_Msg(CMD_LCD_EXP, LCD_EXP_END);
 				Tx_Hand1_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
+
+				Exp_Total_Log();
 				step = STEP0;
 			}
 		break;

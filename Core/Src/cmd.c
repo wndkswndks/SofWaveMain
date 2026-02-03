@@ -221,6 +221,13 @@ void Debug_Tx_GenStatus_Check_Printf()
 	printf("GenStatus_Check\r\n");
 #endif
 }
+void Debug_Tx_FeedBack_Check_Printf()
+{
+#if 1
+	printf("[TX_RF] ");
+	printf("FeedBack_Check\r\n");
+#endif
+}
 
 void Tx_LCD_Msg(uint8_t add, uint16_t data)
 {
@@ -373,8 +380,9 @@ void Debug_Rx_Parssing(uint8_t add, uint32_t data)
 	{
 
 		case CMD_TEST_PULSE:
-			Tx_LCD_Msg(CMD_TEST_PULSE, data);
-			m_rf.testPulseOption = data;
+			m_rf.testPulseOption++;
+			if(m_rf.testPulseOption == 5) m_rf.testPulseOption = 1;
+			Tx_LCD_Msg(CMD_TEST_PULSE, m_rf.testPulseOption);
 		break;
 
 		case CMD_TEST_FORCE_PAGE_CHANGE:
@@ -596,6 +604,13 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 				m_rf.interval++;
 			else if(data == BUTTON_DN&& m_rf.interval>0)
 				m_rf.interval--;
+
+			if(m_rf.interval==0)
+			{
+				m_rf.testPulseOption = 1;
+				Tx_LCD_Msg(CMD_TEST_PULSE, m_rf.testPulseOption);
+			}
+
 			Tx_LCD_Msg(CMD_INTERVAL, m_rf.interval);
 		break;
 
@@ -949,8 +964,10 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 		break;
 
 		case CMD_TEST_PULSE:
-			Tx_LCD_Msg(CMD_TEST_PULSE, data);
-			m_rf.testPulseOption = data;
+			m_rf.testPulseOption++;
+			if(m_rf.testPulseOption == 5) m_rf.testPulseOption = 1;
+
+			Tx_LCD_Msg(CMD_TEST_PULSE, m_rf.testPulseOption);
 		break;
 
 

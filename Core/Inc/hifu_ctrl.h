@@ -182,11 +182,12 @@ typedef enum
 	REQ_DATA = 0xffff,
 
 	TIME_100MS = 100,
+	TIME_1000MS = 1000,
 
 	MAX_ENERGY = 50,
 	MAX_PULSE_DURATION = 50,
 	MAX_POST_COOLING = 30,
-	MAX_INTERVAL = 30,
+	MAX_INTERVAL = 3,
 	MAX_WATT_IDX = 11,
 
 	READY_ON = 1,
@@ -466,7 +467,7 @@ typedef struct
 	uint8_t pulseEndisChkBuff[5];
 	uint8_t agingCnt;
 	uint8_t agingUpDn;
-	uint32_t trigTemeStamp[10];
+	uint32_t trigTemeStamp[30];
 	uint8_t trigCnt;
 	uint8_t getWattBuff[10];
 	uint8_t getWattCnt;
