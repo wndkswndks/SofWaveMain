@@ -228,119 +228,6 @@ void Rf_TD2_Table()
 }
 
 
-void Rf_TD1_Table_New_test()
-{
-	//frq
-	m_eep.rfFrqBuff[0] = 0;
-	m_eep.rfFrqBuff[1] = 11035;
-	m_eep.rfFrqBuff[2] = 11027;
-	m_eep.rfFrqBuff[3] = 10962;
-	m_eep.rfFrqBuff[4] = 10992;
-	m_eep.rfFrqBuff[5] = 11062;
-	m_eep.rfFrqBuff[6] = 11045;
-	m_eep.rfFrqBuff[7] = 11060;
-
-	//no.1
-	m_eep.rfWattBuff[0]  = 0   ;
-	m_eep.rfWattBuff[1]  = 1   ;//0.1w
-	m_eep.rfWattBuff[2]  = 9   ;//0.2w
-	m_eep.rfWattBuff[3]  = 24  ;//0.3w
-	m_eep.rfWattBuff[4]  = 39  ;//0.4w
-	m_eep.rfWattBuff[5]  = 50  ;//0.5w
-	m_eep.rfWattBuff[6]  = 63  ;//0.6w
-	m_eep.rfWattBuff[7]  = 78  ;//0.7w
-	m_eep.rfWattBuff[8]  = 89  ;//0.8w
-	m_eep.rfWattBuff[9]  = 101 ;//0.9w
-	m_eep.rfWattBuff[10] = 120 ;//1.0w
-//	m_eep.rfWattBuff[10] = 115 ;//1.0w
-	m_eep.rfWattBuff[11] = 160 ;//1.1w
-
-	//no.2
-	m_eep.rfWattBuff[12] = 2   ;//0.1w
-	m_eep.rfWattBuff[13] = 18  ;//0.2w
-	m_eep.rfWattBuff[14] = 34  ;//0.3w
-	m_eep.rfWattBuff[15] = 46  ;//0.4w
-	m_eep.rfWattBuff[16] = 60  ;//0.5w
-	m_eep.rfWattBuff[17] = 72  ;//0.6w
-	m_eep.rfWattBuff[18] = 86  ;//0.7w
-	m_eep.rfWattBuff[19] = 98  ;//0.8w
-	m_eep.rfWattBuff[20] = 108 ;//0.9w
-	m_eep.rfWattBuff[21] = 120 ;//1.0w
-//	m_eep.rfWattBuff[21] = 122 ;//1.0w
-	m_eep.rfWattBuff[22] = 160 ;//1.1w
-
-	//no.3
-	m_eep.rfWattBuff[23] = 1   ;//0.1w
-	m_eep.rfWattBuff[24] = 14  ;//0.2w
-	m_eep.rfWattBuff[25] = 28  ;//0.3w
-	m_eep.rfWattBuff[26] = 42  ;//0.4w
-	m_eep.rfWattBuff[27] = 52  ;//0.5w
-	m_eep.rfWattBuff[28] = 64  ;//0.6w
-	m_eep.rfWattBuff[29] = 76  ;//0.7w
-	m_eep.rfWattBuff[30] = 87  ;//0.8w
-	m_eep.rfWattBuff[31] = 101 ;//0.9w
-	m_eep.rfWattBuff[32] = 120 ;//1.0w
-//	m_eep.rfWattBuff[32] = 110 ;//1.0w
-	m_eep.rfWattBuff[33] = 160 ;//1.1w
-
-	//no.4
-	m_eep.rfWattBuff[34] = 1   ;//0.1w
-	m_eep.rfWattBuff[35] = 16  ;//0.2w
-	m_eep.rfWattBuff[36] = 32  ;//0.3w
-	m_eep.rfWattBuff[37] = 46  ;//0.4w
-	m_eep.rfWattBuff[38] = 58  ;//0.5w
-	m_eep.rfWattBuff[39] = 72  ;//0.6w
-	m_eep.rfWattBuff[40] = 82  ;//0.7w
-	m_eep.rfWattBuff[41] = 95  ;//0.8w
-	m_eep.rfWattBuff[42] = 106 ;//0.9w
-	m_eep.rfWattBuff[43] = 120 ;//1.0w
-//	m_eep.rfWattBuff[43] = 117 ;//1.0w
-	m_eep.rfWattBuff[44] = 160 ;//1.1w
-
-	//no.5
-	m_eep.rfWattBuff[45] = 2   ;//0.1w
-	m_eep.rfWattBuff[46] = 22  ;//0.2w
-	m_eep.rfWattBuff[47] = 40  ;//0.3w
-	m_eep.rfWattBuff[48] = 52  ;//0.4w
-	m_eep.rfWattBuff[49] = 64  ;//0.5w
-	m_eep.rfWattBuff[50] = 80  ;//0.6w
-	m_eep.rfWattBuff[51] = 92  ;//0.7w
-	m_eep.rfWattBuff[52] = 102 ;//0.8w
-	m_eep.rfWattBuff[53] = 115 ;//0.9w
-	m_eep.rfWattBuff[54] = 120 ;//1.0w
-//	m_eep.rfWattBuff[54] = 126 ;//1.0w
-	m_eep.rfWattBuff[55] = 160 ;//1.1w
-
-	//no.6
-	m_eep.rfWattBuff[56] = 1   ;//0.1w
-	m_eep.rfWattBuff[57] = 18  ;//0.2w
-	m_eep.rfWattBuff[58] = 36  ;//0.3w
-	m_eep.rfWattBuff[59] = 46  ;//0.4w
-	m_eep.rfWattBuff[60] = 60  ;//0.5w
-	m_eep.rfWattBuff[61] = 71  ;//0.6w
-	m_eep.rfWattBuff[62] = 84  ;//0.7w
-	m_eep.rfWattBuff[63] = 93  ;//0.8w
-	m_eep.rfWattBuff[64] = 108 ;//0.9w
-	m_eep.rfWattBuff[65] = 120 ;//1.0w
-//	m_eep.rfWattBuff[65] = 119 ;//1.0w
-	m_eep.rfWattBuff[66] = 160 ;//1.1w
-
-	//no.7
-	m_eep.rfWattBuff[67] = 2   ;//0.1w
-	m_eep.rfWattBuff[68] = 20  ;//0.2w
-	m_eep.rfWattBuff[69] = 36  ;//0.3w
-	m_eep.rfWattBuff[70] = 50  ;//0.4w
-	m_eep.rfWattBuff[71] = 64  ;//0.5w
-	m_eep.rfWattBuff[72] = 76  ;//0.6w
-	m_eep.rfWattBuff[73] = 88  ;//0.7w
-	m_eep.rfWattBuff[74] = 98  ;//0.8w
-	m_eep.rfWattBuff[75] = 112 ;//0.9w
-	m_eep.rfWattBuff[76] = 120 ;//1.0w
-//	m_eep.rfWattBuff[76] = 122 ;//1.0w
-	m_eep.rfWattBuff[77] = 160 ;//1.1w
-}
-
-
 void Rf_TD1_Table_New()
 {
 	//frq
@@ -550,111 +437,6 @@ void Rf_TD2_Table_New()
 	m_eep.rfWattBuff[77] = 160 ; //1.1w
 }
 
-void Rf_TD2_Table_New_test()
-{
-	//frq
-	m_eep.rfFrqBuff[0] = 0;
-	m_eep.rfFrqBuff[1] = 11090;
-	m_eep.rfFrqBuff[2] = 11037;
-	m_eep.rfFrqBuff[3] = 11030;
-	m_eep.rfFrqBuff[4] = 11025;
-	m_eep.rfFrqBuff[5] = 11102;
-	m_eep.rfFrqBuff[6] = 10972;
-	m_eep.rfFrqBuff[7] = 11115;
-
-	//no.1
-	m_eep.rfWattBuff[0] = 0 ;
-	m_eep.rfWattBuff[1] = 1 ; //0.1w
-	m_eep.rfWattBuff[2] = 13 ; //0.2w
-	m_eep.rfWattBuff[3] = 29 ; //0.3w
-	m_eep.rfWattBuff[4] = 43 ; //0.4w
-	m_eep.rfWattBuff[5] = 59 ; //0.5w
-	m_eep.rfWattBuff[6] = 73 ; //0.6w
-	m_eep.rfWattBuff[7] = 89 ; //0.7w
-	m_eep.rfWattBuff[8] = 102 ; //0.8w
-	m_eep.rfWattBuff[9] = 113 ; //0.9w
-	m_eep.rfWattBuff[10] = 120 ; //1.0w
-	m_eep.rfWattBuff[11] = 160 ; //1.1w
-
-	//no.2
-	m_eep.rfWattBuff[12] = 1 ; //0.1w
-	m_eep.rfWattBuff[13] = 16 ; //0.2w
-	m_eep.rfWattBuff[14] = 34 ; //0.3w
-	m_eep.rfWattBuff[15] = 48 ; //0.4w
-	m_eep.rfWattBuff[16] = 60 ; //0.5w
-	m_eep.rfWattBuff[17] = 75 ; //0.6w
-	m_eep.rfWattBuff[18] = 86 ; //0.7w
-	m_eep.rfWattBuff[19] = 100 ; //0.8w
-	m_eep.rfWattBuff[20] = 114 ; //0.9w
-	m_eep.rfWattBuff[21] = 120 ; //1.0w
-	m_eep.rfWattBuff[22] = 160 ; //1.1w
-
-	//no.3
-	m_eep.rfWattBuff[23] = 1 ; //0.1w
-	m_eep.rfWattBuff[24] = 16 ; //0.2w
-	m_eep.rfWattBuff[25] = 30 ; //0.3w
-	m_eep.rfWattBuff[26] = 46 ; //0.4w
-	m_eep.rfWattBuff[27] = 58 ; //0.5w
-	m_eep.rfWattBuff[28] = 73 ; //0.6w
-	m_eep.rfWattBuff[29] = 84 ; //0.7w
-	m_eep.rfWattBuff[30] = 98 ; //0.8w
-	m_eep.rfWattBuff[31] = 110 ; //0.9w
-	m_eep.rfWattBuff[32] = 120 ; //1.0w
-	m_eep.rfWattBuff[33] = 160 ; //1.1w
-
-	//no.4
-	m_eep.rfWattBuff[34] = 1 ; //0.1w
-	m_eep.rfWattBuff[35] = 20 ; //0.2w
-	m_eep.rfWattBuff[36] = 38 ; //0.3w
-	m_eep.rfWattBuff[37] = 50 ; //0.4w
-	m_eep.rfWattBuff[38] = 66 ; //0.5w
-	m_eep.rfWattBuff[39] = 80 ; //0.6w
-	m_eep.rfWattBuff[40] = 94 ; //0.7w
-	m_eep.rfWattBuff[41] = 106 ; //0.8w
-	m_eep.rfWattBuff[42] = 124 ; //0.9w
-	m_eep.rfWattBuff[43] = 120 ; //1.0w
-	m_eep.rfWattBuff[44] = 160 ; //1.1w
-
-	//no.5
-	m_eep.rfWattBuff[45] = 1 ; //0.1w
-	m_eep.rfWattBuff[46] = 22 ; //0.2w
-	m_eep.rfWattBuff[47] = 40 ; //0.3w
-	m_eep.rfWattBuff[48] = 58 ; //0.4w
-	m_eep.rfWattBuff[49] = 72 ; //0.5w
-	m_eep.rfWattBuff[50] = 82 ; //0.6w
-	m_eep.rfWattBuff[51] = 94 ; //0.7w
-	m_eep.rfWattBuff[52] = 108 ; //0.8w
-	m_eep.rfWattBuff[53] = 120 ; //0.9w
-	m_eep.rfWattBuff[54] = 120 ; //1.0w
-	m_eep.rfWattBuff[55] = 160 ; //1.1w
-
-	//no.6
-	m_eep.rfWattBuff[56] = 1 ; //0.1w
-	m_eep.rfWattBuff[57] = 16 ; //0.2w
-	m_eep.rfWattBuff[58] = 30 ; //0.3w
-	m_eep.rfWattBuff[59] = 46 ; //0.4w
-	m_eep.rfWattBuff[60] = 56 ; //0.5w
-	m_eep.rfWattBuff[61] = 70 ; //0.6w
-	m_eep.rfWattBuff[62] = 82 ; //0.7w
-	m_eep.rfWattBuff[63] = 94 ; //0.8w
-	m_eep.rfWattBuff[64] = 107 ; //0.9w
-	m_eep.rfWattBuff[65] = 120 ; //1.0w
-	m_eep.rfWattBuff[66] = 160 ; //1.1w
-
-	//no.7
-	m_eep.rfWattBuff[67] = 1 ; //0.1w
-	m_eep.rfWattBuff[68] = 22; //0.2w
-	m_eep.rfWattBuff[69] = 38 ; //0.3w
-	m_eep.rfWattBuff[70] = 54 ; //0.4w
-	m_eep.rfWattBuff[71] = 66 ; //0.5w
-	m_eep.rfWattBuff[72] = 80 ; //0.6w
-	m_eep.rfWattBuff[73] = 94 ; //0.7w
-	m_eep.rfWattBuff[74] = 108 ; //0.8w
-	m_eep.rfWattBuff[75] = 120 ; //0.9w
-	m_eep.rfWattBuff[76] = 120 ; //1.0w
-	m_eep.rfWattBuff[77] = 160 ; //1.1w
-}
-
 void Rf_Init()
 {
 	m_rf.pluseOn = 0;
@@ -667,9 +449,9 @@ void Rf_Init()
 
 
 	#if 0
-	Rf_TD1_Table_New_test();
+	Rf_TD1_Table_New();
 	#else
-	Rf_TD2_Table_New_test();
+	Rf_TD2_Table_New();
 	#endif
 	m_rf.testPulseOption = 2;
 
@@ -2011,6 +1793,25 @@ int AutoCal_Avg()// 오름차순으로 정리
 
 }
 
+int qsort10Buff[10] = {0,};
+int AutoCal_10_Avg()// 오름차순으로 정리
+{
+	int sum =0;
+	float avg = 0;
+	qsort(qsort10Buff, sizeof(qsort10Buff) / sizeof(int), sizeof(int), compare_32);// u32
+
+	for(int i =2 ;i < 8;i++)
+	{
+		sum += qsort10Buff[i];
+	}
+
+	avg = (float)(sum)/6;
+	printf(">>avg : %d %.2f \r\n", trandu, avg);
+	memset(qsort10Buff, 0, sizeof(qsort10Buff));
+
+	return avg;
+
+}
 
 
 
@@ -2179,7 +1980,7 @@ void AutoCal_Config_test()
 }
 void AutoCal_Config_test2()
 {
-  int wattLongBuff[50] ={0,};
+  int wattLongBuff[60] ={0,};
   int wattDaBuff[7] = {127, 126, 124, 136, 134, 120, 134};
   int avg = 0;
   uint16_t add;
@@ -2202,8 +2003,21 @@ void AutoCal_Config_test2()
 
   AutoCal_Tx_IP_Msg();//아이들 0,2,4,6,8,
   HAL_Delay(500);
-  RF_eg_Exp_On(3000);
-  for(int i =0 ;i < 49;i++)
+
+  for(int i =0 ;i < 10;i++)
+  {
+    AutoCal_Tx_IP_Msg();//엑티브 1,3,5,7,9
+	HAL_Delay(100);
+
+  }
+  RF_eg_Exp_On(4000);
+  for(int i =0 ;i < 40;i++)
+  {
+    AutoCal_Tx_IP_Msg();//엑티브 1,3,5,7,9
+	HAL_Delay(100);
+  }
+
+  for(int i =0 ;i < 10;i++)
   {
     AutoCal_Tx_IP_Msg();//엑티브 1,3,5,7,9
 	HAL_Delay(100);
@@ -2215,22 +2029,18 @@ void AutoCal_Config_test2()
 
 
 
-	for(int i =1 ;i < 49;i++)
+	for(int i =1 ;i < 60;i++)
 	{
 		wattLongBuff[i] = m_rf.FeedBackWBuff[i] +(-1*m_rf.FeedBackWBuff[0]);
-//		if(wattLongBuff[i]>50)
-//		{
-//			wattLongBuff[i] += 3;
-//		}
-		printf("%d\r\n",wattLongBuff[i]);
-		if(11<=i && i<=20)
+
+		printf(">>%d %d\r\n", trandu, wattLongBuff[i]);
+		if(25<=i && i<35)
 		{
-			avg += wattLongBuff[i];
+			qsort10Buff[i-25]= wattLongBuff[i];
 		}
 	}
-	avg /= 10;
+	avg = AutoCal_10_Avg();
 
-	printf("avg %d\r\n",avg);
 	calCnt++;
 	if(calCnt == 20)
 	{

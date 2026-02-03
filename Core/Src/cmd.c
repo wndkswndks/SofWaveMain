@@ -1369,7 +1369,7 @@ void Uart3_Passing(uint8_t data)//stm32��
 			m_rf.FeedBackW = FeedBackWtemp;
 			m_rf.FeedBackWBuff[m_rf.FeedBackCnt] = m_rf.FeedBackW;
 			m_rf.FeedBackCnt++;
-			m_rf.FeedBackCnt %= 50;
+			m_rf.FeedBackCnt %= 70;
 		}
 
 		Rx_BuffClear(&m_uart3);
