@@ -979,13 +979,14 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 				{
 					reqAdd = add - CMD_TRANDU_FRQ_BASE;
 					reqData = m_eep.rfFrqBuff[reqAdd];
+					Tx_LCD_Msg(add, reqData);
 				}
 				else if(CMD_TRANDU1_WATT10 <= add && add <=CMD_TRANDU7_WATT005)
 				{
 					reqAdd = add-CMD_TRANDU_WATT_BASE;
 					reqData = m_eep.rfWattBuff[reqAdd];
+					Tx_LCD_Msg(add, reqData);
 				}
-				Tx_LCD_Msg(add, reqData);
 
 			}
 			else
@@ -993,13 +994,14 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 				if(CMD_TRANDU1_FRQ <= add && add <=CMD_TRANDU7_FRQ)
 				{
 					m_eep.rfFrqBuff[add-CMD_TRANDU_FRQ_BASE] = data;
+					Tx_Hand1_Msg(add, data);
 				}
 				else if(CMD_TRANDU1_WATT10 <= add && add <=CMD_TRANDU7_WATT005)
 				{
 					reqAdd = add-CMD_TRANDU_WATT_BASE;
 					m_eep.rfWattBuff[reqAdd] = data;
+					Tx_Hand1_Msg(add, data);
 				}
-				Tx_Hand1_Msg(add, data);
 			}
 
 		break;
