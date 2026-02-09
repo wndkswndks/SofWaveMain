@@ -495,9 +495,9 @@ void LCD_Init()
 {
 	HAL_Delay(500);
 
-	m_rf.energy = 10;
-	m_rf.pulseDuration = 20;
-	m_rf.postCooling = 12;
+	m_rf.energy = 2;
+	m_rf.pulseDuration = 4;
+	m_rf.postCooling = 3;
 	m_rf.interval = 1;
 
 

@@ -473,6 +473,7 @@ typedef struct
 	uint8_t getWattCnt;
 	uint8_t feedBackTest;
 	uint16_t remainingShotNegative;
+	uint8_t vibeLevel;
 } RF_T;
 typedef struct
 {

@@ -970,6 +970,12 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 			Tx_LCD_Msg(CMD_TEST_PULSE, m_rf.testPulseOption);
 		break;
 
+		case CMD_VIBE_LEVEL:
+			m_rf.vibeLevel++;
+			m_rf.vibeLevel %= 5;
+			Tx_LCD_Msg(CMD_VIBE_LEVEL, m_rf.vibeLevel);
+		break;
+
 
 		default:
 			uint16_t reqAdd, reqData;
