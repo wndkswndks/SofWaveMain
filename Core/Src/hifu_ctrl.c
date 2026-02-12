@@ -37,7 +37,7 @@ void Test_Init()
 //	AutoCal_Avg();
 }
 
-void Rf_TD1_Table_2511()
+void Rf_TD_BLS001_Table_2511()
 {
 	//frq
 	m_eep.rfFrqBuff[0] = 0;
@@ -127,7 +127,7 @@ void Rf_TD1_Table_2511()
 
 }
 
-void Rf_TD2_Table_2511()
+void Rf_TD_BLS002_Table_2511()
 {
 	//frq
 	m_eep.rfFrqBuff[0] = 0;
@@ -228,7 +228,7 @@ void Rf_TD2_Table_2511()
 }
 
 
-void Rf_TD1_Table_2601()
+void Rf_TD_BLS001_Table_2601()
 {
 	//frq
 	m_eep.rfFrqBuff[0] = 0;
@@ -332,7 +332,7 @@ void Rf_TD1_Table_2601()
 	m_eep.rfWattBuff[76] = 122 ;//1.0w
 	m_eep.rfWattBuff[77] = 160 ;//1.1w
 }
-void Rf_TD2_Table_2602()//260211
+void Rf_TD_BLS002_Table_2602()//260211
 {
 
 	m_eep.rfFrqBuff[0] = 0;
@@ -439,7 +439,7 @@ void Rf_TD2_Table_2602()//260211
 
 }
 
-void Rf_TD2_Table_2601()//260125
+void Rf_TD_BLS002_Table_2601()//260125
 {
 
 	//frq
@@ -546,9 +546,115 @@ void Rf_TD2_Table_2601()//260125
 	m_eep.rfWattBuff[77] = 160 ; //1.1w
 }
 
-
-void Rf_TD2_Table_Auto_frQ()// 주파수 바꿔가면서 가장 출력이 높은 주파수
+void Rf_TD_BHB001_Table_260212()//260212
 {
+	//BHB001
+	m_eep.rfFrqBuff[0] = 0;
+	m_eep.rfFrqBuff[1] = 11395;
+	m_eep.rfFrqBuff[1] = 11402;
+	m_eep.rfFrqBuff[2] = 11400;
+	m_eep.rfFrqBuff[4] = 11392;
+	m_eep.rfFrqBuff[5] = 11407;
+	m_eep.rfFrqBuff[6] = 11402;
+	m_eep.rfFrqBuff[7] = 11412;
+
+	m_eep.rfWattBuff[10] = 160 ; //1.0w
+	m_eep.rfWattBuff[21] = 156 ; //1.0w
+	m_eep.rfWattBuff[32] = 88 ; //1.0w
+	m_eep.rfWattBuff[43] = 158 ; //1.0w
+	m_eep.rfWattBuff[54] = 162 ; //1.0w
+	m_eep.rfWattBuff[65] = 164 ; //1.0w
+	m_eep.rfWattBuff[76] = 156 ; //1.0w
+
+}
+void Rf_TD_BHB002_Table_260212()//260212
+{
+	//BHB002
+	m_eep.rfFrqBuff[0] = 0;
+	m_eep.rfFrqBuff[1] = 11380;
+	m_eep.rfFrqBuff[2] = 11350;
+	m_eep.rfFrqBuff[3] = 11305;
+	m_eep.rfFrqBuff[4] = 11345;
+	m_eep.rfFrqBuff[5] = 11335;
+	m_eep.rfFrqBuff[6] = 11352;
+	m_eep.rfFrqBuff[7] = 11332;
+
+	m_eep.rfWattBuff[10] = 162 ; //1.0w
+	m_eep.rfWattBuff[21] = 144 ; //1.0w
+	m_eep.rfWattBuff[32] = 144 ; //1.0w
+	m_eep.rfWattBuff[43] = 156 ; //1.0w
+	m_eep.rfWattBuff[54] = 154 ; //1.0w
+	m_eep.rfWattBuff[65] = 152 ; //1.0w
+	m_eep.rfWattBuff[76] = 146 ; //1.0w
+
+
+}
+void Rf_TD_BHB003_Table_260212()//260212
+{
+	//BHB003
+	m_eep.rfFrqBuff[0] = 0;
+	m_eep.rfFrqBuff[1] = 11447;
+	m_eep.rfFrqBuff[2] = 11285;
+	m_eep.rfFrqBuff[3] = 11420;
+	m_eep.rfFrqBuff[4] = 11375;
+	m_eep.rfFrqBuff[5] = 11360;
+	m_eep.rfFrqBuff[6] = 11385;
+	m_eep.rfFrqBuff[7] = 11427;
+
+	m_eep.rfWattBuff[10] = 174 ; //1.0w
+	m_eep.rfWattBuff[21] = 140 ; //1.0w
+	m_eep.rfWattBuff[32] = 170 ; //1.0w
+	m_eep.rfWattBuff[43] = 166 ; //1.0w
+	m_eep.rfWattBuff[54] = 152 ; //1.0w
+	m_eep.rfWattBuff[65] = 162 ; //1.0w
+	m_eep.rfWattBuff[76] = 160 ; //1.0w
+
+}
+void Rf_TD_BHB004_Table_260212()//260212
+{
+	//BHB004
+	m_eep.rfFrqBuff[0] = 0;
+	m_eep.rfFrqBuff[1] = 11342;
+	m_eep.rfFrqBuff[2] = 11367;
+	m_eep.rfFrqBuff[3] = 11302;
+	m_eep.rfFrqBuff[4] = 11345;
+	m_eep.rfFrqBuff[5] = 11372;
+	m_eep.rfFrqBuff[6] = 11352;
+	m_eep.rfFrqBuff[7] = 11380;
+
+	m_eep.rfWattBuff[10] = 150 ; //1.0w
+	m_eep.rfWattBuff[21] = 152 ; //1.0w
+	m_eep.rfWattBuff[32] = 154 ; //1.0w
+	m_eep.rfWattBuff[43] = 160 ; //1.0w
+	m_eep.rfWattBuff[54] = 162 ; //1.0w
+	m_eep.rfWattBuff[65] = 158 ; //1.0w
+	m_eep.rfWattBuff[76] = 156 ; //1.0w
+
+}
+
+
+
+void Rf_TD_BLS002_Table_Auto_frQ()// 주파수 바꿔가면서 가장 출력이 높은 주파수
+{
+
+/*
+
+1와트에 해당하는값
+
+ACal 0 102 -> 100 99 101 101 100 avg : 100
+ACal 1 104 -> 100 101 100 100 99 avg : 100
+ACal 2 112 -> 101 102 101 101 101 avg : 101
+ACal 3 110 -> 100 101 100 100 100 avg : 100
+ACal 4 104 -> 101 101 102 101 101 avg : 101
+ACal 5 104 -> 102 104 100 100 101 avg : 101
+ACal 6 104 -> 98 96 96 97 121 avg : 102
+
+우선 1.0w만 찾음 나머지는 몰라
+
+
+*/
+
+
 	//frq
 	m_eep.rfFrqBuff[0] = 0;
 	m_eep.rfFrqBuff[1] = 10940;
@@ -570,7 +676,7 @@ void Rf_TD2_Table_Auto_frQ()// 주파수 바꿔가면서 가장 출력이 높은 주파수
 	m_eep.rfWattBuff[7] = 89 ; //0.7w
 	m_eep.rfWattBuff[8] = 102 ; //0.8w
 	m_eep.rfWattBuff[9] = 113 ; //0.9w
-	m_eep.rfWattBuff[10] = 127 ; //1.0w
+	m_eep.rfWattBuff[10] = 102 ; //1.0w
 	m_eep.rfWattBuff[11] = 160 ; //1.1w
 
 	//no.2
@@ -583,7 +689,7 @@ void Rf_TD2_Table_Auto_frQ()// 주파수 바꿔가면서 가장 출력이 높은 주파수
 	m_eep.rfWattBuff[18] = 86 ; //0.7w
 	m_eep.rfWattBuff[19] = 100 ; //0.8w
 	m_eep.rfWattBuff[20] = 114 ; //0.9w
-	m_eep.rfWattBuff[21] = 126 ; //1.0w
+	m_eep.rfWattBuff[21] = 104 ; //1.0w
 	m_eep.rfWattBuff[22] = 160 ; //1.1w
 
 	//no.3
@@ -596,7 +702,7 @@ void Rf_TD2_Table_Auto_frQ()// 주파수 바꿔가면서 가장 출력이 높은 주파수
 	m_eep.rfWattBuff[29] = 84 ; //0.7w
 	m_eep.rfWattBuff[30] = 98 ; //0.8w
 	m_eep.rfWattBuff[31] = 110 ; //0.9w
-	m_eep.rfWattBuff[32] = 124 ; //1.0w
+	m_eep.rfWattBuff[32] = 112 ; //1.0w
 	m_eep.rfWattBuff[33] = 160 ; //1.1w
 
 	//no.4
@@ -609,7 +715,7 @@ void Rf_TD2_Table_Auto_frQ()// 주파수 바꿔가면서 가장 출력이 높은 주파수
 	m_eep.rfWattBuff[40] = 94 ; //0.7w
 	m_eep.rfWattBuff[41] = 106 ; //0.8w
 	m_eep.rfWattBuff[42] = 124 ; //0.9w
-	m_eep.rfWattBuff[43] = 136 ; //1.0w
+	m_eep.rfWattBuff[43] = 110 ; //1.0w
 	m_eep.rfWattBuff[44] = 160 ; //1.1w
 
 	//no.5
@@ -622,7 +728,7 @@ void Rf_TD2_Table_Auto_frQ()// 주파수 바꿔가면서 가장 출력이 높은 주파수
 	m_eep.rfWattBuff[51] = 94 ; //0.7w
 	m_eep.rfWattBuff[52] = 108 ; //0.8w
 	m_eep.rfWattBuff[53] = 120 ; //0.9w
-	m_eep.rfWattBuff[54] = 134 ; //1.0w
+	m_eep.rfWattBuff[54] = 104 ; //1.0w
 	m_eep.rfWattBuff[55] = 160 ; //1.1w
 
 	//no.6
@@ -635,7 +741,7 @@ void Rf_TD2_Table_Auto_frQ()// 주파수 바꿔가면서 가장 출력이 높은 주파수
 	m_eep.rfWattBuff[62] = 82 ; //0.7w
 	m_eep.rfWattBuff[63] = 94 ; //0.8w
 	m_eep.rfWattBuff[64] = 107 ; //0.9w
-	m_eep.rfWattBuff[65] = 120 ; //1.0w
+	m_eep.rfWattBuff[65] = 104 ; //1.0w
 	m_eep.rfWattBuff[66] = 160 ; //1.1w
 
 	//no.7
@@ -648,7 +754,7 @@ void Rf_TD2_Table_Auto_frQ()// 주파수 바꿔가면서 가장 출력이 높은 주파수
 	m_eep.rfWattBuff[73] = 94 ; //0.7w
 	m_eep.rfWattBuff[74] = 108 ; //0.8w
 	m_eep.rfWattBuff[75] = 120 ; //0.9w
-	m_eep.rfWattBuff[76] = 134 ; //1.0w
+	m_eep.rfWattBuff[76] = 104 ; //1.0w
 	m_eep.rfWattBuff[77] = 160 ; //1.1w
 }
 
@@ -663,11 +769,8 @@ void Rf_Init()
 	RF_Pwr_ON();
 
 
-	#if 0
-	Rf_TD1_Table_2601();
-	#else
-	Rf_TD2_Table_2602();
-	#endif
+	Rf_TD_BHB002_Table_260212();
+
 
 
 	m_rf.pulseMaxBuff[IDX_MAIN_P1_WATT]			= 10;
@@ -710,10 +813,10 @@ void LCD_Init()
 {
 	HAL_Delay(500);
 
-	m_rf.energy = 2;
-	m_rf.pulseDuration = 4;
-	m_rf.postCooling = 3;
-	m_rf.interval = 1;
+	m_rf.energy = 50;
+	m_rf.pulseDuration = 50;
+	m_rf.postCooling = 5;
+	m_rf.interval = 0;
 
 
 	Tx_LCD_Msg(CMD_ENERGY, m_rf.energy);
@@ -1958,6 +2061,7 @@ void LCD_Status_Tret()
 			m_rf.readyFlag = READY_ON;
 
 			Tx_RF_FRQ_ALL_Module();
+			Tx_RF_Watt_ALL_Module_org();
 			TX_RF_Max_Ontime_Set();
 
 			Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_TRET);
@@ -2047,8 +2151,9 @@ int compare_32(const void *a, const void *b)    // 오름차순 비교 함수 (uint32_t 
 }
 
 
-int wattDa = 0;
+int wattDa = 140;
 int trandu = 0;
+int tranduOut = 1;
 
 
 int qsortBuff[5] = {0,};
@@ -2351,7 +2456,7 @@ void AutoCal_Config_test3()
 
 	Tx_RF_Watt_Module(trandu, wattDa);
 
-	for(int i =0 ;i < 5;i++)
+	for(int i =0 ;i < 1;i++)
 	{
 		AutoCal_Tx_IP_Msg();//아이들 0,2,4,6,8,
 		HAL_Delay(500);
@@ -2366,43 +2471,38 @@ void AutoCal_Config_test3()
 
 	printf("ACal %d %d -> ",trandu, wattDa);
 
-	if(m_rf.FeedBackCnt<5)// 10개중에 5개 미만일때 통신불량
-	{
-		m_err.autoCalStatus = 1;
-		Debug_Printf("AutoCal Commu Err",1);
-	}
-	else
-	{
-		m_err.autoCalStatus = 0;
-	}
 
 	qsortBuff[0] = m_rf.FeedBackWBuff[1] +(-1*m_rf.FeedBackWBuff[0]);
-	printf("%d ",qsortBuff[0]);
+	printf("%d\r\n",qsortBuff[0]);
 
-	qsortBuff[1] = m_rf.FeedBackWBuff[3] +(-1*m_rf.FeedBackWBuff[2]);
-	printf("%d ",qsortBuff[1]);
+//	qsortBuff[1] = m_rf.FeedBackWBuff[3] +(-1*m_rf.FeedBackWBuff[2]);
+//	printf("%d ",qsortBuff[1]);
 
-	qsortBuff[2] = m_rf.FeedBackWBuff[5] +(-1*m_rf.FeedBackWBuff[4]);
-	printf("%d ",qsortBuff[2]);
+//	qsortBuff[2] = m_rf.FeedBackWBuff[5] +(-1*m_rf.FeedBackWBuff[4]);
+//	printf("%d ",qsortBuff[2]);
 
-	qsortBuff[3] = m_rf.FeedBackWBuff[7] +(-1*m_rf.FeedBackWBuff[6]);
-	printf("%d ",qsortBuff[3]);
+//	qsortBuff[3] = m_rf.FeedBackWBuff[7] +(-1*m_rf.FeedBackWBuff[6]);
+//	printf("%d ",qsortBuff[3]);
 
-	qsortBuff[4] = m_rf.FeedBackWBuff[9] +(-1*m_rf.FeedBackWBuff[8]);
-	printf("%d ",qsortBuff[4]);
+//	qsortBuff[4] = m_rf.FeedBackWBuff[9] +(-1*m_rf.FeedBackWBuff[8]);
+//	printf("%d ",qsortBuff[4]);
 
-	avg = AutoCal_Avg();
+//	avg = AutoCal_Avg();
 
-	if(avg >100)
+	avg = qsortBuff[0];
+
+	if(avg >=100)
 	{
 		Tx_RF_Watt_Zero_ALL_Module();
-		if(trandu<6)
+		if(trandu<tranduOut)
 		{
+			printf("NEXT !!\r\n");
 			trandu++;
-			wattDa = 94;
+			wattDa = 140;
 		}
 		else
 		{
+			printf("OUT TD !!\r\n");
 			m_rf.autoCalFlag = 0;
 		}
 
@@ -2716,7 +2816,7 @@ void Rf_Config()
 #if 1
 	LCD_Status_Tret();
 	Exp_Config();
-	AutoCal_Config_test2();
+	AutoCal_Config_test3();
 	RF_Borad_FeedBack_Test();
 
 #else
