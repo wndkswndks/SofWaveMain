@@ -632,6 +632,27 @@ void Rf_TD_BHB004_Table_260212()//260212
 
 }
 
+void Rf_TD_BHB005_Table_260212()//260212
+{
+	//BHB005
+	m_eep.rfFrqBuff[0] = 0;
+	m_eep.rfFrqBuff[1] = 11402;
+	m_eep.rfFrqBuff[2] = 11430;
+	m_eep.rfFrqBuff[3] = 11407;
+	m_eep.rfFrqBuff[4] = 11367;
+	m_eep.rfFrqBuff[5] = 11285;
+	m_eep.rfFrqBuff[6] = 11322;
+	m_eep.rfFrqBuff[7] = 11307;
+
+	m_eep.rfWattBuff[10] = 190 ; //1.0w
+	m_eep.rfWattBuff[21] = 186 ; //1.0w
+	m_eep.rfWattBuff[32] = 180 ; //1.0w
+	m_eep.rfWattBuff[43] = 200; //1.0w
+	m_eep.rfWattBuff[54] = 176 ; //1.0w
+	m_eep.rfWattBuff[65] = 168 ; //1.0w
+	m_eep.rfWattBuff[76] = 158 ; //1.0w
+
+}
 
 
 void Rf_TD_BLS002_Table_Auto_frQ()// 주파수 바꿔가면서 가장 출력이 높은 주파수
@@ -769,7 +790,7 @@ void Rf_Init()
 	RF_Pwr_ON();
 
 
-	Rf_TD_BHB002_Table_260212();
+	Rf_TD_BHB005_Table_260212();
 
 
 
@@ -2153,7 +2174,7 @@ int compare_32(const void *a, const void *b)    // 오름차순 비교 함수 (uint32_t 
 
 int wattDa = 140;
 int trandu = 0;
-int tranduOut = 1;
+int tranduOut = 6;
 
 
 int qsortBuff[5] = {0,};
