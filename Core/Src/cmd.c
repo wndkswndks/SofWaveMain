@@ -968,6 +968,14 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 			if(m_rf.testPulseOption == 5) m_rf.testPulseOption = 1;
 
 			Tx_LCD_Msg(CMD_TEST_PULSE, m_rf.testPulseOption);
+
+			if(m_rf.testPulseOption == 1)
+			{
+				m_rf.interval = 0;
+				Tx_LCD_Msg(CMD_INTERVAL, m_rf.interval);
+			}
+
+
 		break;
 
 		case CMD_VIBE_LEVEL:

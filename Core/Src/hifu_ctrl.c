@@ -816,7 +816,7 @@ void LCD_Init()
 	m_rf.energy = 50;
 	m_rf.pulseDuration = 50;
 	m_rf.postCooling = 5;
-	m_rf.interval = 0;
+	m_rf.interval = 1;
 
 
 	Tx_LCD_Msg(CMD_ENERGY, m_rf.energy);
