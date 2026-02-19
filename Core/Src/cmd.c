@@ -599,11 +599,18 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 		break;
 
 		case CMD_INTERVAL:
+			if(m_rf.testPulseOption == 1)
+			{
+				m_rf.interval = 0;
+			}
+			else
+			{
+				if(data == BUTTON_UP&& m_rf.interval<MAX_INTERVAL)
+					m_rf.interval++;
+				else if(data == BUTTON_DN&& m_rf.interval>0)
+					m_rf.interval--;
+			}
 
-			if(data == BUTTON_UP&& m_rf.interval<MAX_INTERVAL)
-				m_rf.interval++;
-			else if(data == BUTTON_DN&& m_rf.interval>0)
-				m_rf.interval--;
 
 			if(m_rf.interval==0)
 			{
