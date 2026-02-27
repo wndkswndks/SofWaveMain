@@ -26,6 +26,18 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 }
 
 
+void SOL1_ON()
+{
+	CON_SOL1_ON_GPIO_Port_H();
+	m_io.sol1On= 1;
+}
+void SOL1_OFF()
+{
+	CON_SOL1_ON_GPIO_Port_L();
+	m_io.sol1On= 0;
+}
+
+
 void RF_Pwr_ON()
 {
 	RF_PWR_EN_H();
@@ -250,17 +262,66 @@ void Cooling_ON(uint8_t num)
 	m_io.battery = 3.3* ((float)adc/4095);
 }
 
+void HP_Insert_Config(uint8_t delEn)
+{
+	if(IS_HP1_INSERT()&& !m_io.hp1CoolOk)
+	{
+		if(delEn)HAL_Delay(1000);
+		HP1_Pwr_ON();
+		HAL_Delay(20);
+
+		SOL1_ON();
+		HAL_Delay(20);
+
+		WaterPump_Pwr_ON();
+		HAL_Delay(20);
+
+		Ciller_Pwr_ON();//나중에 플로우 값 정상들어와야지 켜지게 하기
+		m_io.hp1CoolOk = 1;
+	}
+}
+
+
+
+void Level_Check()
+{
+	m_io.level1Status = IS_LEVEL_SENSOR1_ON() ;
+	m_io.level2Status = IS_LEVEL_SENSOR2_ON() ;
+
+	if(m_io.level1Status && m_io.level2Status)
+	{
+		// ok
+		m_io.levelStatusErr = 0;
+	}
+	else if(!m_io.level1Status && m_io.level2Status)
+	{
+		// warning
+		m_io.levelStatusErr = 0;
+	}
+	else
+	{
+		//error
+		if(!m_io.levelStatusErr)
+		{
+			Ciller_Pwr_OFF();//나중에 플로우 값 정상들어와야지 켜지게 하기
+			HAL_Delay(1000);
+			WaterPump_Pwr_OFF();
+			m_io.levelStatusErr = 1;
+		}
+	}
+
+
+}
 void IO_Init()
 {
-	BUFFER_ON_L();
-	HP1_Pwr_ON();
-	WaterPump_Pwr_ON();
-
     BUZZER_H();
     HAL_Delay(1000);//
     BUZZER_L();
-	Ciller_Pwr_ON();
+
+	HP_Insert_Config(0);
+
 	m_io.rtcEn = 1;
+
 }
 void RTC_Init(void)
 {
@@ -321,22 +382,10 @@ void IO_Config()
 
 	if(m_rf.pluseOn) return;
 
-	m_io.level1Status = IS_LEVEL_SENSOR1_ON() ;
-	m_io.level2Status = IS_LEVEL_SENSOR2_ON() ;
+	Level_Check();
 
-#if 0
-	if(is_flowOk && is_pumpOn &&  !is_cillerOn && m_io.level1Status && m_io.level2Status )
-	{
 
-		Ciller_Pwr_ON();
-	}
-	else
-	{
-		if(is_cillerOn) Ciller_Pwr_OFF();
-		if(is_pumpOn) WaterPump_Pwr_OFF();
-	}
-
-#endif
+	HP_Insert_Config(1);
 
 	Battery_Read();
 	RTC_Config();

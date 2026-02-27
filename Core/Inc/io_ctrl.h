@@ -228,10 +228,12 @@ typedef struct
 	uint8_t mp3On;
 	float battery;
 	uint8_t rfPwrEn;
+	uint8_t sol1On;
 	uint8_t test1;
 	uint8_t test2;
 	uint8_t level1Status;
 	uint8_t level2Status;
+	uint8_t levelStatusErr;
 	uint32_t day;
 	uint16_t infoUiDesing;
 	uint16_t infoUiFw;
@@ -248,6 +250,7 @@ typedef struct
 	uint8_t sec;
 	uint8_t minPre;
 	uint8_t rtcEn;
+	uint8_t hp1CoolOk;
 }IO_T;
 
 /*  			enum end  				*/
