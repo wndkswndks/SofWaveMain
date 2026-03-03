@@ -382,7 +382,7 @@ void IO_Config()
 
 	if(m_rf.pluseOn) return;
 
-	Level_Check();
+//	Level_Check();
 
 
 	HP_Insert_Config(1);
