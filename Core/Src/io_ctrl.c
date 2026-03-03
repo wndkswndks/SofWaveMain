@@ -318,6 +318,8 @@ void IO_Init()
     HAL_Delay(1000);//
     BUZZER_L();
 
+	BUFFER_ON_L();
+
 	HP_Insert_Config(0);
 
 	m_io.rtcEn = 1;
