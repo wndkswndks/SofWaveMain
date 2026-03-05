@@ -219,6 +219,7 @@ typedef enum
 typedef struct
 {
 	float flowSensorFrq;
+	float LperSec;
 	uint8_t ChillerPwrEn;
 	uint8_t waterPumpPwrEn;
 	uint8_t HP1PwrEn;

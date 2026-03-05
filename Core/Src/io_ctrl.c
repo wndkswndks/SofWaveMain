@@ -10,6 +10,14 @@
 IO_T m_io;
 
 uint32_t timeTerm;
+
+float Get_X_From_Y(float y)
+{
+    float x;
+    x = (y + 1.0f) / 14.0f;
+    return x;
+}
+
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 	static uint32_t timeStamp;
@@ -19,6 +27,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	{
 		timeTerm = HAL_GetTick()-timeStamp;
 		m_io.flowSensorFrq = (1000.0f) / (float)timeTerm;
+		m_io.LperSec = Get_X_From_Y(m_io.flowSensorFrq);
 
 		timeStamp = HAL_GetTick();
 
@@ -76,12 +85,14 @@ void WaterPump_Pwr_ON()
 {
 	WATER_PUMP_PWR_EN_H();
 	m_io.waterPumpPwrEn = 1;
+	Debug_Printf("PUMP ON",1);
 }
 
 void WaterPump_Pwr_OFF()
 {
 	WATER_PUMP_PWR_EN_L();
 	m_io.waterPumpPwrEn = 0;
+	Debug_Printf("PUMP OFF",1);
 }
 
 
@@ -89,12 +100,14 @@ void Ciller_Pwr_ON()
 {
 	CILLER_PWR_ON_GPIO_Port_H();
 	m_io.ChillerPwrEn = 1;
+	Debug_Printf("Ciller ON",1);
 }
 
 void Ciller_Pwr_OFF()
 {
 	CILLER_PWR_ON_GPIO_Port_L();
 	m_io.ChillerPwrEn = 0;
+	Debug_Printf("Ciller OFF",1);
 }
 
 void MP3_PLAY_ON(uint8_t num)
@@ -318,7 +331,7 @@ void IO_Init()
     HAL_Delay(1000);//
     BUZZER_L();
 
-	BUFFER_ON_L();
+//	BUFFER_ON_L();
 
 	HP_Insert_Config(0);
 
