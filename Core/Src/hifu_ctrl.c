@@ -654,6 +654,106 @@ void Rf_TD_BHB005_Table_260212()//260212
 
 }
 
+void Rf_TD_BHA001_Table_260306()
+{
+	//BHB005
+	m_eep.rfFrqBuff[0] = 0;
+	m_eep.rfFrqBuff[1] = 12065;
+	m_eep.rfFrqBuff[2] = 12010;
+	m_eep.rfFrqBuff[3] = 12100;
+	m_eep.rfFrqBuff[4] = 12155;
+	m_eep.rfFrqBuff[5] = 12210;
+	m_eep.rfFrqBuff[6] = 12075;
+	m_eep.rfFrqBuff[7] = 12055;
+
+
+	m_eep.rfFrqBuff[0] = 0;
+
+	m_eep.rfFrqBuff[1] = 19;
+	m_eep.rfFrqBuff[2] = 59;
+	m_eep.rfFrqBuff[3] = 91;
+	m_eep.rfFrqBuff[4] = 119;
+	m_eep.rfFrqBuff[5] = 147;
+	m_eep.rfFrqBuff[6] = 177;
+	m_eep.rfFrqBuff[7] = 205;
+	m_eep.rfFrqBuff[8] = 225;
+	m_eep.rfFrqBuff[9] = 247;
+	m_eep.rfFrqBuff[10] = 265;
+	m_eep.rfFrqBuff[11] = 290;
+
+	m_eep.rfFrqBuff[12] = 23;
+	m_eep.rfFrqBuff[13] = 61;
+	m_eep.rfFrqBuff[14] = 93;
+	m_eep.rfFrqBuff[15] = 121;
+	m_eep.rfFrqBuff[16] = 149;
+	m_eep.rfFrqBuff[17] = 177;
+	m_eep.rfFrqBuff[18] = 199;
+	m_eep.rfFrqBuff[19] = 221;
+	m_eep.rfFrqBuff[20] = 241;
+	m_eep.rfFrqBuff[21] = 261;
+	m_eep.rfFrqBuff[22] = 290;
+
+	m_eep.rfFrqBuff[23] = 23;
+	m_eep.rfFrqBuff[24] = 65;
+	m_eep.rfFrqBuff[25] = 97;
+	m_eep.rfFrqBuff[26] = 127;
+	m_eep.rfFrqBuff[27] = 153;
+	m_eep.rfFrqBuff[28] = 181;
+	m_eep.rfFrqBuff[29] = 203;
+	m_eep.rfFrqBuff[30] = 225;
+	m_eep.rfFrqBuff[31] = 245;
+	m_eep.rfFrqBuff[32] = 267;
+	m_eep.rfFrqBuff[33] = 290;
+
+	m_eep.rfFrqBuff[34] = 19;
+	m_eep.rfFrqBuff[35] = 63;
+	m_eep.rfFrqBuff[36] = 99;
+	m_eep.rfFrqBuff[37] = 129;
+	m_eep.rfFrqBuff[38] = 159;
+	m_eep.rfFrqBuff[39] = 187;
+	m_eep.rfFrqBuff[40] = 211;
+	m_eep.rfFrqBuff[41] = 235;
+	m_eep.rfFrqBuff[42] = 257;
+	m_eep.rfFrqBuff[43] = 277;
+	m_eep.rfFrqBuff[44] = 290;
+
+	m_eep.rfFrqBuff[45] = 21;
+	m_eep.rfFrqBuff[46] = 65;
+	m_eep.rfFrqBuff[47] = 99;
+	m_eep.rfFrqBuff[48] = 125;
+	m_eep.rfFrqBuff[49] = 157;
+	m_eep.rfFrqBuff[50] = 183;
+	m_eep.rfFrqBuff[51] = 209;
+	m_eep.rfFrqBuff[52] = 233;
+	m_eep.rfFrqBuff[53] = 251;
+	m_eep.rfFrqBuff[54] = 269;
+	m_eep.rfFrqBuff[55] = 290;
+
+	m_eep.rfFrqBuff[56] = 27;
+	m_eep.rfFrqBuff[57] = 75;
+	m_eep.rfFrqBuff[58] = 109;
+	m_eep.rfFrqBuff[59] = 139;
+	m_eep.rfFrqBuff[60] = 163;
+	m_eep.rfFrqBuff[61] = 189;
+	m_eep.rfFrqBuff[62] = 213;
+	m_eep.rfFrqBuff[63] = 235;
+	m_eep.rfFrqBuff[64] = 255;
+	m_eep.rfFrqBuff[65] = 275;
+	m_eep.rfFrqBuff[66] = 290;
+
+	m_eep.rfFrqBuff[67] = 35;
+	m_eep.rfFrqBuff[68] = 73;
+	m_eep.rfFrqBuff[69] = 105;
+	m_eep.rfFrqBuff[70] = 131;
+	m_eep.rfFrqBuff[71] = 159;
+	m_eep.rfFrqBuff[72] = 187;
+	m_eep.rfFrqBuff[73] = 213;
+	m_eep.rfFrqBuff[74] = 237;
+	m_eep.rfFrqBuff[75] = 259;
+	m_eep.rfFrqBuff[76] = 279;
+	m_eep.rfFrqBuff[77] = 290;
+
+}
 
 void Rf_TD_BLS002_Table_Auto_frQ()// 주파수 바꿔가면서 가장 출력이 높은 주파수
 {
@@ -2172,7 +2272,7 @@ int compare_32(const void *a, const void *b)    // 오름차순 비교 함수 (uint32_t 
 }
 
 
-int wattDa = 140;
+int wattDa = 0;
 int trandu = 0;
 int tranduOut = 6;
 
@@ -2233,7 +2333,7 @@ void AutoCal_Config()
 	memset(m_rf.FeedBackWBuff, 0, sizeof(m_rf.FeedBackWBuff));
 	m_rf.FeedBackCnt = 0;
 
-	if(wattDa<200)
+	if(wattDa<300)
 	{
 		wattDa += 2 ;
 	}
@@ -2248,6 +2348,7 @@ void AutoCal_Config()
 
 	Tx_RF_Watt_Module(trandu, wattDa);
 
+	//for(int i =0 ;i < 5;i++)
 	for(int i =0 ;i < 1;i++)
 	{
 		AutoCal_Tx_IP_Msg();//아이들 0,2,4,6,8,
@@ -2266,25 +2367,29 @@ void AutoCal_Config()
 
 	qsortBuff[0] = m_rf.FeedBackWBuff[1] +(-1*m_rf.FeedBackWBuff[0]);
 	printf("%d \r\n",qsortBuff[0]);
+#if 0
+	qsortBuff[1] = m_rf.FeedBackWBuff[3] +(-1*m_rf.FeedBackWBuff[2]);
+	printf("%d ",qsortBuff[1]);
 
-//	qsortBuff[1] = m_rf.FeedBackWBuff[3] +(-1*m_rf.FeedBackWBuff[2]);
-//	printf("%d ",qsortBuff[1]);
+	qsortBuff[2] = m_rf.FeedBackWBuff[5] +(-1*m_rf.FeedBackWBuff[4]);
+	printf("%d ",qsortBuff[2]);
 
-//	qsortBuff[2] = m_rf.FeedBackWBuff[5] +(-1*m_rf.FeedBackWBuff[4]);
-//	printf("%d ",qsortBuff[2]);
+	qsortBuff[3] = m_rf.FeedBackWBuff[7] +(-1*m_rf.FeedBackWBuff[6]);
+	printf("%d ",qsortBuff[3]);
 
-//	qsortBuff[3] = m_rf.FeedBackWBuff[7] +(-1*m_rf.FeedBackWBuff[6]);
-//	printf("%d ",qsortBuff[3]);
+	qsortBuff[4] = m_rf.FeedBackWBuff[9] +(-1*m_rf.FeedBackWBuff[8]);
+	printf("%d ",qsortBuff[4]);
 
-//	qsortBuff[4] = m_rf.FeedBackWBuff[9] +(-1*m_rf.FeedBackWBuff[8]);
-//	printf("%d ",qsortBuff[4]);
-
-//	avg = AutoCal_Avg();
+	avg = AutoCal_Avg();
+#else
 	avg = qsortBuff[0];
-	if(avg>wattBuff[m_rf.autoCalWattLevel])
+#endif
+
+	if(avg >= wattBuff[m_rf.autoCalWattLevel])
 	{
 		add = (CMD_TRANDU_WATT_BASE + trandu*11 +m_rf.autoCalWattLevel+1);
-		Tx_LCD_Msg(add, wattDa);
+		Tx_LCD_Msg(add, wattDa-1);
+		wattDa += 16;
 
 		m_rf.autoCalWattLevel++;
 		if(m_rf.autoCalWattLevel == 10)
@@ -2373,7 +2478,7 @@ void AutoCal_Config_test()
   m_rf.autoCalFlag = 0;
 
 }
-void AutoCal_Config_test2()
+void AutoCal_Config_100ms()// 100ms  마다 읽는
 {
   int wattLongBuff[60] ={0,};
   int wattDaBuff[7] = {127, 126, 124, 136, 134, 120, 134};
@@ -2457,7 +2562,7 @@ void AutoCal_Config_test2()
 
 
 
-void AutoCal_Config_test3()
+void AutoCal_Config_1watt()
 {
 	uint8_t wattBuff[10] = {10, 20, 30, 40, 50, 60 , 70, 80 , 90, 100};
 	int avg = 0;
@@ -2496,19 +2601,6 @@ void AutoCal_Config_test3()
 	qsortBuff[0] = m_rf.FeedBackWBuff[1] +(-1*m_rf.FeedBackWBuff[0]);
 	printf("%d\r\n",qsortBuff[0]);
 
-//	qsortBuff[1] = m_rf.FeedBackWBuff[3] +(-1*m_rf.FeedBackWBuff[2]);
-//	printf("%d ",qsortBuff[1]);
-
-//	qsortBuff[2] = m_rf.FeedBackWBuff[5] +(-1*m_rf.FeedBackWBuff[4]);
-//	printf("%d ",qsortBuff[2]);
-
-//	qsortBuff[3] = m_rf.FeedBackWBuff[7] +(-1*m_rf.FeedBackWBuff[6]);
-//	printf("%d ",qsortBuff[3]);
-
-//	qsortBuff[4] = m_rf.FeedBackWBuff[9] +(-1*m_rf.FeedBackWBuff[8]);
-//	printf("%d ",qsortBuff[4]);
-
-//	avg = AutoCal_Avg();
 
 	avg = qsortBuff[0];
 
@@ -2837,7 +2929,7 @@ void Rf_Config()
 #if 1
 	LCD_Status_Tret();
 	Exp_Config();
-	AutoCal_Config_test3();
+	AutoCal_Config();
 	RF_Borad_FeedBack_Test();
 
 #else

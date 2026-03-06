@@ -450,6 +450,35 @@ void Debug_Rx_Parssing(uint8_t add, uint32_t data)
 			Debug_Printf("CMD_WATT_FEEDBACK START",1);
 		break;
 
+		case CMD_BODY_LED_TEST:
+			switch (data)
+			{
+				case 0:
+					HANDLE_LED_RED_OFF();//1 boot
+					HANDLE_LED_GREED_OFF();//2 err
+					HANDLE_LED_BLUE_OFF();//3 shot
+				break;
+
+				case 1:
+					HANDLE_LED_RED_ON();//1 boot
+					HANDLE_LED_GREED_OFF();//2 err
+					HANDLE_LED_BLUE_OFF();//3 shot
+				break;
+
+				case 2:
+					HANDLE_LED_RED_OFF();//1 boot
+					HANDLE_LED_GREED_ON();//2 err
+					HANDLE_LED_BLUE_OFF();//3 shot
+				break;
+
+				case 3:
+					HANDLE_LED_RED_OFF();//1 boot
+					HANDLE_LED_GREED_OFF();//2 err
+					HANDLE_LED_BLUE_ON();//3 shot
+				break;
+			}
+		break;
+
 
 		case CMD_FRQ_CH0:
 			m_rf.rfFrqBuff[RF_FRQ_CH0] = data;

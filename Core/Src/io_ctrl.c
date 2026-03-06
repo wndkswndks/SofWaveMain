@@ -281,15 +281,9 @@ void HP_Insert_Config(uint8_t delEn)
 	{
 		if(delEn)HAL_Delay(1000);
 		HP1_Pwr_ON();
-		HAL_Delay(20);
+		HAL_Delay(5);
 
 		SOL1_ON();
-		HAL_Delay(20);
-
-		WaterPump_Pwr_ON();
-		HAL_Delay(20);
-
-		Ciller_Pwr_ON();//나중에 플로우 값 정상들어와야지 켜지게 하기
 		m_io.hp1CoolOk = 1;
 	}
 }
@@ -332,6 +326,10 @@ void IO_Init()
     BUZZER_L();
 
 //	BUFFER_ON_L();
+
+	WaterPump_Pwr_ON();
+	HAL_Delay(5);
+	Ciller_Pwr_ON();//나중에 플로우 값 정상들어와야지 켜지게 하기
 
 	HP_Insert_Config(0);
 
