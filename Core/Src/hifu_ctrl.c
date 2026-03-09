@@ -2857,7 +2857,12 @@ void Exp_Nomal_Config()
 	uint16_t totalEenerge;
 
 	static uint8_t step = STEP0;
-	if(m_rf.readyFlag != READY_ON) return;
+	if(m_rf.readyFlag != READY_ON)
+	{
+		if(testExpFlag)testExpFlag = 0;
+		return;
+	}
+
 
 	switch (step)
 	{

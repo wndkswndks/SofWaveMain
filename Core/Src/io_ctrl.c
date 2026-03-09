@@ -25,11 +25,12 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
 	if(GPIO_Pin == FLOWSENSOR_OUT_Pin)
 	{
-		timeTerm = HAL_GetTick()-timeStamp;
-		m_io.flowSensorFrq = (1000.0f) / (float)timeTerm;
+		m_io.flowTimeTerm = HAL_GetTick()-timeStamp;
+		m_io.flowSensorFrq = (1000.0f) / (float)m_io.flowTimeTerm;
 		m_io.LperSec = Get_X_From_Y(m_io.flowSensorFrq);
 
 		timeStamp = HAL_GetTick();
+		m_io.flowPulseCnt++;
 
 	}
 }
@@ -38,11 +39,13 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 void SOL1_ON()
 {
 	CON_SOL1_ON_GPIO_Port_H();
+	Debug_Printf("SOL1_ON",1);
 	m_io.sol1On= 1;
 }
 void SOL1_OFF()
 {
 	CON_SOL1_ON_GPIO_Port_L();
+	Debug_Printf("SOL1_OFF",1);
 	m_io.sol1On= 0;
 }
 
@@ -50,64 +53,70 @@ void SOL1_OFF()
 void RF_Pwr_ON()
 {
 	RF_PWR_EN_H();
+	Debug_Printf("RF_Pwr_ON",1);
 	m_io.rfPwrEn = 1;
 }
 void RF_Pwr_OFF()
 {
 	RF_PWR_EN_L();
+	Debug_Printf("RF_Pwr_OFF",1);
 	m_io.rfPwrEn = 0;
 }
 
 void HP1_Pwr_ON()
 {
 	HP1_PWR_EN_H();
+	Debug_Printf("HP1_Pwr_ON",1);
 	m_io.HP1PwrEn = 1;
 }
 
 void HP1_Pwr_OFF()
 {
 	HP1_PWR_EN_L();
+	Debug_Printf("HP1_Pwr_OFF",1);
 	m_io.HP1PwrEn = 0;
 }
 
 void HP2_Pwr_ON()
 {
 	HP2_PWR_EN_H();
+	Debug_Printf("HP2_Pwr_ON",1);
 	m_io.HP2PwrEn = 1;
 }
 void HP2_Pwr_OFF()
 {
 	HP2_PWR_EN_L();
+	Debug_Printf("HP2_Pwr_OFF",1);
 	m_io.HP2PwrEn = 1;
 }
 
 void WaterPump_Pwr_ON()
 {
 	WATER_PUMP_PWR_EN_H();
-	m_io.waterPumpPwrEn = 1;
 	Debug_Printf("PUMP ON",1);
+	m_io.waterPumpPwrEn = 1;
 }
 
 void WaterPump_Pwr_OFF()
 {
 	WATER_PUMP_PWR_EN_L();
-	m_io.waterPumpPwrEn = 0;
 	Debug_Printf("PUMP OFF",1);
+	m_io.waterPumpPwrEn = 0;
 }
 
 
 void Ciller_Pwr_ON()
 {
 	CILLER_PWR_ON_GPIO_Port_H();
-	m_io.ChillerPwrEn = 1;
 	Debug_Printf("Ciller ON",1);
+	m_io.ChillerPwrEn = 1;
 }
 
 void Ciller_Pwr_OFF()
 {
 	CILLER_PWR_ON_GPIO_Port_L();
-	m_io.ChillerPwrEn = 0;
 	Debug_Printf("Ciller OFF",1);
+	m_io.ChillerPwrEn = 0;
 }
 
 void MP3_PLAY_ON(uint8_t num)
@@ -282,8 +291,8 @@ void HP_Insert_Config(uint8_t delEn)
 		if(delEn)HAL_Delay(1000);
 		HP1_Pwr_ON();
 		HAL_Delay(5);
+		if(m_eep.catridgeDetect == CATRIGE_DETECT) SOL1_ON();
 
-		SOL1_ON();
 		m_io.hp1CoolOk = 1;
 	}
 }
@@ -317,6 +326,61 @@ void Level_Check()
 		}
 	}
 
+
+}
+
+uint8_t IO_ErrCnt_Chk(uint8_t BooL, uint8_t idx )
+{
+	static uint8_t cntBuff[10];
+	uint8_t eventOn = 0;
+
+	if(idx >= 10) return 0;
+
+	if(BooL)
+	{
+		 if(cntBuff[idx] < 10) cntBuff[idx]++;
+	}
+	else cntBuff[idx] = 0;
+
+	if(cntBuff[idx] >= 10)
+	{
+		cntBuff[idx] = 0;
+		eventOn = 1;
+	}
+
+	return eventOn;
+}
+void Flow_Stop_Check()
+{
+
+	uint8_t is_flowOk = (3<m_io.flowSensorFrq&&m_io.flowSensorFrq<10);
+	static uint32_t preFlowCnt;
+	static uint32_t timeStamp;
+	uint8_t flowErr = 0;
+	static uint8_t flowErrAccu;
+	if(HAL_GetTick()-timeStamp >= 100)
+	{
+
+		timeStamp = HAL_GetTick();
+
+		if(IO_ErrCnt_Chk((preFlowCnt == m_io.flowPulseCnt), 0))flowErr++;
+		if(IO_ErrCnt_Chk((!is_flowOk), 1))flowErr++;
+		preFlowCnt = m_io.flowPulseCnt;
+
+		if(!flowErrAccu &&flowErr)
+		{
+			if(m_io.sol1On)
+			{
+				SOL1_OFF();
+			}
+			else
+			{
+				flowErrAccu = 1;
+				Ciller_Pwr_OFF();//나중에 플로우 값 정상들어와야지 켜지게 하기
+				WaterPump_Pwr_OFF();
+			}
+		}
+	}
 
 }
 void IO_Init()
@@ -389,7 +453,6 @@ void RTC_Config(void)
 
 void IO_Config()
 {
-	uint8_t is_flowOk = (5<m_io.flowSensorFrq&&m_io.flowSensorFrq<10);
 	uint8_t is_pumpOn = (m_io.waterPumpPwrEn == 1);
 	uint8_t is_cillerOn = (m_io.ChillerPwrEn == 1);
 
@@ -397,6 +460,7 @@ void IO_Config()
 
 //	Level_Check();
 
+	Flow_Stop_Check();
 
 	HP_Insert_Config(1);
 

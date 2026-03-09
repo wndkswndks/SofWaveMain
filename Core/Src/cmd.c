@@ -428,6 +428,10 @@ void Debug_Rx_Parssing(uint8_t add, uint32_t data)
 			else Debug_Printf("Autocal End",1);
 
 		break;
+		case CMD_DO_ALL_LIVE:
+			Tx_Hand1_Msg(CMD_DO_ALL_LIVE, 0);
+		break;
+
 
 
 		case CMD_DEBUG_PUMP:
@@ -479,6 +483,9 @@ void Debug_Rx_Parssing(uint8_t add, uint32_t data)
 			}
 		break;
 
+		case CMD_DEBUG_VIBE:
+			Tx_Hand1_Msg(CMD_DEBUG_VIBE, data);
+		break;
 
 		case CMD_FRQ_CH0:
 			m_rf.rfFrqBuff[RF_FRQ_CH0] = data;
@@ -1018,6 +1025,8 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 			m_rf.vibeLevel++;
 			m_rf.vibeLevel %= 5;
 			Tx_LCD_Msg(CMD_VIBE_LEVEL, m_rf.vibeLevel);
+
+			Tx_Hand1_Msg(CMD_DEBUG_VIBE, m_rf.vibeLevel);
 		break;
 
 
@@ -1111,6 +1120,12 @@ void Hand_Rx_Parssing(uint8_t add, uint32_t data, uint32_t data2, uint32_t data3
 				Tx_LCD_Msg(CMD_MANUFAC_DD, data);
 			break;
 
+			case CMD_LCD_EXP:
+				testExpFlag = 1;
+				Debug_Printf("EXP_HAND",1);
+			break;
+
+
 			case CMD_ISSUED_YY:
 				m_eep.issuedYY = data;
 				Tx_LCD_Msg(CMD_ISSUED_YY, data);
@@ -1179,6 +1194,8 @@ void Hand_Rx_Parssing(uint8_t add, uint32_t data, uint32_t data2, uint32_t data3
 //				{
 //					if(!m_eep.rfWattBuff[i])eepErr++;
 //				}
+				eepErr = 0;
+
 				if(eepErr==0)
 				{
 					LCD_Init();

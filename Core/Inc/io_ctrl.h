@@ -220,6 +220,8 @@ typedef struct
 {
 	float flowSensorFrq;
 	float LperSec;
+	uint32_t flowTimeTerm;
+	uint32_t flowPulseCnt;
 	uint8_t ChillerPwrEn;
 	uint8_t waterPumpPwrEn;
 	uint8_t HP1PwrEn;
