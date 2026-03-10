@@ -353,7 +353,9 @@ uint8_t IO_ErrCnt_Chk(uint8_t BooL, uint8_t idx )
 void Flow_Stop_Check()
 {
 
-	uint8_t is_flowOk = (3<m_io.flowSensorFrq&&m_io.flowSensorFrq<10);
+//	uint8_t is_flowOk = (3<m_io.flowSensorFrq&&m_io.flowSensorFrq<10);
+	uint8_t is_flowOk = (3<m_io.flowSensorFrq);
+
 	static uint32_t preFlowCnt;
 	static uint32_t timeStamp;
 	uint8_t flowErr = 0;
