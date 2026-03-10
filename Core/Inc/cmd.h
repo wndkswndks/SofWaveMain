@@ -102,14 +102,18 @@ typedef enum
 	CMD_TEST_FORCE_PAGE_CHANGE = 75,
 	CMD_TEMP_DUTY_ON = 76,
 
+	CMD_INFO_UI_FW = 77,
+	CMD_INFO_MAIN_FW = 78,
+	CMD_INFO_HP_FW = 79,
+	CMD_INFO_RF_FW = 80,
+	CMD_PWM_DUTY = 81,
+	CMD_TEMPERATURE= 82,
+
 	CMD_LCD_EXP = 85,
 	CMD_LCD_AUTO_CAL = 87,
 	CMD_PULSE_TRIGER = 88,
 	CMD_INFO_UI_DESING = 89,
-	CMD_INFO_UI_FW = 90,
-	CMD_INFO_MAIN_FW = 91,
-	CMD_INFO_HP_FW = 92,
-	CMD_INFO_RF_FW = 93,
+
 
 
 	CMD_RF_ALL_SETTING = 188,
@@ -243,7 +247,12 @@ typedef enum
 	DEBUG_GEN = 4,
 	DEBUG_LCD = 5,
 
+	IDX_RX_CMD = 0,
+	IDX_RX_DATA = 1,
 } UART_E;
+
+
+
 /*  			enum end  				*/
 
 
@@ -255,17 +264,14 @@ typedef struct
 	uint8_t rxViewBuff[RX_BUFF_SIZE];
 	uint16_t rxViewCnt;
 	uint16_t rxCnt;
-	int rxCmdAdd[10];
-	int rxCmdData[10];
-	int rxCmdData2[10];
-	int rxCmdData3[10];
-	int rxCmdData4[10];
-	uint8_t rxCmdRingCnt;
+	int rxCmdAdd;
+	int rxCmdData;
+	int rxRingBuff[RX_BUFF_SIZE][2];
+	uint8_t rxRingCnt;
 	uint16_t rxCmdChk;
-	uint8_t clearFlag1;
-	uint8_t clearFlag2;
-	uint8_t startFlag;
-	uint8_t endFlag;
+	uint8_t rxStep;
+	uint32_t traceBuff[10];
+
 
 } UART_T;
 
@@ -307,6 +313,11 @@ void Debug_Tx_RF_Frq_Printf(uint8_t ch, uint16_t frq);
 void Debug_Tx_RF_Watt_Printf(uint8_t ch, uint16_t watt);
 void Debug_Tx_RF_All_Zero_Watt_Printf();
 void Debug_Printf(char* str, uint8_t cr);
+
+void LCD_Rx_Parssing(uint8_t add, uint32_t data);
+void Hand_Rx_Parssing(uint8_t add, uint32_t data);
+void Debug_Rx_Parssing(uint8_t add, uint32_t data);
+
 
 /*  			extern start  			*/
 

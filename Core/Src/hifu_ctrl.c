@@ -1436,18 +1436,6 @@ void Error_Check_Config()
 }
 
 
-void Hand1_Poling_Ctrl(int add, int data1, int data2, int data3, int data4)
-{
-
-	if(add != CMD_HP1_ADD)return;
-
-	m_hand1.mode = data1;
-	m_hand1.pwmDuty = data2;
-	m_hand1.temprature = data3;
-	m_hand1.ioStatus = data4;
-
-}
-
 void RF_Watt_All_Calculate()
 {
 	int idx;

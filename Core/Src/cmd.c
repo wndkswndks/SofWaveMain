@@ -43,43 +43,18 @@ int __io_putchar(int ch)
 }
 
 #endif
-uint8_t Uart_RxBuff_Get(UART_T* uart, uint8_t data,char startChar, char endChar)
-{
-	if(data ==startChar)
-	{
-		uart->rxCnt = 0;
-		uart->startFlag = 1;
-		memset(uart->rxBuff, 0, RX_BUFF_SIZE);
-	}
-	else if(uart->startFlag &&data ==endChar)
-	{
-		uart->endFlag = 1;
-	}
-	if(uart->startFlag)
-	{
-		uart->rxBuff[uart->rxCnt] = data;
-		uart->rxCnt++;
-		uart->rxCnt %= RX_BUFF_SIZE;
-	}
-
-	if(uart->startFlag&&uart->endFlag)
-	{
-		uart->startFlag = 0;
-		uart->endFlag = 0;
-		return 1;
-	}
-	else
-	{
-		return 0;
-	}
-
-}
 
 
 void Rx_BuffClear(UART_T *uart)
 {
 	memset(uart->rxBuff,0,RX_BUFF_SIZE);
 	uart->rxCnt = 0;
+}
+void Uart_Clear_Rx_Ring(UART_T* uart, uint8_t idx)
+{
+	uart->rxRingBuff[idx][IDX_RX_CMD] = 0;
+	uart->rxRingBuff[idx][IDX_RX_DATA] = 0;
+	uart->rxCmdChk &= ~(1<<idx);
 }
 
 void Debug_Printf(char* str, uint8_t cr)
@@ -1071,20 +1046,17 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 }
 
 
-void Hand_Rx_Parssing(uint8_t add, uint32_t data, uint32_t data2, uint32_t data3, uint32_t data4 )
+void Hand_Rx_Parssing(uint8_t add, uint32_t data)
 {
 	if(add !=0)
 	{
-		if(add != CMD_HP1_ADD)
-		{
-			Debug_HAND_Printf(DEBUG_RX, add, data);
-		}
+		Debug_HAND_Printf(DEBUG_RX, add, data);
+
 		switch (add)
 		{
 			case CMD_HP1_ADD:
 				m_err.handTimeout = 0;
 				m_err.handComuErr = 0;
-				Hand1_Poling_Ctrl(CMD_HP1_ADD,data, data2, data3, data4);
 			break;
 
 			case CMD_CART_ID:
@@ -1176,6 +1148,17 @@ void Hand_Rx_Parssing(uint8_t add, uint32_t data, uint32_t data2, uint32_t data3
 				//占쌍억옙占쏙옙占?
 			break;
 
+			case CMD_TEMPERATURE:
+				m_hand1.temprature = data;
+
+			break;
+
+			case CMD_PWM_DUTY:
+				m_hand1.pwmDuty = data;
+			break;
+
+
+
 			case CMD_GET_ALL_CART_END:
 				uint8_t eepErr = 0;
 				if(!m_eep.catridgeId)eepErr++;
@@ -1252,16 +1235,21 @@ void Hand_Rx_Parssing(uint8_t add, uint32_t data, uint32_t data2, uint32_t data3
 
 void UartRx1DataProcess()
 {
+	int cmd;
+	int data;
 	if(m_uart1.rxCmdChk == 0x0000)return;
 
-	for(int i =0 ;i < 10;i++)
+	for(int i =0 ;i < RX_BUFF_SIZE;i++)
 	{
-		if(m_uart1.rxCmdAdd[i] !=0)
+		if(m_uart1.rxRingBuff[i][IDX_RX_CMD] !=0)
 		{
-			Debug_Rx_Parssing(m_uart1.rxCmdAdd[i],m_uart1.rxCmdData[i]);
-			m_uart1.rxCmdAdd[i] = 0;
-			m_uart1.rxCmdData[i] = 0;
-			m_uart1.rxCmdChk &= ~(1<<i);
+			cmd = m_uart1.rxRingBuff[i][IDX_RX_CMD];
+			data = m_uart1.rxRingBuff[i][IDX_RX_DATA];
+			m_uart1.traceBuff[5]++;
+			Debug_Rx_Parssing(cmd, data);
+
+			Uart_Clear_Rx_Ring(&m_uart1, i);
+
 		}
 
 	}
@@ -1269,19 +1257,21 @@ void UartRx1DataProcess()
 
 void UartRx2DataProcess()
 {
-	if(m_uart2.rxCmdChk == 0x0000)return;
-	for(int i =0 ;i < 10;i++)
-	{
-		if(m_uart2.rxCmdAdd[i] !=0)
-		{
-			Hand_Rx_Parssing(m_uart2.rxCmdAdd[i], m_uart2.rxCmdData[i], m_uart2.rxCmdData2[i], m_uart2.rxCmdData3[i], m_uart2.rxCmdData4[i]);
+	int cmd;
+	int data;
 
-			m_uart2.rxCmdAdd[i] = 0;
-			m_uart2.rxCmdData[i] = 0;
-			m_uart2.rxCmdData2[i] = 0;
-			m_uart2.rxCmdData3[i] = 0;
-			m_uart2.rxCmdData4[i] = 0;
-			m_uart2.rxCmdChk &= ~(1<<i);
+	if(m_uart2.rxCmdChk == 0x0000)return;
+	for(int i =0 ;i < RX_BUFF_SIZE;i++)
+	{
+		if(m_uart2.rxRingBuff[i][IDX_RX_CMD] !=0)
+		{
+			cmd = m_uart2.rxRingBuff[i][IDX_RX_CMD];
+			data = m_uart2.rxRingBuff[i][IDX_RX_DATA];
+			m_uart2.traceBuff[5]++;
+			Hand_Rx_Parssing(cmd, data);
+			Uart_Clear_Rx_Ring(&m_uart2, i);
+
+
 		}
 	}
 }
@@ -1292,16 +1282,21 @@ void UartRx4DataProcess()
 }
 void UartRx5DataProcess()
 {
+	int cmd;
+	int data;
+
 	if(m_uart5.rxCmdChk == 0x0000)return;
 
-	for(int i =0 ;i < 10;i++)
+	for(int i =0 ;i < RX_BUFF_SIZE;i++)
 	{
-		if(m_uart5.rxCmdAdd[i] !=0)
+		if(m_uart5.rxRingBuff[i][IDX_RX_CMD] !=0)
 		{
-			LCD_Rx_Parssing(m_uart5.rxCmdAdd[i], m_uart5.rxCmdData[i]);
-			m_uart5.rxCmdAdd[i] = 0;
-			m_uart5.rxCmdData[i] = 0;
-			m_uart5.rxCmdChk &= ~(1<<i);
+			cmd = m_uart5.rxRingBuff[i][IDX_RX_CMD];
+			data = m_uart5.rxRingBuff[i][IDX_RX_DATA];
+			m_uart5.traceBuff[5]++;
+			LCD_Rx_Parssing(cmd, data);
+			Uart_Clear_Rx_Ring(&m_uart5, i);
+
 		}
 
 	}
@@ -1371,78 +1366,6 @@ void UartRxDataProcess()
 }
 
 
-
-#if 0
-void Uart_Passing_org(UART_T* uart, uint8_t* ptr)//stm32占쏙옙
-{
-	int i = 0;
-	uint16_t commaCnt = 0;
-	for(i =0 ;i < RX_BUFF_SIZE;i++)
-	{
-		if(uart->rxBuff[i] == ',')commaCnt++;
-	}
-
-	char* ptrStart = strchr((char*)(uart->rxBuff),'[');
-	char* ptrEnd = strrchr ((char*)(uart->rxBuff),']');
-
-	if(ptrStart !=NULL && ptrEnd !=NULL)
-	{
-		if(commaCnt ==4)
-			sscanf(ptr,"[%d,%d,%d,%d,%d]",&(uart->rxCmdAdd),&(uart->rxCmdData),&(uart->rxCmdData2),&(uart->rxCmdData3),&(uart->rxCmdData4));
-		else if(commaCnt ==1)
-			sscanf(ptr,"[%d,%d]",&(uart->rxCmdAdd),&(uart->rxCmdData));
-
-	}
-	else
-	{
-//		ERR_FUC_LINE();
-		printf("%s \r\n",uart->rxBuff);
-	}
-
-	Rx_BuffClear(uart);
-}
-
-#endif
-
-void Uart_Passing(UART_T* uart, uint8_t* ptr)//stm32占쏙옙
-{
-	int i = 0;
-	uint8_t rxRingCnt = 0;
-	uint16_t commaCnt = 0;
-	for(i =0 ;i < RX_BUFF_SIZE;i++)
-	{
-		if(uart->rxBuff[i] == ',')commaCnt++;
-	}
-
-	char* ptrStart = strchr((char*)(uart->rxBuff),'[');
-	char* ptrEnd = strrchr ((char*)(uart->rxBuff),']');
-
-	rxRingCnt = uart->rxCmdRingCnt;
-
-	if(ptrStart !=NULL && ptrEnd !=NULL)
-	{
-		uart->rxCmdChk |= 1<< (uart->rxCmdRingCnt);
-
-		if(commaCnt ==4)
-			sscanf(ptr,"[%d,%d,%d,%d,%d]",&(uart->rxCmdAdd[rxRingCnt]),&(uart->rxCmdData[rxRingCnt]),&(uart->rxCmdData2[rxRingCnt]),&(uart->rxCmdData3[rxRingCnt]),&(uart->rxCmdData4[rxRingCnt]));
-		else if(commaCnt ==1)
-			sscanf(ptr,"[%d,%d]",&(uart->rxCmdAdd[rxRingCnt]),&(uart->rxCmdData[rxRingCnt]));
-
-		if(uart->rxCmdRingCnt< 9)uart->rxCmdRingCnt++;
-		else uart->rxCmdRingCnt = 0;
-
-
-	}
-	else
-	{
-//		ERR_FUC_LINE();
-		printf("%s \r\n",uart->rxBuff);
-	}
-
-	Rx_BuffClear(uart);
-}
-
-
 void Uart3_Passing(uint8_t data)//stm32占쏙옙
 {
 	float FeedBackWtemp;
@@ -1470,22 +1393,10 @@ void Uart3_Passing(uint8_t data)//stm32占쏙옙
 }
 
 
-void Uart_Passing_STX_ETX_Config(UART_T* uart, uint8_t data, char startChar, char endChar)
-{
-	if(Uart_RxBuff_Get(uart, data, startChar, endChar))
-	{
-		Uart_Passing(uart, uart->rxBuff);
-	}
-}
 
-uint8_t ddQ[5];
 void TxTest()
 {
-	if(dd.d1)
-	{
-		dd.d1 = 0;
-		MX_UART5_Init();
-	}
+
 }
 void Uart_RxBuff_View(UART_T* uart, uint8_t data)
 {
@@ -1494,14 +1405,184 @@ void Uart_RxBuff_View(UART_T* uart, uint8_t data)
 }
 
 
-void Uart_ClearCharBuff(uint8_t* buff, uint16_t*cnt, int size)
+void Uart_Simple_Rx_Passing(UART_T* uart, uint8_t rxData)
 {
-	memset(buff, 0, size);
-	*cnt = 0;
+	switch (uart->rxStep)
+	{
+		case STEP0:
+			if(rxData == '[')
+			{
+				uart->rxCmdAdd = 0;
+				uart->rxCmdData  = 0;
+				uart->rxStep = STEP1;
+				uart->traceBuff[0]++;
+			}
+
+		break;
+
+		case STEP1:
+			if('0' <= rxData && rxData <= '9')
+			{
+				rxData = rxData -'0';
+				uart->rxCmdAdd *= 10;
+				uart->rxCmdAdd += rxData;
+				uart->traceBuff[1]++;
+			}
+			else if(rxData == ',')
+			{
+				uart->rxStep = STEP2;
+				uart->traceBuff[2]++;
+			}
+			else
+			{
+				uart->rxStep = STEP0;
+			}
+
+		break;
+
+		case STEP2:
+			if('0' <= rxData && rxData <= '9')
+			{
+				rxData = rxData -'0';
+				uart->rxCmdData *= 10;
+				uart->rxCmdData += rxData;
+				uart->traceBuff[3]++;
+			}
+			else if(rxData == '-')//must start
+			{
+				uart->rxCmdData = -1;
+			}
+			else if(rxData == ']')
+			{
+				uart->rxCmdChk |= (1<< uart->rxRingCnt);
+				uart->rxRingBuff[uart->rxRingCnt][IDX_RX_CMD] = uart->rxCmdAdd;
+				uart->rxRingBuff[uart->rxRingCnt][IDX_RX_DATA] = uart->rxCmdData;
+				uart->rxRingCnt++;
+				uart->rxRingCnt %= RX_BUFF_SIZE;
+				uart->traceBuff[4]++;
+				uart->rxStep = STEP0;
+			}
+			else
+			{
+				uart->rxStep = STEP0;
+			}
+		break;
+
+
+	}
+}
+
+static void UART1_RxRestart(void)
+{
+    // 1) 수신 중단/상태 초기화
+    (void)HAL_UART_AbortReceive_IT(&huart1);
+
+    // 2) 에러 플래그 정리 (ORE/FE/NE/PE 등)
+    __HAL_UART_CLEAR_OREFLAG(&huart1);
+    __HAL_UART_CLEAR_FEFLAG(&huart1);
+    __HAL_UART_CLEAR_NEFLAG(&huart1);
+    __HAL_UART_CLEAR_PEFLAG(&huart1);
+
+    // 3) IDLE 등 라인 상태도 정리(선택)
+    __HAL_UART_CLEAR_IDLEFLAG(&huart1);
+
+    // 4) RX 인터럽트 재가동
+    __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
+    __HAL_UART_ENABLE_IT(&huart1, UART_IT_ERR);
+
+    // 5) 수신 재시작
+    (void)HAL_UART_Receive_IT(&huart1, Rx_data1, 1);
+}
+
+static void UART2_RxRestart(void)
+{
+    // 1) 수신 중단/상태 초기화
+    (void)HAL_UART_AbortReceive_IT(&huart2);
+
+    // 2) 에러 플래그 정리 (ORE/FE/NE/PE 등)
+    __HAL_UART_CLEAR_OREFLAG(&huart2);
+    __HAL_UART_CLEAR_FEFLAG(&huart2);
+    __HAL_UART_CLEAR_NEFLAG(&huart2);
+    __HAL_UART_CLEAR_PEFLAG(&huart2);
+
+    // 3) IDLE 등 라인 상태도 정리(선택)
+    __HAL_UART_CLEAR_IDLEFLAG(&huart2);
+
+    // 4) RX 인터럽트 재가동
+    __HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
+    __HAL_UART_ENABLE_IT(&huart2, UART_IT_ERR);
+
+    // 5) 수신 재시작
+    (void)HAL_UART_Receive_IT(&huart2, Rx_data2, 1);
+}
+
+static void UART3_RxRestart(void)
+{
+    // 1) 수신 중단/상태 초기화
+    (void)HAL_UART_AbortReceive_IT(&huart3);
+
+    // 2) 에러 플래그 정리 (ORE/FE/NE/PE 등)
+    __HAL_UART_CLEAR_OREFLAG(&huart3);
+    __HAL_UART_CLEAR_FEFLAG(&huart3);
+    __HAL_UART_CLEAR_NEFLAG(&huart3);
+    __HAL_UART_CLEAR_PEFLAG(&huart3);
+
+    // 3) IDLE 등 라인 상태도 정리(선택)
+    __HAL_UART_CLEAR_IDLEFLAG(&huart3);
+
+    // 4) RX 인터럽트 재가동
+    __HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
+    __HAL_UART_ENABLE_IT(&huart3, UART_IT_ERR);
+
+    // 5) 수신 재시작
+    (void)HAL_UART_Receive_IT(&huart3, Rx_data3, 1);
 }
 
 
+static void UART4_RxRestart(void)
+{
+    // 1) 수신 중단/상태 초기화
+    (void)HAL_UART_AbortReceive_IT(&huart4);
 
+    // 2) 에러 플래그 정리 (ORE/FE/NE/PE 등)
+    __HAL_UART_CLEAR_OREFLAG(&huart4);
+    __HAL_UART_CLEAR_FEFLAG(&huart4);
+    __HAL_UART_CLEAR_NEFLAG(&huart4);
+    __HAL_UART_CLEAR_PEFLAG(&huart4);
+
+    // 3) IDLE 등 라인 상태도 정리(선택)
+    __HAL_UART_CLEAR_IDLEFLAG(&huart4);
+
+    // 4) RX 인터럽트 재가동
+    __HAL_UART_ENABLE_IT(&huart4, UART_IT_RXNE);
+    __HAL_UART_ENABLE_IT(&huart4, UART_IT_ERR);
+
+    // 5) 수신 재시작
+    (void)HAL_UART_Receive_IT(&huart4, Rx_data4, 1);
+}
+
+
+static void UART5_RxRestart(void)
+{
+    // 1) 수신 중단/상태 초기화
+    (void)HAL_UART_AbortReceive_IT(&huart5);
+
+    // 2) 에러 플래그 정리 (ORE/FE/NE/PE 등)
+    __HAL_UART_CLEAR_OREFLAG(&huart5);
+    __HAL_UART_CLEAR_FEFLAG(&huart5);
+    __HAL_UART_CLEAR_NEFLAG(&huart5);
+    __HAL_UART_CLEAR_PEFLAG(&huart5);
+
+    // 3) IDLE 등 라인 상태도 정리(선택)
+    __HAL_UART_CLEAR_IDLEFLAG(&huart5);
+
+    // 4) RX 인터럽트 재가동
+    __HAL_UART_ENABLE_IT(&huart5, UART_IT_RXNE);
+    __HAL_UART_ENABLE_IT(&huart5, UART_IT_ERR);
+
+    // 5) 수신 재시작
+    (void)HAL_UART_Receive_IT(&huart5, Rx_data5, 1);
+}
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
@@ -1510,14 +1591,14 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	 {
 		HAL_UART_Receive_IT(&huart1, Rx_data1, 1);
 		Uart_RxBuff_View(&m_uart1, Rx_data1[0]);
-		Uart_Passing_STX_ETX_Config(&m_uart1, Rx_data1[0],'[', ']');//lcdtemp test
+		Uart_Simple_Rx_Passing(&m_uart1, Rx_data1[0]);
 
 	 }
 	 else if (huart == &huart2)
 	 {
 		HAL_UART_Receive_IT(&huart2, Rx_data2, 1);
 		Uart_RxBuff_View(&m_uart2, Rx_data2[0]);
-		 Uart_Passing_STX_ETX_Config(&m_uart2, Rx_data2[0],'[', ']');
+		Uart_Simple_Rx_Passing(&m_uart2, Rx_data2[0]);
 	 }
 	 else if (huart == &huart3)
 	 {
@@ -1536,12 +1617,43 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	 {
 		HAL_UART_Receive_IT(&huart5, Rx_data5, 1);
 		Uart_RxBuff_View(&m_uart5, Rx_data5[0]);
-	 	Uart_Passing_STX_ETX_Config(&m_uart5, Rx_data5[0],'[', ']');
+		Uart_Simple_Rx_Passing(&m_uart5, Rx_data5[0]);
 	 }
 
 }
 
 
+uint16_t uart1ErrCnt, uart2ErrCnt, uart3ErrCnt, uart4ErrCnt, uart5ErrCnt;
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+{
+    if(huart->Instance == USART1)
+    {
+    	uart1ErrCnt++;
+        UART1_RxRestart();
+    }
+
+    if(huart->Instance == USART2)
+    {
+    	uart2ErrCnt++;
+    	UART2_RxRestart();
+    }
+    if(huart->Instance == USART3)
+    {
+    	uart3ErrCnt++;
+    	UART3_RxRestart();
+    }
+    if(huart->Instance == UART4)
+    {
+    	uart4ErrCnt++;
+    	UART4_RxRestart();
+    }
+    if(huart->Instance == UART5)
+    {
+    	uart5ErrCnt++;
+    	UART5_RxRestart();
+    }
+
+}
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)//485
 {
@@ -1552,23 +1664,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)//485
 
 }
 
-extern uint32_t readRfidID;
-void Uart_Gulobal()
-{
-	if(m_uart2.clearFlag1)
-	{
-		m_uart2.clearFlag1 = 0;
-		Uart_ClearCharBuff(m_uart2.rxBuff,&m_uart2.rxCnt ,RX_BUFF_SIZE);
-	}
 
-	if(m_uart2.clearFlag2)
-	{
-		m_uart2.clearFlag2 = 0;
-		Uart_ClearCharBuff(m_uart2.rxViewBuff,&m_uart2.rxViewCnt ,RX_BUFF_SIZE);
-	}
-
-
-}
 
 
 

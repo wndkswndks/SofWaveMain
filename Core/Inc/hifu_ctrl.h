@@ -580,14 +580,11 @@ void Rx_RF_Get(uint8_t getData);
 void Rf_Init();
 void RF_Eg_Exp_Conter();
 
-void LCD_Rx_Parssing(uint8_t add, uint32_t data);
-void Hand_Rx_Parssing(uint8_t add, uint32_t data, uint32_t data2, uint32_t data3, uint32_t data4);
-void Debug_Rx_Parssing(uint8_t add, uint32_t data);
+
 void RF_Rx_Parssing(uint8_t rxID);
 
 void HP1_Tx_Msg(uint8_t add, uint16_t data);
 void Hand_Init();
-void Hand1_Poling_Ctrl(int add, int data1, int data2, int data3, int data4);
 void TX_RF_Max_Ontime_Set();
 void Tx_RF_GenStatus_Check();
 void Tx_RF_FeedBack_Check();

@@ -685,7 +685,6 @@ void ddbugConfig()
 #endif
 
 #if 1
-	Uart_Gulobal();
 #endif
 
 
