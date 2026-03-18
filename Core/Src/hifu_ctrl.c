@@ -881,6 +881,7 @@ ACal 6 104 -> 98 96 96 97 121 avg : 102
 
 void Rf_Init()
 {
+	HP1_Pwr_ON();
 	m_rf.pluseOn = 0;
 	m_rf.pluseLevel = 0;
 	m_rf.pluseTimeStamp = HAL_GetTick();
@@ -926,10 +927,17 @@ void Rf_Init()
 void Hand_Init()//
 {
 	m_eep.catridgeDetectPre = CATRIGE_DETECT;
-	m_eep.catridgeDetect = CATRIGE_DETECT;
+
 	m_eep.cartAllow = 1;// temp
 	m_hand1.tempDutyEn = 1;
+	Debug_Printf("HP1_CATRIGE_DETECT INIT",1);
+
 }
+
+
+
+
+
 void LCD_Init()
 {
 	HAL_Delay(500);
@@ -954,6 +962,7 @@ void LCD_Init()
 	Tx_LCD_Msg(CMD_TEST_PULSE, m_rf.testPulseOption);
 
 	Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_STNBY);
+	m_rf.switchHandFoot = SWITCH_HAND;
 
 }
 void LCD_Max_Init()
@@ -2838,7 +2847,33 @@ void CurrentEnergy_Cal()
 
 }
 
+uint8_t Exp_Shot_Chk()
+{
+	if(m_rf.switchHandFoot == SWITCH_HAND)
+	{
+		if (IS_HP1_SHOT_PUSH())
+		{
 
+		}
+		else
+		{
+
+		}
+
+	}
+	else if(m_rf.switchHandFoot == SWITCH_FOOT)
+	{
+		if (IS_HP1_SHOT_PUSH())
+		{
+
+		}
+		else
+		{
+
+		}
+	}
+
+}
 
 void Exp_Nomal_Config()
 {

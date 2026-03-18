@@ -108,9 +108,10 @@ int main(void)
   LCD_Init();
   Test_Init();
   RTC_Init();
-  Eeprom_All_Read();
+
   Err_Init();
 
+//  HAL_Delay(5000);
 
 
   /* USER CODE END 2 */
@@ -127,8 +128,9 @@ int main(void)
 #if 1
 	Rf_Config();
 	UartRxDataProcess();
-	TxTest();
     IO_Config();
+
+
 #else
   Error_Check_Config();
 

@@ -208,6 +208,9 @@ typedef enum
 	PULSE_DISABLE = 0,
 	PULSE_ENABLE = 1,
 
+	SWITCH_HAND = 0,
+	SWITCH_FOOT = 1,
+
 } LCD_NUM_E;
 
 typedef enum
@@ -347,6 +350,11 @@ typedef enum
 
 	CATRIGE_DETECT = 0,
 	CATRIGE_UN_DETECT = 1,
+	CATRIGE_YET_DETECT = 2,
+
+	CATRIGE_UN_INSERT = 0,
+	CATRIGE_INSERT = 1,
+	CATRIGE_YET_INSERT = 2,
 } ERR_CMD_E;
 
 typedef enum
@@ -474,6 +482,7 @@ typedef struct
 	uint8_t feedBackTest;
 	uint16_t remainingShotNegative;
 	uint8_t vibeLevel;
+	uint8_t switchHandFoot;
 } RF_T;
 typedef struct
 {
@@ -491,6 +500,7 @@ typedef struct
 	uint16_t remainingShotNum;
 	uint16_t catridgeStatus;
 	uint16_t catridgeDetect;
+	uint16_t catridgeDetectCome;
 	uint16_t catridgeDetectPre;
 	uint8_t catridgeRxErrCnt;
 	uint8_t cartAllow;

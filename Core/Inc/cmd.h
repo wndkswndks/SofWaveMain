@@ -93,6 +93,8 @@ typedef enum
 	CMD_AGING_BUTTON = 65,
 	CMD_AUTO_EXP = 66,
 	CMD_VIBE_LEVEL = 67,
+	CMD_IS_CATRIDGE    = 68,
+	CMD_HAND_FOOT	 = 69,
 
 	CMD_DO_ALL_LIVE = 70,
 	CMD_GET_ALL_CART = 71,
@@ -108,6 +110,7 @@ typedef enum
 	CMD_INFO_RF_FW = 80,
 	CMD_PWM_DUTY = 81,
 	CMD_TEMPERATURE= 82,
+	CMD_COOLING = 83,
 
 	CMD_LCD_EXP = 85,
 	CMD_LCD_AUTO_CAL = 87,
@@ -128,6 +131,7 @@ typedef enum
 	CMD_WATT_FEEDBACK = 196,
 	CMD_BODY_LED_TEST = 197,
 	CMD_DEBUG_VIBE = 198,
+	CMD_TTTEST = 199,
 
 	CMD_HP1_ADD = 200,
 
@@ -268,7 +272,7 @@ typedef struct
 	int rxCmdData;
 	int rxRingBuff[RX_BUFF_SIZE][2];
 	uint8_t rxRingCnt;
-	uint16_t rxCmdChk;
+	uint32_t rxCmdChk;
 	uint8_t rxStep;
 	uint32_t traceBuff[10];
 

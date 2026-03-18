@@ -429,6 +429,11 @@ void Debug_Rx_Parssing(uint8_t add, uint32_t data)
 			Debug_Printf("CMD_WATT_FEEDBACK START",1);
 		break;
 
+		case CMD_IS_CATRIDGE:
+			Tx_Hand1_Msg(CMD_IS_CATRIDGE, 0);
+			Debug_Printf("CMD_IS_CATRIDGE",1);
+		break;
+
 		case CMD_BODY_LED_TEST:
 			switch (data)
 			{
@@ -496,6 +501,18 @@ void Debug_Rx_Parssing(uint8_t add, uint32_t data)
 			m_rf.rfFrqBuff[RF_FRQ_CH6] = data;
 			Tx_RF_FRQ_Module(RF_FRQ_CH6, data);
 		break;
+		case CMD_TTTEST:
+			if (data)
+			{
+				SOL1_ON();
+			}
+			else
+			{
+				SOL1_OFF();
+			}
+
+		break;
+
 
 		case CMD_AGING_BUTTON:
 			if(data<=30)
@@ -946,15 +963,20 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 
 		case CMD_DO_ALL_LIVE:
 			CMD_Is_All_Live();
+//			Tx_LCD_Msg(CMD_DO_ALL_LIVE, 11);
 		break;
 
 		case CMD_GET_ALL_CART:
 			Tx_Hand1_Msg(CMD_GET_ALL_CART, 0);
+//			Tx_LCD_Msg(CMD_GET_ALL_CART_END, 11);
 		break;
 
 		case CMD_GET_ALL_CART_END:
 			Debug_Printf("lcd all cart Recive",1);
 			Tx_Hand1_Msg(CMD_GET_ALL_CART_END, 0);
+
+
+
 
 		break;
 
@@ -1002,6 +1024,25 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 			Tx_LCD_Msg(CMD_VIBE_LEVEL, m_rf.vibeLevel);
 
 			Tx_Hand1_Msg(CMD_DEBUG_VIBE, m_rf.vibeLevel);
+		break;
+
+		case CMD_HAND_FOOT:
+			if (m_rf.switchHandFoot == SWITCH_HAND)
+			{
+				m_rf.switchHandFoot = SWITCH_FOOT;
+			}
+			else if (m_rf.switchHandFoot == SWITCH_FOOT)
+			{
+				m_rf.switchHandFoot = SWITCH_HAND;
+			}
+			Tx_LCD_Msg(CMD_HAND_FOOT, m_rf.switchHandFoot);
+
+		break;
+
+		case CMD_COOLING:
+			WaterPump_Pwr_ON();
+			HAL_Delay(5);
+			Ciller_Pwr_ON();//나중에 플로우 값 정상들어와야지 켜지게 하기
 		break;
 
 
@@ -1156,6 +1197,20 @@ void Hand_Rx_Parssing(uint8_t add, uint32_t data)
 			case CMD_PWM_DUTY:
 				m_hand1.pwmDuty = data;
 			break;
+
+			case CMD_IS_CATRIDGE:
+				m_eep.catridgeDetect = data;
+				if (m_eep.catridgeDetect == CATRIGE_DETECT)
+				{
+					Debug_Printf("CATRIDGE Detect",1);
+				}
+				else if (m_eep.catridgeDetect == CATRIGE_UN_DETECT)
+				{
+					Debug_Printf("CATRIDGE Undetect",1);
+				}
+				m_eep.catridgeDetectCome = 1;
+			break;
+
 
 
 

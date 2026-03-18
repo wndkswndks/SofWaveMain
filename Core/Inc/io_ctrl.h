@@ -225,6 +225,7 @@ typedef struct
 	uint8_t ChillerPwrEn;
 	uint8_t waterPumpPwrEn;
 	uint8_t HP1PwrEn;
+	uint8_t HP1_Insert;
 	uint8_t HP2PwrEn;
 	uint8_t dipState;
 	uint8_t buzzerOn;
