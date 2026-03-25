@@ -23,6 +23,7 @@
 #include "io_ctrl.h"
 #include "hifu_ctrl.h"
 #include "eeprom.h"
+#include "error_handler.h"
 
 //
 

@@ -276,6 +276,21 @@ void AutoCal_Tx_Z_Msg()
 #endif
 
 }
+void Ready_ON()
+{
+	m_rf.readyFlag = READY_ON;
+
+	 if(m_io.sol1OnStatus) SOL1_ON();
+}
+
+void Ready_OFF()
+{
+	m_rf.treatStatus = STATUS_STNBY;
+	Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_STNBY);
+	m_rf.readyFlag = READY_OFF;
+	SOL1_OFF();
+
+}
 
 void CMD_Is_All_Live()
 {
@@ -319,31 +334,6 @@ void CMD_Is_All_Live()
 
 }
 
-void HP_Cartrige_Check()
-{
-	uint8_t family = 0;
-
-		for(int i =0 ;i < 10;i++)
-		{
-			if(m_eepMain.cartIdBuff[i] == m_eep.catridgeId)
-			{
-				family = 1;
-				break;
-			}
-		}
-
-		if(m_eep.remainingShotNum == 0)
-		{
-			Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CART_EVENT_EXPRATION);
-		}
-		else
-		{
-			if(family) Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CART_EVENT_DETECT);
-			else Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CART_EVENT_DETECT_NEW);
-		}
-		m_eep.catridgeId = 0;
-		m_eep.remainingShotNum = 10000;
-}
 
 //static
 uint8_t agingCnt, updn;
@@ -553,9 +543,8 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 	{
 		if(add != CMD_LCD_STATUS)
 		{
-			m_rf.treatStatus = STATUS_STNBY;
-			m_rf.readyFlag = READY_OFF;
-			Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_STNBY);
+
+			Ready_OFF();
 		}
 	}
 	switch (add)
@@ -898,33 +887,29 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 				Tx_Hand1_Msg(CMD_ISSUED_YY, m_eep.issuedYY);
 				Tx_Hand1_Msg(CMD_ISSUED_MM, m_eep.issuedMM);
 				Tx_Hand1_Msg(CMD_ISSUED_DD, m_eep.issuedDD);
-				Tx_LCD_Msg(CMD_ISSUED_YY, m_eep.issuedYY);
-				Tx_LCD_Msg(CMD_ISSUED_MM, m_eep.issuedMM);
-				Tx_LCD_Msg(CMD_ISSUED_DD, m_eep.issuedDD);
 
-				m_eep.cartAllow = 1;
 				Tx_Hand1_Msg(CMD_CART_ALLOW, 1);
 			}
 		break;
 
 		case CMD_SYS_CHK:
-			Tx_LCD_Msg(CMD_SYS_CHK, data);
-			CARTRIGE_REQ_DATA(data);
 			m_rf.sysChkFlag = 1;
 		break;
 
 		case CMD_LCD_STATUS:
 			if(data == STATUS_PRECOOLING)
 			{
-				m_rf.preCooltime = HAL_GetTick();
-				m_rf.treatStatus = data;
-				Tx_LCD_Msg(CMD_LCD_STATUS, data);
+				if(m_eep.catridgeDetect != CATRIGE_CHK_UN_DETECT && (m_io.HP1_Insert == CATRIGE_INSERT))
+				{
+					m_rf.preCooltime = HAL_GetTick();
+					m_rf.treatStatus = STATUS_PRECOOLING;
+					Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_PRECOOLING);
+
+				}
 			}
 			else if(data == STATUS_STNBY)
 			{
-				m_rf.readyFlag = READY_OFF;
-				m_rf.treatStatus = data;
-				Tx_LCD_Msg(CMD_LCD_STATUS, data);
+				Ready_OFF();
 			}
 
 
@@ -1046,6 +1031,8 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 		break;
 
 
+
+
 		default:
 			uint16_t reqAdd, reqData;
 			if(data == REQ_DATA)
@@ -1092,29 +1079,14 @@ void Hand_Rx_Parssing(uint8_t add, uint32_t data)
 	if(add !=0)
 	{
 		Debug_HAND_Printf(DEBUG_RX, add, data);
+		m_err.handTimeout = 0;
 
 		switch (add)
 		{
-			case CMD_HP1_ADD:
-				m_err.handTimeout = 0;
-				m_err.handComuErr = 0;
-			break;
 
 			case CMD_CART_ID:
 				m_eep.catridgeId = data;
-				if(m_eep.cartAllow)
-				{
-					for(int i =0 ;i < 10;i++)
-					{
-						if(m_eepMain.cartIdBuff[i] == 0)
-						{
-							m_eepMain.cartIdBuff[i] = data;
-							Eeprom_Byte_Write(i+1, data);
-							break;
-						}
-					}
-					Tx_LCD_Msg(CMD_CART_ID, data);
-				}
+				Tx_LCD_Msg(CMD_CART_ID, data);
 
 			break;
 
@@ -1134,8 +1106,17 @@ void Hand_Rx_Parssing(uint8_t add, uint32_t data)
 			break;
 
 			case CMD_LCD_EXP:
+
+			if(m_rf.switchHandFoot == SWITCH_HAND)
+			{
 				testExpFlag = 1;
 				Debug_Printf("EXP_HAND",1);
+			}
+			else
+			{
+				Debug_Printf("NOW FOOT MODE",1);
+			}
+
 			break;
 
 
@@ -1156,7 +1137,7 @@ void Hand_Rx_Parssing(uint8_t add, uint32_t data)
 
 			case CMD_REMIND_SHOT:
 				m_eep.remainingShotNum = data;
-				if(m_eep.cartAllow) Tx_LCD_Msg(CMD_REMIND_SHOT, data);
+				Tx_LCD_Msg(CMD_REMIND_SHOT, data);
 
 			break;
 
@@ -1166,21 +1147,49 @@ void Hand_Rx_Parssing(uint8_t add, uint32_t data)
 			break;
 
 			case CMD_CATRIDGE_EVENT:
-				if(data == CATRIGE_DETECT)
+				m_eep.catridgeDetect = data;
+				switch (data)
 				{
-					 HP_Cartrige_Check();
-				}
-				else
-				{
-					Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CART_EVENT_UNDETECT);
+					case CATRIGE_CHK_OK:
+
+						//if(m_rf.sysChkFlag)Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_OK);
+
+						Debug_Printf("CATRIDGE Detect",1);
+					break;
+
+					case CATRIGE_CHK_NEW:
+						//Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_NEW);
+						Debug_Printf("CATRIDGE Detect NeW",1);
+					break;
+
+					case CATRIGE_CHK_I2C_READ_ERR:
+						//Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_I2C_READ_ERR);
+						Debug_Printf("CATRIDGE Detect I2C read Err",1);
+					break;
+
+					case CATRIGE_CHK_I2C_WRITE_ERR:
+						//Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_I2C_WRITE_ERR);
+						Debug_Printf("CATRIDGE Detec I2C write Err",1);
+					break;
+
+					case CATRIGE_CHK_REMIND_ZERO_ERR:
+						//Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_REMIND_ZERO_ERR);
+						Debug_Printf("CATRIDGE Detect Remind zero Err",1);
+					break;
+
+					case CATRIGE_CHK_UN_DETECT:
+						//Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_UN_DETECT);
+						Debug_Printf("CATRIDGE Undetect",1);
+					break;
 				}
 
-				m_eep.catridgeDetect = data;
+
+
 				//ï¿½Ö¾ï¿½ï¿½ï¿½ï¿?
 			break;
 
 			case CMD_CART_ALLOW:
-				if(data==0) m_eep.cartAllow = 0;
+
 			break;
 
 
@@ -1191,7 +1200,6 @@ void Hand_Rx_Parssing(uint8_t add, uint32_t data)
 
 			case CMD_TEMPERATURE:
 				m_hand1.temprature = data;
-
 			break;
 
 			case CMD_PWM_DUTY:
@@ -1199,16 +1207,33 @@ void Hand_Rx_Parssing(uint8_t add, uint32_t data)
 			break;
 
 			case CMD_IS_CATRIDGE:
-				m_eep.catridgeDetect = data;
-				if (m_eep.catridgeDetect == CATRIGE_DETECT)
+
+				switch (m_eep.catridgeDetect)
 				{
-					Debug_Printf("CATRIDGE Detect",1);
+					case CATRIGE_CHK_OK:
+						Debug_Printf("CATRIDGE Detect",1);
+					break;
+
+					case CATRIGE_CHK_NEW:
+						Debug_Printf("CATRIDGE Detect NeW",1);
+					break;
+
+					case CATRIGE_CHK_I2C_READ_ERR:
+						Debug_Printf("CATRIDGE Detect I2C read Err",1);
+					break;
+
+					case CATRIGE_CHK_I2C_WRITE_ERR:
+						Debug_Printf("CATRIDGE Detec I2C write Err",1);
+					break;
+
+					case CATRIGE_CHK_REMIND_ZERO_ERR:
+						Debug_Printf("CATRIDGE Detect Remind zero Err",1);
+					break;
+
+					case CATRIGE_CHK_UN_DETECT:
+						Debug_Printf("CATRIDGE Undetect",1);
+					break;
 				}
-				else if (m_eep.catridgeDetect == CATRIGE_UN_DETECT)
-				{
-					Debug_Printf("CATRIDGE Undetect",1);
-				}
-				m_eep.catridgeDetectCome = 1;
 			break;
 
 

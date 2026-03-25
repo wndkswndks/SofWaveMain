@@ -3,7 +3,6 @@
 
 #include "hifu_ctrl.h"
 uint8_t testExpFlag;
-ERROR_T m_err;
 
 
 RF_T m_rf;
@@ -609,7 +608,82 @@ void Rf_TD_BHB003_Table_260212()//260212
 	m_eep.rfWattBuff[65] = 162 ; //1.0w
 	m_eep.rfWattBuff[76] = 160 ; //1.0w
 
+
 }
+
+
+
+
+
+void Rf_TD_BHB003_Table_260212_test()//260212
+{
+	//BHB003
+	m_eep.rfFrqBuff[0] = 0;
+	m_eep.rfFrqBuff[1] = 11447;
+	m_eep.rfFrqBuff[2] = 11285;
+	m_eep.rfFrqBuff[3] = 11420;
+	m_eep.rfFrqBuff[4] = 11375;
+	m_eep.rfFrqBuff[5] = 11360;
+	m_eep.rfFrqBuff[6] = 11385;
+	m_eep.rfFrqBuff[7] = 11427;
+
+	m_eep.rfWattBuff[10] = BHB0003_1W_1 ; //1.0w
+	m_eep.rfWattBuff[11] = BHB0003_1W_1 ; //1.0w
+	for(int i =1 ;i <= 9;i++)
+	{
+		float ffdata = (BHB0003_1W_1/10.0)*i;
+		m_eep.rfWattBuff[i] = ffdata;
+	}
+
+
+	m_eep.rfWattBuff[21] = BHB0003_1W_2 ; //1.0w
+	m_eep.rfWattBuff[22] = BHB0003_1W_2 ; //1.0w
+	for(int i =1 ;i <= 9;i++)
+	{
+		m_eep.rfWattBuff[i+11] = (BHB0003_1W_2/10.0)*i;
+	}
+
+	m_eep.rfWattBuff[32] = BHB0003_1W_3 ; //1.0w
+	m_eep.rfWattBuff[33] = BHB0003_1W_3 ; //1.0w
+	for(int i =1 ;i <= 9;i++)
+	{
+		m_eep.rfWattBuff[i+22] = (BHB0003_1W_3/10.0)*i;
+	}
+
+
+	m_eep.rfWattBuff[43] = BHB0003_1W_4 ; //1.0w
+	m_eep.rfWattBuff[44] = BHB0003_1W_4 ; //1.0w
+	for(int i =1 ;i <= 9;i++)
+	{
+		m_eep.rfWattBuff[i+33] = (BHB0003_1W_4/10.0)*i;
+	}
+
+	m_eep.rfWattBuff[54] = BHB0003_1W_5 ; //1.0w
+	m_eep.rfWattBuff[55] = BHB0003_1W_5 ; //1.0w
+	for(int i =1 ;i <= 9;i++)
+	{
+		m_eep.rfWattBuff[i+44] = (BHB0003_1W_5/10.0)*i;
+	}
+
+	m_eep.rfWattBuff[65] = BHB0003_1W_6 ; //1.0w
+	m_eep.rfWattBuff[66] = BHB0003_1W_6 ; //1.0w
+	for(int i =1 ;i <= 9;i++)
+	{
+		m_eep.rfWattBuff[i+55] = (BHB0003_1W_6/10.0)*i;
+	}
+
+	m_eep.rfWattBuff[76] = BHB0003_1W_7 ; //1.0w
+	m_eep.rfWattBuff[77] = BHB0003_1W_7 ; //1.0w
+	for(int i =1 ;i <= 9;i++)
+	{
+		m_eep.rfWattBuff[i+66] = (BHB0003_1W_7/10.0)*i;
+	}
+
+
+
+
+}
+
 void Rf_TD_BHB004_Table_260212()//260212
 {
 	//BHB004
@@ -881,7 +955,7 @@ ACal 6 104 -> 98 96 96 97 121 avg : 102
 
 void Rf_Init()
 {
-	HP1_Pwr_ON();
+//	HP1_Pwr_ON();
 	m_rf.pluseOn = 0;
 	m_rf.pluseLevel = 0;
 	m_rf.pluseTimeStamp = HAL_GetTick();
@@ -891,7 +965,7 @@ void Rf_Init()
 	RF_Pwr_ON();
 
 
-	Rf_TD_BHB005_Table_260212();
+	Rf_TD_BHB003_Table_260212_test();
 
 
 
@@ -926,9 +1000,7 @@ void Rf_Init()
 }
 void Hand_Init()//
 {
-	m_eep.catridgeDetectPre = CATRIGE_DETECT;
 
-	m_eep.cartAllow = 1;// temp
 	m_hand1.tempDutyEn = 1;
 	Debug_Printf("HP1_CATRIGE_DETECT INIT",1);
 
@@ -1000,14 +1072,6 @@ void LCD_Max_Init()
 
 }
 
-
-void Err_Init()
-{
-	for(int i =0 ;i < 16;i++)
-	{
-		m_err.errStandBuff[i] = 5;
-	}
-}
 void PulseData_Sand(uint8_t num, uint16_t data)
 {
 	uint16_t pulseData;
@@ -1030,419 +1094,6 @@ void PulseEn_Sand(uint8_t num, uint16_t enDis)
 }
 
 
-#if 0
-
-uint8_t Check_Common(uint8_t status, uint8_t idx, uint8_t level, uint8_t cmd)
-{
-	uint16_t errData;
-
-	if(status)
-	{
-		if(m_err.errBuff[idx]==1)
-		{
-			errData = level*LEVEL_UNIT + ERR_DISABLE +cmd;
-			m_err.errDataBuff[idx] = errData;
-
-		}
-		m_err.errBuff[idx] = 0;
-	}
-	else
-	{
-		if(m_err.errBuff[idx] == 0)
-		{
-			errData = level*LEVEL_UNIT + ERR_ENABLE +cmd;
-			m_err.errDataBuff[idx] = errData;
-		}
-		m_err.errBuff[idx] = 1;
-	}
-	return m_err.errBuff[idx];
-
-}
-#else
-
-void Set_Err_StatusBitFlag(uint8_t cmd, uint8_t status)
-{
-	if(status)
-	{
-		if(cmd<=15) m_err.errStatus[0] |= 1<<cmd;
-		else if(cmd<=31) m_err.errStatus[1] |= 1<<cmd;
-		else if(cmd<=47) m_err.errStatus[2] |= 1<<cmd;
-		else m_err.errStatus[3] |= 1<<cmd;
-	}
-	else
-	{
-		if(cmd<=15) m_err.errStatus[0] &= ~(1<<cmd);
-		else if(cmd<=31) m_err.errStatus[1] &= ~(1<<cmd);
-		else if(cmd<=47) m_err.errStatus[2] &= ~(1<<cmd);
-		else m_err.errStatus[3] |= ~(1<<cmd);
-	}
-
-
-	Eeprom_Word_Write(IDX_EEP_ERROR_STATUS_1, m_err.errStatus[0]);
-	Eeprom_Word_Write(IDX_EEP_ERROR_STATUS_2, m_err.errStatus[1]);
-	Eeprom_Word_Write(IDX_EEP_ERROR_STATUS_3, m_err.errStatus[2]);
-	Eeprom_Word_Write(IDX_EEP_ERROR_STATUS_4, m_err.errStatus[3]);
-
-}
-
-void Get_Err_StatusBitFlag()
-{
-	for(int i =0 ;i <= 15;i++)
-	{
-		if((m_err.errStatus[0]>>i)&0x01) m_err.errDataBuff[i] = i;
-		else m_err.errDataBuff[i] = 0;
-
-	}
-	for(int i =0 ;i <= 15;i++)
-	{
-		if((m_err.errStatus[1]>>i)&0x01) m_err.errDataBuff[i+16] = i;
-		else m_err.errDataBuff[i+16] = 0;
-	}
-	for(int i =0 ;i <= 15;i++)
-	{
-		if((m_err.errStatus[2]>>i)&0x01) m_err.errDataBuff[i+32] = i;
-		else m_err.errDataBuff[i+32] = 0;
-	}
-	for(int i =0 ;i <= 1;i++)
-	{
-		if((m_err.errStatus[3]>>i)&0x01) m_err.errDataBuff[i+48] = i;
-		else m_err.errDataBuff[i+48] = 0;
-	}
-}
-
-uint8_t Check_Common(uint8_t status, uint8_t cmd)
-{
-
-	if(status)//Nomal
-	{
-		if(m_err.errDataBuff[cmd])
-		{
-			m_err.errTxDoneBuff[cmd] = 0;
-			m_err.errDataBuff[cmd] = 0;
-//			Set_Err_StatusBitFlag(cmd, 0);
-		}
-		m_err.errNowBuff[cmd] = 0;
-		m_err.errCntBuff[cmd] = 0;
-	}
-	else//errs
-	{
-		if(!m_err.errDataBuff[cmd])
-		{
-			m_err.errCntBuff[cmd]++;
-			if(m_err.errStandBuff[cmd] < m_err.errCntBuff[cmd])
-			{
-				m_err.errCntBuff[cmd] = 0;
-				m_err.errDataBuff[cmd] = cmd;
-//				Set_Err_StatusBitFlag(cmd, 1);
-				if(m_eepMain.errCntBuff[cmd]<999)m_eepMain.errCntBuff[cmd]++;
-				Eeprom_Word_Write(IDX_EEP_ERROR+cmd*2, m_eepMain.errCntBuff[cmd]);
-			}
-		}
-		m_err.errNowBuff[cmd] = cmd;
-	}
-	return m_err.errDataBuff[cmd];
-
-}
-
-#endif
-
-uint8_t Check_CartrigeCommon(uint8_t status, uint8_t cmd)
-{
-	uint16_t errData;
-
-	if(status)
-	{
-		errData = ERR_DISABLE +cmd;
-		m_err.errDataBuff[cmd] = errData;
-	}
-
-	return 0;
-
-}
-
-uint8_t Check_Max_Min(int data, int max, int min, uint8_t cmd)
-{
-	uint8_t status = (min <= data && data <max);
-	uint8_t returnValue = 0;
-	returnValue = Check_Common(status, cmd);
-
-	return returnValue;
-}
-
-uint8_t Check_Max(int data, int max, uint8_t cmd)
-{
-
-	uint8_t status = (data <max);
-	uint8_t returnValue = 0;
-	returnValue = Check_Common(status, cmd);
-
-	return returnValue;
-
-}
-
-uint8_t Check_Min(int data, int min, uint8_t cmd)
-{
-	uint8_t status = (min <= data);
-	uint8_t returnValue = 0;
-	returnValue = Check_Common(status,cmd);
-
-	return returnValue;
-
-}
-
-
-uint8_t Check_Status(int data, int nomalData, uint8_t cmd)
-{
-	uint8_t status = (data == nomalData);
-	uint8_t returnValue = 0;
-	returnValue = Check_Common(status, cmd);
-
-	return returnValue;
-
-}
-
-
-uint8_t Check_Day(uint16_t YY, uint16_t MM, uint16_t DD, uint8_t cmd)
-{
-	uint8_t yyOk = (YY_MIN <= YY && YY <=YY_MAX);
-	uint8_t mmOk = (MM_MIN <= MM && MM <=MM_MAX);
-	uint8_t ddOk = (DD_MIN <= DD && DD <=DD_MAX);
-	uint8_t status = (yyOk && mmOk && ddOk);
-	uint8_t returnValue = 0;
-	returnValue = Check_Common(status, cmd);
-
-	return returnValue;
-}
-
-uint8_t Check_Time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t cmd)
-{
-	uint8_t hourOk = (HOUR_MIN <= hour && hour <=HOUR_MAX);
-	uint8_t minOk = (MIN_MIN <= min && min <=MIN_MAX);
-	uint8_t secOk = (SEC_MIN <= sec && sec <=SEC_MAX);
-	uint8_t status = (hourOk && minOk && secOk);
-	uint8_t returnValue = 0;
-
-	returnValue = Check_Common(status, cmd);
-
-	return returnValue;
-
-
-}
-void Error_Buff_Clear()
-{
-	memset(m_err.errDataBuff, 0, sizeof(m_err.errDataBuff));
-}
-
-
-void Error_Buff_Main_Tx()
-{
-	uint8_t errCnt = 0;
-	for(int i =IDX_MAIN_EVENT_START ;i < IDX_MAIN_EVENT_END; i++)
-	{
-		if(m_err.errDataBuff[i])
-		{
-			errCnt++;
-			Tx_LCD_Msg(CMD_ERR, m_err.errDataBuff[i]);
-			HAL_Delay(1500);
-		}
-	}
-	if(errCnt==0)
-	{
-		Tx_LCD_Msg(CMD_OK, OK_MAIN);
-	}
-}
-
-void Error_Buff_HP_Tx()
-{
-	uint8_t errCnt = 0;
-	for(int i =IDX_HP_EVENT_START ;i < IDX_HP_EVENT_END; i++)
-	{
-		if(m_err.errDataBuff[i])
-		{
-			errCnt++;
-			if(!m_err.errTxDoneBuff[i])
-			{
-				Tx_LCD_Msg(CMD_ERR, m_err.errDataBuff[i]);
-				m_err.errTxDoneBuff[i] = 1;
-				HAL_Delay(1500);
-			}
-		}
-	}
-	if(errCnt==0)
-	{
-		Tx_LCD_Msg(CMD_OK, OK_HP);
-	}
-}
-
-void Error_Buff_Rf_Tx()
-{
-	uint8_t errCnt = 0;
-	for(int i =IDX_RF_EVENT_START ;i < IDX_RF_EVENT_END; i++)
-	{
-		if(m_err.errDataBuff[i])
-		{
-			errCnt++;
-			Tx_LCD_Msg(CMD_ERR, m_err.errDataBuff[i]);
-			HAL_Delay(1500);
-		}
-	}
-	if(errCnt==0)
-	{
-		Tx_LCD_Msg(CMD_OK, OK_RF);
-	}
-}
-
-/*
-m_err.errDataBuff[IDX_TEMP_OUT]
-m_err.errDataBuff[IDX_TEMP_LIMIT_UNDER]
-m_err.errDataBuff[IDX_TEMP_LOW]
-m_err.errDataBuff[IDX_FLOW_LIMIT_UNDER]
-m_err.errDataBuff[IDX_FLOW_ZERO_IDX]
-m_err.errDataBuff[IDX_LEVEL_LOW]
-m_err.errDataBuff[IDX_AUTO_CAL_COMU_ERR]
-m_err.errDataBuff[IDX_BATTRY_LIMIT_OVER]
-m_err.errDataBuff[IDX_BATTRY_LIMIT_UNDER]
-m_err.errDataBuff[IDX_BATTRY_LIMIT_LOW]
-m_err.errDataBuff[IDX_RTC_ERR]
-m_err.errDataBuff[IDX_PRE_COOL_ERR]
-m_err.errDataBuff[IDX_HAND_COMU_ERR]
-m_err.errDataBuff[IDX_CATRIGE_ID_ERR]
-m_err.errDataBuff[IDX_CATRIGE_MANU_ERR]
-m_err.errDataBuff[IDX_CATRIGE_MANU_OVER_ERR]
-m_err.errDataBuff[IDX_CATRIGE_ISUE_ERR]
-m_err.errDataBuff[IDX_CATRIGE_ISUE_OVER_ERR]
-m_err.errDataBuff[IDX_CATRIGE_WATT_ERR]
-m_err.errDataBuff[IDX_CATRIGE_FRQ_ERR]
-m_err.errDataBuff[IDX_CATRIGE_RESHOT_ERR]
-m_err.errDataBuff[IDX_CATRIGE_RESHOT_LOW]
-m_err.errDataBuff[IDX_CATRIGE_RESHOT_ZERO]
-m_err.errDataBuff[IDX_CATRIGE_DETECT]
-m_err.errDataBuff[IDX_CATRIGE_UN_DETEC]
-m_err.errDataBuff[IDX_HAND_TIMEOUT]
-m_err.errDataBuff[IDX_RF_COMU_ERR]
-m_err.errDataBuff[IDX_RF_STATUS_ERR]
-m_err.errDataBuff[IDX_RF_EVENT_END]
-m_err.errDataBuff[IDX_LCD_COMU_ERR]
-m_err.errDataBuff[IDX_LCD_TIMEOUT]
-m_err.errDataBuff[IDX_IS_CURRNTSHOT_RESET]
-m_err.errDataBuff[IDX_IS_TOTALJULE_RESET]
-m_err.errDataBuff[IDX_CATRIGE_NEW]
-*/
-
-
-void Error_Check_Main()
-{
-#if 0
-	Check_Max_Min(m_hand1.temprature, TEMP_OUT_MAX, TEMP_OUT_MIN,IDX_TEMP_OUT);
-	Check_Min(m_hand1.temprature, TEMP_MIN, IDX_TEMP_LIMIT_UNDER);
-	Check_Min(m_hand1.temprature, TEMP_LOW_VALUE, IDX_TEMP_LOW);
-
-	Check_Status(m_io.level1Status, 0, IDX_LEVEL_LOW);
-#if 0//die
-	Check_Min(m_io.flowSensorFrq, FLOW_LOW_MIN, IDX_FLOW_ZERO_IDX);
-	Check_Max_Min(m_io.flowSensorFrq, FLOW_LOW_MAX, FLOW_LOW_MIN, IDX_FLOW_LIMIT_UNDER);
-#endif
-
-	Check_Max(m_io.battery*10, BATTRY_LIMIT_MAX, IDX_BATTRY_LIMIT_OVER);
-	Check_Min(m_io.battery*10, BATTRY_LIMIT_MIN, IDX_BATTRY_LIMIT_UNDER);
-	Check_Min(m_io.battery*10, BATTRY_NOMAL_MIN, IDX_BATTRY_LIMIT_LOW);
-
-	Check_Status(m_err.autoCalStatus, 0, IDX_AUTO_CAL_COMU_ERR);
-	Check_Time(m_io.hour, m_io.min, m_io.sec, IDX_RTC_ERR);
-
-
-#endif
-
-	if(m_err.txEn)Error_Buff_Main_Tx();
-
-
-
-
-
-}
-
-void Error_Check_HP()
-{
-	uint8_t errStatus;
-#if 0
-
-	m_err.handTimeout++;
-	Check_Max(m_err.handTimeout, COMU_MAX_CNT, IDX_HAND_COMU_ERR);
-
-
-
-	Check_Day(m_eep.manufacYY, m_eep.manufacMM, m_eep.manufacDD, IDX_CATRIGE_MANU_ERR);
-	Check_Day(m_eep.issuedYY, m_eep.issuedMM, m_eep.issuedDD, IDX_CATRIGE_ISUE_ERR);
-
-	for(int i = 1; i <= 7; i++)
-	{
-		errStatus = Check_Max_Min(m_eep.rfFrqBuff[i], CATRIDGE_FRQ_MAX, CATRIDGE_FRQ_MIN, IDX_CATRIGE_FRQ_ERR);
-		if(errStatus) break;
-	}
-	for(int i = 1; i <= 77; i++)
-	{
-		errStatus = Check_Max_Min(m_eep.rfWattBuff[i], CATRIDGE_WATT_MAX, CATRIDGE_WATT_MIN, IDX_CATRIGE_WATT_ERR);
-		if(errStatus) break;
-	}
-	Check_Max(m_eep.remainingShotNum, CATRIDGE_REMAIN_MAX, IDX_CATRIGE_RESHOT_ERR);
-	if(!m_rf.remainingShotNegative)
-	{
-		Check_Min(m_eep.remainingShotNum, CATRIDGE_REMAIN_LOW_3, IDX_CATRIGE_RESHOT_LOW);
-	}
-	else
-	{
-		Check_Max(m_rf.remainingShotNegative, m_eepMain.remainingShotRandom, IDX_CATRIGE_RESHOT_ZERO);
-	}
-
-
-	Check_Max(m_eep.catridgeId, CATRIDGE_ID_MAX, IDX_CATRIGE_ID_ERR);
-
-	Check_Status(m_err.preCoolStatus, 0, IDX_PRE_COOL_ERR);
-
-	m_eep.manufacDay = m_eep.manufacYY*10000 + m_eep.manufacMM*100 + m_eep.manufacDD;
-	m_eep.issuedDay = m_eep.issuedYY*10000 + m_eep.issuedMM*100 + m_eep.issuedDD;
-	Check_Max(m_io.day, m_eep.manufacDay + DAY_MAX, IDX_CATRIGE_MANU_OVER_ERR);
-	Check_Max(m_io.day, m_eep.issuedDay + DAY_MAX, IDX_CATRIGE_ISUE_OVER_ERR);
-
-
-#endif
-
-	if(m_err.txEn)Error_Buff_HP_Tx();
-
-}
-
-void Error_Check_RF()
-{
-#if 0
-	m_err.rfTimeout++;
-	Tx_RF_GenStatus_Check();
-	Check_Max(m_err.rfTimeout, COMU_MAX_CNT, IDX_RF_COMU_ERR);//E02
-
-	Check_Status(m_err.rfStatus, 0, IDX_RF_STATUS_ERR);//E14
-#endif
-
-	if(m_err.txEn)Error_Buff_Rf_Tx();
-
-}
-
-void Error_Check_Config()
-{
-	static uint32_t timeStamp;
-
-	if(m_rf.pluseOn) return;
-	if(HAL_GetTick()-timeStamp >= 2000)
-	{
-		Error_Check_Main();
-		Error_Check_HP();
-		Error_Check_RF();
-
-		timeStamp = HAL_GetTick();
-	}
-
-
-
-
-}
 
 
 void RF_Watt_All_Calculate()
@@ -2156,7 +1807,27 @@ void LCD_Status_Tret()
 	{
 		if(m_hand1.temprature <70)
 		{
-			m_rf.readyFlag = READY_ON;
+			Ready_ON();
+
+			Tx_RF_FRQ_ALL_Module();
+			Tx_RF_Watt_ALL_Module_org();
+			TX_RF_Max_Ontime_Set();
+
+			Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_TRET);
+			m_rf.treatStatus = STATUS_TRET;
+
+			m_rf.preCooltime = 0;
+			m_err.preCoolStatus = 0;
+
+#if 0
+		HAL_Delay(500);
+		testExpFlag =1;
+#endif
+		}
+
+		if(HAL_GetTick()- m_rf.preCooltime> PRECOOL_TIMEOUT && m_rf.preCooltime)
+		{
+			Ready_ON();
 
 			Tx_RF_FRQ_ALL_Module();
 			Tx_RF_Watt_ALL_Module_org();
@@ -2167,26 +1838,6 @@ void LCD_Status_Tret()
 
 			m_rf.preCooltime = 0;
 			m_err.preCoolStatus = 1;
-
-#if 0
-		HAL_Delay(500);
-		testExpFlag =1;
-#endif
-		}
-
-		if(HAL_GetTick()- m_rf.preCooltime> PRECOOL_TIMEOUT && m_rf.preCooltime)
-		{
-			m_rf.readyFlag = READY_ON;
-
-			Tx_RF_FRQ_ALL_Module();
-			Tx_RF_Watt_ALL_Module_org();
-			TX_RF_Max_Ontime_Set();
-
-			Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_TRET);
-			m_rf.treatStatus = STATUS_TRET;
-
-			m_rf.preCooltime = 0;
-			m_err.preCoolStatus = 2;
 		}
 
 	}
@@ -2272,9 +1923,10 @@ int compare_32(const void *a, const void *b)    // 오름차순 비교 함수 (uint32_t 
 int wattDa = 0;
 int trandu = 0;
 int tranduOut = 6;
-
-
+int frqQ = 10500;
 int qsortBuff[5] = {0,};
+int qsort10Buff[10] = {0,};
+
 int AutoCal_Avg()// 오름차순으로 정리
 {
 	int sum =0, avgInt;
@@ -2296,7 +1948,6 @@ int AutoCal_Avg()// 오름차순으로 정리
 
 }
 
-int qsort10Buff[10] = {0,};
 int AutoCal_10_Avg()// 오름차순으로 정리
 {
 	int sum =0;
@@ -2621,7 +2272,6 @@ void AutoCal_Config_1watt()
 
 }
 
-int frqQ = 10500;
 void AutoCal_Config_test_Frq()
 {
   int avg = 0;
@@ -2816,7 +2466,6 @@ void RF_Rx_Parssing(uint8_t rxID)
 }
 
 
-int testTriger=1;
 void Rf_Test()
 {
 
@@ -2853,25 +2502,26 @@ uint8_t Exp_Shot_Chk()
 	{
 		if (IS_HP1_SHOT_PUSH())
 		{
-
+			return 1;
 		}
 		else
 		{
-
+			return 0;
 		}
 
 	}
 	else if(m_rf.switchHandFoot == SWITCH_FOOT)
 	{
-		if (IS_HP1_SHOT_PUSH())
+		if (IS_HP2_SHOT_PUSH())
 		{
-
+			return 1;
 		}
 		else
 		{
-
+			return 0;
 		}
 	}
+	return 0;
 
 }
 
@@ -2890,7 +2540,7 @@ void Exp_Nomal_Config()
 	switch (step)
 	{
 		case STEP0:
-			if(testExpFlag || IS_HP1_SHOT_PUSH())
+			if(testExpFlag || Exp_Shot_Chk())
 			{
 				HAL_Delay(200);
 				testExpFlag = 0;

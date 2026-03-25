@@ -51,6 +51,27 @@ HAL_StatusTypeDef CAT24C16_ReadByte(I2C_HandleTypeDef *hi2c, uint16_t abs_addr, 
     return HAL_I2C_Mem_Read(hi2c, dev, maddr, I2C_MEMADD_SIZE_8BIT, p_data, 1, 100);
 }
 
+HAL_StatusTypeDef CAT24C16_ReadWord(I2C_HandleTypeDef *hi2c, uint16_t abs_addr, uint16_t *p_data)
+{
+    uint8_t buf[2];
+    uint16_t dev;
+    uint8_t maddr;
+    HAL_StatusTypeDef st;
+
+    if (abs_addr >= (CAT24C16_TOTAL_BYTES - 1) || p_data == NULL)
+        return HAL_ERROR;
+
+    dev   = CAT24C16_ADDRESS_ID;
+    maddr = CAT24C16_MemAddr8(abs_addr);
+
+    st = HAL_I2C_Mem_Read(hi2c, dev, maddr, I2C_MEMADD_SIZE_8BIT, buf, 2, 100);
+    if (st != HAL_OK)
+        return st;
+
+    *p_data = ((uint16_t)buf[0] << 8) | buf[1];
+
+    return HAL_OK;
+}
 
 
 uint8_t bufQQ[255] = {0};
@@ -72,7 +93,6 @@ void Eeprom_All_Read(void)
 		m_eepMain.buff[IDX_HP1_IS_FLASH_FIRST] = m_eepMain.flashFirst;
 		for(int i =0 ;i < 10;i++)
 		{
-			m_eepMain.cartIdBuff[i] = 0;
 			m_eepMain.buff[i+1] = 0;
 		}
 
@@ -100,10 +120,7 @@ void Eeprom_All_Read(void)
 	}
 	else
 	{
-		for(int i =0 ;i < 10;i++)
-		{
-			m_eepMain.cartIdBuff[i] = m_eepMain.buff[i+IDX_HP1_CART_ID1_START];
-		}
+
 
 		for(int i =0 ;i < 50;i++)
 		{
@@ -111,6 +128,13 @@ void Eeprom_All_Read(void)
 		}
 
 		m_eepMain.remainingShotRandom =  m_eepMain.buff[IDX_REMIND_RANDOM];
+
+		m_err.errStatus[0] = m_eepMain.buff[IDX_EEP_ERROR_STATUS_1];
+		m_err.errStatus[1] = m_eepMain.buff[IDX_EEP_ERROR_STATUS_2];
+		m_err.errStatus[2] = m_eepMain.buff[IDX_EEP_ERROR_STATUS_3];
+		m_err.errStatus[3] = m_eepMain.buff[IDX_EEP_ERROR_STATUS_4];
+
+
 	}
 
 
@@ -121,6 +145,7 @@ void Eeprom_All_Read(void)
 void Eeprom_Byte_Write(uint8_t Idx, uint8_t data)
 {
 	if(Idx >= MAX_EEPROM_SIZE) return;
+	printf("Eeprom_Byte_Write Add[%u] Data[%u] \r\n",Idx, data);
 	m_eepMain.buff[Idx] = (uint8_t)data;
 	CAT24C16_WriteByte(&hi2c1, Idx, data);
 }
@@ -129,6 +154,7 @@ void Eeprom_Word_Write(uint8_t startIdx, uint16_t data)
 {
 	uint8_t lsb,msb;
 	if(startIdx >= MAX_EEPROM_SIZE-1) return;
+	printf("Eeprom_Word_Write Add[%u] Data[%u] \r\n",startIdx, data);
 
 	msb = (data>>8)&0xff;
 	lsb = (data)&0xff;
@@ -137,6 +163,36 @@ void Eeprom_Word_Write(uint8_t startIdx, uint16_t data)
 	CAT24C16_WriteByte(&hi2c1, startIdx, msb);
 	CAT24C16_WriteByte(&hi2c1, startIdx+1, lsb);
 }
+uint16_t Eeprom_Word_Read(uint8_t startIdx)
+{
+    uint16_t data = 0;
+
+    if (startIdx >= MAX_EEPROM_SIZE - 1)
+        return 0;
+
+    CAT24C16_ReadWord(&hi2c1, startIdx, &data);
+
+    m_eepMain.buff[startIdx]   = (uint8_t)((data >> 8) & 0xFF);
+    m_eepMain.buff[startIdx+1] = (uint8_t)(data & 0xFF);
+
+    return data;
+}
+
+
+uint16_t Eeprom_Byte_Read(uint8_t startIdx)
+{
+    uint16_t data = 0;
+
+    if (startIdx >= MAX_EEPROM_SIZE)
+        return 0;
+
+    CAT24C16_ReadByte(&hi2c1, startIdx, &data);
+
+    m_eepMain.buff[startIdx] = data;
+
+    return data;
+}
+
 
 
 

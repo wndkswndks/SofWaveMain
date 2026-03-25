@@ -27,6 +27,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	{
 		m_io.flowTimeTerm = HAL_GetTick()-timeStamp;
 		m_io.flowSensorFrq = (1000.0f) / (float)m_io.flowTimeTerm;
+		m_io.flowSensorFrqChk = m_io.flowSensorFrq;
 		m_io.LperSec = Get_X_From_Y(m_io.flowSensorFrq);
 
 		timeStamp = HAL_GetTick();
@@ -36,15 +37,31 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 }
 
 
+void SOL1_ON_ORG()
+{
+	CON_SOL2_ON_GPIO_Port_H();
+	Debug_Printf("SOL1_ON",1);
+	m_io.sol1On= 1;
+}
+void SOL1_OFF_ORG()
+{
+	CON_SOL2_ON_GPIO_Port_L();
+	Debug_Printf("SOL1_OFF",1);
+	m_io.sol1On= 0;
+}
+
+
 void SOL1_ON()
 {
-	CON_SOL1_ON_GPIO_Port_H();
+	CON_SOL1_ON_GPIO_Port_L();  //////반대
+	CON_SOL2_ON_GPIO_Port_H();
 	Debug_Printf("SOL1_ON",1);
 	m_io.sol1On= 1;
 }
 void SOL1_OFF()
 {
-	CON_SOL1_ON_GPIO_Port_L();
+	CON_SOL1_ON_GPIO_Port_H();	//////반대
+	CON_SOL2_ON_GPIO_Port_L();
 	Debug_Printf("SOL1_OFF",1);
 	m_io.sol1On= 0;
 }
@@ -322,12 +339,9 @@ void HP_Connect_Config()
 		{
 			if(m_io.HP1_Insert != CATRIGE_UN_INSERT)Debug_Printf("CATRIGE_UN_INSERT",1);
 			m_io.HP1_Insert = CATRIGE_UN_INSERT;
+			m_eep.catridgeDetect = CATRIGE_CHK_UN_DETECT;
 		}
 
-
-		Tx_Hand1_Msg(CMD_IS_CATRIDGE, 0);
-		m_eep.catridgeDetectCome = 0;
-		printf("HP1_Insert : %u, catridgeDetect : %u, flowSensorFrq : %d \r\n",m_io.HP1_Insert, m_eep.catridgeDetect, flowINt);
 
 
 	}
@@ -341,13 +355,14 @@ void HP_Connect_Config()
 	}
 
 
-	if((m_io.HP1_Insert == CATRIGE_INSERT) && (m_eep.catridgeDetect == CATRIGE_DETECT))
+	if((m_io.HP1_Insert == CATRIGE_INSERT) && (m_eep.catridgeDetect != CATRIGE_CHK_UN_DETECT))
 	{
-		if(!m_io.sol1On)SOL1_ON();
+		m_io.sol1OnStatus = 1;//SOL1_ON();
 	}
 	else
 	{
-		if(m_io.sol1On)SOL1_OFF();
+		if(m_io.sol1OnStatus)Ready_OFF();
+		m_io.sol1OnStatus = 0;
 	}
 
 
@@ -380,7 +395,6 @@ void Level_Check()
 		if(!m_io.levelStatusErr)
 		{
 			Ciller_Pwr_OFF();//나중에 플로우 값 정상들어와야지 켜지게 하기
-			HAL_Delay(1000);
 			WaterPump_Pwr_OFF();
 			m_io.levelStatusErr = 1;
 		}
@@ -410,156 +424,87 @@ uint8_t IO_ErrCnt_Chk(uint8_t BooL, uint8_t idx )
 
 	return eventOn;
 }
+void Flow_Stop_Check_ORG()
+{
+
+	uint8_t is_flowOk = (2<m_io.flowSensorFrq&&m_io.flowSensorFrq<40);
+//	uint8_t is_flowOk = 1;//(3<m_io.flowSensorFrq);
+	int flowINt;
+	static uint32_t timeStamp;
+	uint8_t flowErr = 0;
+	static uint8_t flowErrAccu;
+
+	flowINt = m_io.flowSensorFrq*10.0;
+	if(HAL_GetTick()-timeStamp >= 1000)
+	{
+
+		timeStamp = HAL_GetTick();
+
+		if(!m_io.flowSensorFrqChk)
+		{
+			flowErr++;
+			Debug_Printf("m_io.flowPulseCnt",1);
+		}
+		if(is_flowOk)
+		{
+			flowErr++;
+			Debug_Printf("is_flowOk Fail",1);
+			printf("flowINt = %d \r\n",flowINt);
+		}
+		m_io.flowPulseCnt = 0;
+
+		if(!flowErrAccu &&flowErr)
+		{
+			if(m_io.sol1On)
+			{
+				Debug_Printf("1111",1);
+				SOL1_OFF();
+			}
+			else
+			{
+				Debug_Printf("2222",1);
+				flowErrAccu = 1;
+				Ciller_Pwr_OFF();//나중에 플로우 값 정상들어와야지 켜지게 하기
+				WaterPump_Pwr_OFF();
+				Debug_Printf("CILLER PUMP_FLOW END",1);
+			}
+		}
+		m_io.flowSensorFrqChk = 0;
+	}
+
+}
+
 void Flow_Stop_Check()
 {
 
-	uint8_t is_flowOk = (2<m_io.flowSensorFrq&&m_io.flowSensorFrq<40);
-//	uint8_t is_flowOk = 1;//(3<m_io.flowSensorFrq);
-	int flowINt;
-	static uint32_t preFlowCnt;
+	uint8_t is_flowOkSolOn = (2<m_io.flowSensorFrq&&m_io.flowSensorFrq<20);
+	uint8_t is_flowOkSolOff = (10<m_io.flowSensorFrq&&m_io.flowSensorFrq<40);
 	static uint32_t timeStamp;
-	uint8_t flowErr = 0;
-	static uint8_t flowErrAccu;
 
-	flowINt = m_io.flowSensorFrq*10.0;
-	if(HAL_GetTick()-timeStamp >= 100)
+
+	if(HAL_GetTick()-timeStamp >= 1000)
 	{
 
 		timeStamp = HAL_GetTick();
 
-		if(IO_ErrCnt_Chk((preFlowCnt == m_io.flowPulseCnt), 0))
+		if(m_io.sol1On)
 		{
-			flowErr++;
-			Debug_Printf("m_io.flowPulseCnt",1);
+			if(!is_flowOkSolOn || !m_io.flowSensorFrqChk) SOL1_OFF();
 		}
-		if(IO_ErrCnt_Chk((!is_flowOk), 1))
+		else
 		{
-			flowErr++;
-			Debug_Printf("is_flowOk Fail",1);
-			printf("flowINt = %d \r\n",flowINt);
-		}
-		preFlowCnt = m_io.flowPulseCnt;
-
-		if(!flowErrAccu &&flowErr)
-		{
-			if(m_io.sol1On)
+			if(!is_flowOkSolOff || !m_io.flowSensorFrqChk)
 			{
-				Debug_Printf("1111",1);
-				SOL1_OFF();
-			}
-			else
-			{
-				Debug_Printf("2222",1);
-				flowErrAccu = 1;
-				Ciller_Pwr_OFF();//나중에 플로우 값 정상들어와야지 켜지게 하기
 				WaterPump_Pwr_OFF();
-				Debug_Printf("CILLER PUMP_FLOW END",1);
+				Ciller_Pwr_OFF();
 			}
 		}
-	}
-
-}
-
-void Flow_Stop_Check_org()
-{
-
-	uint8_t is_flowOk = (2<m_io.flowSensorFrq&&m_io.flowSensorFrq<40);
-//	uint8_t is_flowOk = 1;//(3<m_io.flowSensorFrq);
-	int flowINt;
-	static uint32_t preFlowCnt;
-	static uint32_t timeStamp;
-	uint8_t flowErr = 0;
-	static uint8_t flowErrAccu;
-
-	flowINt = m_io.flowSensorFrq*10.0;
-	if(HAL_GetTick()-timeStamp >= 100)
-	{
-
-		timeStamp = HAL_GetTick();
-
-		if(IO_ErrCnt_Chk((preFlowCnt == m_io.flowPulseCnt), 0))
-		{
-			flowErr++;
-			Debug_Printf("m_io.flowPulseCnt",1);
-		}
-		if(IO_ErrCnt_Chk((!is_flowOk), 1))
-		{
-			flowErr++;
-			Debug_Printf("is_flowOk Fail",1);
-			printf("flowINt = %d \r\n",flowINt);
-		}
-		preFlowCnt = m_io.flowPulseCnt;
-
-		if(!flowErrAccu &&flowErr)
-		{
-			if(m_io.sol1On)
-			{
-				Debug_Printf("1111",1);
-				SOL1_OFF();
-			}
-			else
-			{
-				Debug_Printf("2222",1);
-				flowErrAccu = 1;
-				Ciller_Pwr_OFF();//나중에 플로우 값 정상들어와야지 켜지게 하기
-				WaterPump_Pwr_OFF();
-				Debug_Printf("CILLER PUMP_FLOW END",1);
-			}
-		}
+		m_io.flowSensorFrqChk = 0;
 	}
 
 }
 
 
-void Flow_Stop_Check_Test()
-{
-
-	uint8_t is_flowOk = (2<m_io.flowSensorFrq&&m_io.flowSensorFrq<40);
-//	uint8_t is_flowOk = 1;//(3<m_io.flowSensorFrq);
-	int flowINt;
-	static uint32_t preFlowCnt;
-	static uint32_t timeStamp;
-	uint8_t flowErr = 0;
-	static uint8_t flowErrAccu;
-
-	flowINt = m_io.flowSensorFrq*10.0;
-	if(HAL_GetTick()-timeStamp >= 100)
-	{
-
-		timeStamp = HAL_GetTick();
-
-		if(IO_ErrCnt_Chk((preFlowCnt == m_io.flowPulseCnt), 0))
-		{
-			flowErr++;
-			Debug_Printf("m_io.flowPulseCnt",1);
-		}
-		if(IO_ErrCnt_Chk((!is_flowOk), 1))
-		{
-			flowErr++;
-			Debug_Printf("is_flowOk Fail",1);
-			printf("flowINt = %d \r\n",flowINt);
-		}
-		preFlowCnt = m_io.flowPulseCnt;
-
-//		if(!flowErrAccu &&flowErr)
-//		{
-//			if(m_io.sol1On)
-//			{
-//				Debug_Printf("1111",1);
-//				SOL1_OFF();
-//			}
-//			else
-//			{
-//				Debug_Printf("2222",1);
-//				flowErrAccu = 1;
-//				Ciller_Pwr_OFF();//나중에 플로우 값 정상들어와야지 켜지게 하기
-//				WaterPump_Pwr_OFF();
-//				Debug_Printf("CILLER PUMP_FLOW END",1);
-//			}
-//		}
-	}
-
-}
 
 void IO_Init()
 {
@@ -570,12 +515,15 @@ void IO_Init()
 
 
 
+	SOL1_OFF();
+	m_io.sol1OnStatus = 0;
 
 
 	m_io.HP1_Insert = CATRIGE_YET_INSERT;
-	m_eep.catridgeDetect = CATRIGE_YET_DETECT;
+	m_eep.catridgeDetect = CATRIGE_CHK_UN_DETECT;
 
 	m_io.rtcEn = 1;
+	if(IS_HP1_INSERT())HP1_Pwr_ON();
 
 }
 void RTC_Init(void)
@@ -638,7 +586,7 @@ void IO_Config()
 
 //	Level_Check();
 	HP_Connect_Config();
-//	Flow_Stop_Check();
+	Flow_Stop_Check();
 
 	Battery_Read();
 	RTC_Config();

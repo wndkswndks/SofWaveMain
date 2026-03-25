@@ -101,7 +101,7 @@ int main(void)
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
   Uart_Init();
-
+  Eeprom_All_Read();
   Rf_Init();
   IO_Init();
   Hand_Init();
@@ -126,13 +126,11 @@ int main(void)
 
 
 #if 1
-	Rf_Config();
-	UartRxDataProcess();
-    IO_Config();
-
-
-#else
+  IO_Config();
+  UartRxDataProcess();
+  Rf_Config();
   Error_Check_Config();
+#else
 
   IO_Test();
   RTC_Test();

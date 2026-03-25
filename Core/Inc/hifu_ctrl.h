@@ -41,6 +41,13 @@
 #define ETX	0x03
 
 
+#define BHB0003_1W_1	174
+#define BHB0003_1W_2	140
+#define BHB0003_1W_3	170
+#define BHB0003_1W_4	166
+#define BHB0003_1W_5	152
+#define BHB0003_1W_6	162
+#define BHB0003_1W_7	160
 
 
 
@@ -146,6 +153,16 @@ typedef enum
 	CART_EVENT_DETECT = 1,
 	CART_EVENT_DETECT_NEW = 2,
 	CART_EVENT_EXPRATION = 3,
+
+	CATRIGE_CHK_OK = 0,
+	CATRIGE_CHK_NEW = 1,
+	CATRIGE_CHK_I2C_READ_ERR = 2,
+	CATRIGE_CHK_I2C_WRITE_ERR = 3,
+	CATRIGE_CHK_REMIND_ZERO_ERR = 4,
+	CATRIGE_CHK_UN_DETECT = 5,
+
+
+
 } RF_E;
 
 
@@ -213,199 +230,7 @@ typedef enum
 
 } LCD_NUM_E;
 
-typedef enum
-{
-	TEMP_MAX   = 40,
-	TEMP_MIN = -10,
-	TEMP_LOW_VALUE = -5,
 
-	TEMP_OUT_MAX   = 260,
-	TEMP_OUT_MIN = -100,
-
-
-	COMU_MAX_CNT = 5,
-	FLOW_ZERO = 0,
-	FLOW_LOW_MAX = 5,
-	FLOW_LOW_MIN = 1,
-
-	BATTRY_LIMIT_MAX = 42,
-	BATTRY_LIMIT_MIN = 15,
-	BATTRY_NOMAL_MAX = 38,
-	BATTRY_NOMAL_MIN = 18,
-
-	CATRIDGE_REMAIN_LOW_30 = 3000,
-	CATRIDGE_REMAIN_LOW_20 = 2000,
-	CATRIDGE_REMAIN_LOW_5 = 500,
-	CATRIDGE_REMAIN_LOW_3 = 300,
-
-	CATRIDGE_REMAIN_MIN = 1,
-	CATRIDGE_REMAIN_MAX = 10001,
-
-
-	CATRIDGE_WATT_MAX = 300,
-	CATRIDGE_WATT_MIN = 0,
-	CATRIDGE_FRQ_MAX = 13000,
-	CATRIDGE_FRQ_MIN = 9000,
-
-	CATRIDGE_ID_MAX = 100,
-
-	YY_MAX = 70,
-	YY_MIN = 25,
-	MM_MAX = 12,
-	MM_MIN = 1,
-	DD_MAX = 31,
-	DD_MIN = 1,
-
-	HOUR_MAX = 24,
-	HOUR_MIN = 1,
-	MIN_MAX = 60,
-	MIN_MIN = 0,
-	SEC_MAX = 60,
-	SEC_MIN = 0,
-
-	DAY_MAX = 30,
-
-	WATER_LEVEL_HIGH = 0,
-	WATER_LEVEL_LOW = 1,
-
-	PRECOOL_TIMEOUT = 2000,
-
-	LEVEL_UNIT = 1000,
-	ERR_ENDIS_UNIT = 100,
-	ERR_ENABLE = 100,
-	ERR_DISABLE = 0,
-	ERR_DATA_UNIT = 0,
-
-
-	ERR_NOT_EXIST = 0,
-	ERR_EXIST = 1,
-
-	OK_MAIN = 1,
-	OK_HP = 2,
-	OK_RF = 3,
-
-	NONE_OK_ADDR = 20,
-	NONE_OK_MAIN = 21,
-	NONE_OK_HP = 22,
-	NONE_OK_RF = 23,
-
-	ERR_CHK_MAIN = 11,
-	ERR_CHK_HP = 12,
-	ERR_CHK_RF = 13,
-} ERROR_DATA_E;
-typedef enum
-{
-	//MAIN
-	EVENT_START_NUM = 1,
-	ERR_FLOW_LIMIT_ZERO = 1,
-	ERR_FLOW_LIMIT_UNDER,
-	ERR_WATER_LEVEL_LIMIT_UNDER,
-	ERR_RTC_BATTERY_LIMIT_OVER,
-	ERR_RTC_BATTERY_LIMIT_UNDER,
-	ERR_RTC_TIME,
-	ERR_MAIN_COMMU,
-
-	//RF
-	ERR_RF_GENERATOR_COMMU,
-	ERR_RF_GENERATOR_STATUS,
-
-	//HP
-	ERR_HP_COMMU,
-	ERR_TRANSDUCER_TEMP,
-	ERR_TRANSDUCER_TEMP_LIMIT_UNDER,
-	ERR_COOLING_TIMEOUT,
-	ERR_CARTRIDGE_MANUFAC,
-	ERR_CARTRIDGE_ISSUED,
-	ERR_CARTRIDGE_FRQ,
-	ERR_CARTRIDGE_WATT_DA,
-	ERR_CARTRIDGE_MAX_SHOT,
-	ERR_CARTRIDGE_REMAINING_SHOT,
-	ERR_CARTRIDGE_ID,
-	ERR_CARTRIDGE_MANUFAC_OVER,
-	ERR_CARTRIDGE_ISSUED_OVER,
-
-
-
-	ALRAM_01,
-	ALRAM_02,
-	ALRAM_03,
-	ALRAM_04,
-	ALRAM_05,
-	ALRAM_06,
-
-	INFO_01,
-	INFO_02,
-	INFO_03,
-	INFO_04,
-	INFO_05,
-	INFO_06,
-
-	EVENT_MAX_NUM = INFO_06,
-
-	EVENT_ICON_BASE = 50,// 임의의수
-
-	LEVEL_ERROR = 1,
-	LEVEL_ALRAM = 2,
-	LEVEL_INFO = 3,
-
-	CATRIGE_DETECT = 0,
-	CATRIGE_UN_DETECT = 1,
-	CATRIGE_YET_DETECT = 2,
-
-	CATRIGE_UN_INSERT = 0,
-	CATRIGE_INSERT = 1,
-	CATRIGE_YET_INSERT = 2,
-} ERR_CMD_E;
-
-typedef enum
-{
-  IDX_MAIN_EVENT_START = 1,
-  IDX_TEMP_OUT = IDX_MAIN_EVENT_START,
-  IDX_TEMP_LIMIT_UNDER,
-  IDX_TEMP_LOW,
-  IDX_FLOW_LIMIT_UNDER,
-  IDX_FLOW_ZERO_IDX,
-  IDX_LEVEL_LOW,
-  IDX_AUTO_CAL_COMU_ERR,
-  IDX_BATTRY_LIMIT_OVER,
-  IDX_BATTRY_LIMIT_UNDER,
-  IDX_BATTRY_LIMIT_LOW,
-  IDX_RTC_ERR,
-  IDX_MAIN_EVENT_END,
-//------------------------------
-  IDX_HP_EVENT_START,
-  IDX_PRE_COOL_ERR = IDX_HP_EVENT_START,
-  IDX_HAND_COMU_ERR,
-  IDX_CATRIGE_ID_ERR,
-  IDX_CATRIGE_MANU_ERR,
-  IDX_CATRIGE_MANU_OVER_ERR,
-  IDX_CATRIGE_ISUE_ERR,
-  IDX_CATRIGE_ISUE_OVER_ERR,
-  IDX_CATRIGE_WATT_ERR,
-  IDX_CATRIGE_FRQ_ERR,
-  IDX_CATRIGE_RESHOT_ERR,
-  IDX_CATRIGE_RESHOT_LOW,
-  IDX_CATRIGE_RESHOT_ZERO,
-  IDX_CATRIGE_DETECT,
-  IDX_CATRIGE_UN_DETEC,
-  IDX_HAND_TIMEOUT,
-  IDX_HP_EVENT_END,
-//------------------------------
-  IDX_RF_EVENT_START,
-  IDX_RF_COMU_ERR = IDX_RF_EVENT_START,
-  IDX_RF_STATUS_ERR,
-  IDX_RF_EVENT_END,
-//------------------------------
-
-  IDX_LCD_COMU_ERR,
-  IDX_LCD_TIMEOUT,
-  IDX_IS_CURRNTSHOT_RESET,
-  IDX_IS_TOTALJULE_RESET,
-  IDX_CATRIGE_NEW,
-  IDX_ERROR_MAX,
-
-
-} ERROR_IDX_E;
 
 /*  			enum end  				*/
 
@@ -500,70 +325,12 @@ typedef struct
 	uint16_t remainingShotNum;
 	uint16_t catridgeStatus;
 	uint16_t catridgeDetect;
-	uint16_t catridgeDetectCome;
-	uint16_t catridgeDetectPre;
 	uint8_t catridgeRxErrCnt;
 	uint8_t cartAllow;
 } EEPROM_T;
 
 
-typedef struct
-{
-	uint8_t rfComuErr;
-	uint8_t rfTimeout;
-	uint8_t rfStatus;
-	uint8_t rfStatusErr;
 
-	uint8_t handComuErr;
-	uint8_t handTimeout;
-
-	uint8_t lcdComuErr;
-	uint8_t lcdTimeout;
-
-	uint8_t tempOut;
-	uint8_t tempLimitUnder;
-	uint8_t tempLow;
-
-	uint8_t flowLimitUnder;
-	uint8_t flowZero;
-
-	uint8_t levelLow;
-
-	uint8_t autoCalComuErr;
-	uint8_t autoCalStatus;
-
-	uint8_t preCoolErr;
-	uint8_t preCoolStatus;
-
-	uint8_t battryLimitOver;
-	uint8_t battryLimitUnder;
-	uint8_t battryLimitLow;
-
-	uint8_t RtcErr;
-	uint8_t catrigeIDErr;
-	uint8_t catrigeManuErr;
-	uint8_t catrigeManuOverErr;
-	uint8_t catrigeIsueErr;
-	uint8_t catrigeIsueOverErr;
-	uint8_t catrigeWattErr;
-	uint8_t catrigeFrqErr;
-	uint8_t catrigeReShotErr;
-	uint8_t catrigeReShotLow;
-	uint8_t catrigeReShotZero;
-
-	uint8_t errTxDoneBuff[50];
-	uint8_t errCntBuff[50];
-	uint8_t errStandBuff[50];
-	uint8_t errDataBuff[50];
-	uint8_t errNowBuff[50];
-	uint16_t errStatus[4];
-	uint8_t errTraceCnt;
-	uint16_t errChkCnt;
-	uint16_t okChkCnt;
-	uint8_t statusTx;
-	uint8_t txEn;
-
-} ERROR_T;
 typedef struct
 {
 	uint8_t mode;
@@ -611,11 +378,9 @@ void Tx_RF_Watt_Zero_ALL_Module();
 void Tx_RF_Watt_Module(uint8_t ch, uint16_t watt);
 void RF_eg_Exp_On(uint32_t expTime);
 void Tx_RF_FRQ_Module(uint8_t ch, uint16_t frequency);
-void Error_Check_Main();
-void Error_Check_HP();
-void Error_Check_RF();
 void CARTRIGE_REQ_DATA(uint8_t idx);
 void Err_Init();
+void Get_Err_StatusBitFlag();
 
 
 /*  			function end  			*/
@@ -624,7 +389,6 @@ void Err_Init();
 /*  			extern start  			*/
 extern RF_T m_rf;
 extern EEPROM_T m_eep;
-extern ERROR_T m_err;
 extern HAND_T m_hand1;
 extern uint8_t testExpFlag;
 
