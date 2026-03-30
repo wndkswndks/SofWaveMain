@@ -1824,21 +1824,22 @@ void LCD_Status_Tret()
 		testExpFlag =1;
 #endif
 		}
+#if 0
+	if(HAL_GetTick()- m_rf.preCooltime> PRECOOL_TIMEOUT && m_rf.preCooltime)
+	{
+		Ready_ON();
 
-		if(HAL_GetTick()- m_rf.preCooltime> PRECOOL_TIMEOUT && m_rf.preCooltime)
-		{
-			Ready_ON();
+		Tx_RF_FRQ_ALL_Module();
+		Tx_RF_Watt_ALL_Module_org();
+		TX_RF_Max_Ontime_Set();
 
-			Tx_RF_FRQ_ALL_Module();
-			Tx_RF_Watt_ALL_Module_org();
-			TX_RF_Max_Ontime_Set();
+		Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_TRET);
+		m_rf.treatStatus = STATUS_TRET;
 
-			Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_TRET);
-			m_rf.treatStatus = STATUS_TRET;
-
-			m_rf.preCooltime = 0;
-			m_err.preCoolStatus = 1;
-		}
+		m_rf.preCooltime = 0;
+		m_err.preCoolStatus = 1;
+	}
+#endif
 
 	}
 
@@ -2548,7 +2549,7 @@ void Exp_Nomal_Config()
 				Tx_Hand1_Msg(CMD_LCD_EXP, LCD_EXP_START);
 				HAL_Delay(200);
 				RF_Pwm_On();
-
+				Body_Led_Ctrl(BODY_LED_SHOT);
 				step = STEP1;
 			}
 		break;
@@ -2588,6 +2589,7 @@ void Exp_Nomal_Config()
 				Tx_Hand1_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
 
 				Exp_Total_Log();
+				Body_Led_Ctrl(BODY_LED_NOMAL);
 				step = STEP0;
 			}
 		break;

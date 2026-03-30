@@ -309,6 +309,9 @@ typedef struct
 	uint8_t vibeLevel;
 	uint8_t switchHandFoot;
 } RF_T;
+
+
+
 typedef struct
 {
 	uint16_t catridgeId;
@@ -333,12 +336,8 @@ typedef struct
 
 typedef struct
 {
-	uint8_t mode;
 	uint8_t pwmDuty;
 	int temprature;
-	int ioStatus;
-	uint32_t lastRxTime;
-	uint32_t dieFlag;
 	uint32_t lastHPTxTime;
 	uint8_t liveOk;
 	uint8_t liveChkCnt;

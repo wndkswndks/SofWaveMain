@@ -46,7 +46,7 @@ void Err_Init()
 		  break;
 		}
 	}
-	 Error_Test_Init();
+//	 Error_Test_Init();
 }
 
 
@@ -130,7 +130,7 @@ uint8_t Check_Common(uint8_t status, uint8_t cmd)
 			{
 				m_err.errCntBuff[cmd] = 0;
 				m_err.errDataBuff[cmd] = cmd;
-
+				Body_Led_Ctrl(BODY_LED_ERROR);
 				Set_Err_StatusBitFlag(cmd, 1);
 				if(m_eepMain.errCntBuff[cmd]<999)
 				{
@@ -359,7 +359,7 @@ m_err.errDataBuff[IDX_CATRIGE_NEW]
 
 void Error_Check_Main()
 {
-#if 1
+#if 0
 	Check_Status(m_io.level1Status, 0, IDX_LEVEL_LOW);
 	Check_Max_Min(m_io.flowSensorFrq, FLOW_LOW_MAX, FLOW_LOW_MIN, IDX_FLOW_LIMIT_UNDER);
 
@@ -387,7 +387,7 @@ void Error_Check_HP()
 
 
 
-#if 1
+#if 0
 	m_err.handTimeout++;
 	if(Check_Max(m_err.handTimeout, COMU_MAX_CNT, IDX_HAND_COMU_ERR)){}
 	if(Check_Status(m_err.preCoolStatus, 0, IDX_PRE_COOL_ERR)){}
@@ -454,12 +454,12 @@ void Error_Check_HP()
 
 void Error_Check_RF()
 {
-#if 1
+#if 0
 	m_err.rfTimeout++;
 	Tx_RF_GenStatus_Check();
 	Check_Max(m_err.rfTimeout, COMU_MAX_CNT, IDX_RF_COMU_ERR);//E02
-#if 0
 	Check_Status(m_err.rfStatus, 0, IDX_RF_STATUS_ERR);//E14
+#if 0
 #endif
 
 #endif

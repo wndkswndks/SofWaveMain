@@ -217,6 +217,11 @@ typedef enum
 	CATRIGE_UN_INSERT = 0,
 	CATRIGE_INSERT = 1,
 	CATRIGE_YET_INSERT = 2,
+
+	BODY_LED_NOMAL = 0,
+	BODY_LED_BOOT = 1,
+	BODY_LED_ERROR = 2,
+	BODY_LED_SHOT = 3,
 } IO_E;
 
 
@@ -283,6 +288,7 @@ void IO_Test();
 void RF_Pwr_ON();
 void IO_Config();
 void RTC_Init(void);
+void Body_Led_Ctrl(uint8_t mode);
 
 
 /*  			function end  			*/

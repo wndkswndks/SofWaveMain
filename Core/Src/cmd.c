@@ -279,8 +279,6 @@ void AutoCal_Tx_Z_Msg()
 void Ready_ON()
 {
 	m_rf.readyFlag = READY_ON;
-
-	 if(m_io.sol1OnStatus) SOL1_ON();
 }
 
 void Ready_OFF()
@@ -425,33 +423,23 @@ void Debug_Rx_Parssing(uint8_t add, uint32_t data)
 		break;
 
 		case CMD_BODY_LED_TEST:
-			switch (data)
-			{
-				case 0:
-					HANDLE_LED_RED_OFF();//1 boot
-					HANDLE_LED_GREED_OFF();//2 err
-					HANDLE_LED_BLUE_OFF();//3 shot
-				break;
-
-				case 1:
-					HANDLE_LED_RED_ON();//1 boot
-					HANDLE_LED_GREED_OFF();//2 err
-					HANDLE_LED_BLUE_OFF();//3 shot
-				break;
-
-				case 2:
-					HANDLE_LED_RED_OFF();//1 boot
-					HANDLE_LED_GREED_ON();//2 err
-					HANDLE_LED_BLUE_OFF();//3 shot
-				break;
-
-				case 3:
-					HANDLE_LED_RED_OFF();//1 boot
-					HANDLE_LED_GREED_OFF();//2 err
-					HANDLE_LED_BLUE_ON();//3 shot
-				break;
-			}
+			Body_Led_Ctrl(data);
 		break;
+
+		case CMD_ADC_CHANGE:
+			Tx_Hand1_Msg(CMD_ADC_CHANGE, data);
+		break;
+
+
+		case CMD_TEMP_OFFSET:
+			Tx_Hand1_Msg(CMD_TEMP_OFFSET, data);
+		break;
+
+		case CMD_ALRAM:
+			Tx_LCD_Msg(CMD_ERR, data);
+		break;
+
+
 
 		case CMD_DEBUG_VIBE:
 			Tx_Hand1_Msg(CMD_DEBUG_VIBE, data);
@@ -894,6 +882,8 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 
 		case CMD_SYS_CHK:
 			m_rf.sysChkFlag = 1;
+			Body_Led_Ctrl(BODY_LED_NOMAL);
+			Tx_Hand1_Msg(CMD_SYS_CHK, 1);
 		break;
 
 		case CMD_LCD_STATUS:
@@ -904,7 +894,7 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 					m_rf.preCooltime = HAL_GetTick();
 					m_rf.treatStatus = STATUS_PRECOOLING;
 					Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_PRECOOLING);
-
+					if(m_io.sol1OnStatus) SOL1_ON();
 				}
 			}
 			else if(data == STATUS_STNBY)
@@ -1387,7 +1377,7 @@ void UartRx5DataProcess()
 void Uart_Tx_Polling_Status()
 {
 	static uint32_t timeStamp, timeStamp2;
-
+#if 0
 	if(m_hand1.tempDutyEn == 1)
 	{
 		if(HAL_GetTick()-timeStamp >= 1000)
@@ -1397,6 +1387,8 @@ void Uart_Tx_Polling_Status()
 			timeStamp = HAL_GetTick();
 		}
 	}
+
+#endif
 	if(m_err.statusTx)
 	{
 

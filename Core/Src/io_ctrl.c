@@ -524,6 +524,7 @@ void IO_Init()
 
 	m_io.rtcEn = 1;
 	if(IS_HP1_INSERT())HP1_Pwr_ON();
+	Body_Led_Ctrl(BODY_LED_BOOT);
 
 }
 void RTC_Init(void)
@@ -576,7 +577,40 @@ void RTC_Config(void)
 //		printf("RTC Time: %02d:%02d:%02d\r\n", hour, min, sec);
 	}
 }
+void Body_Led_Ctrl(uint8_t mode)
+{
+	switch (mode)
+	{
+		case BODY_LED_NOMAL:
+			HANDLE_LED_RED_OFF();//1 boot
+			HANDLE_LED_GREED_OFF();//2 err
+			HANDLE_LED_BLUE_OFF();//3 shot
+			Debug_Printf("LED_NOMAL", 1);
+		break;
 
+		case BODY_LED_BOOT:
+			HANDLE_LED_RED_ON();//1 boot
+			HANDLE_LED_GREED_OFF();//2 err
+			HANDLE_LED_BLUE_OFF();//3 shot
+			Debug_Printf("LED_BOOT", 1);
+		break;
+
+		case BODY_LED_ERROR:
+			HANDLE_LED_RED_OFF();//1 boot
+			HANDLE_LED_GREED_ON();//2 err
+			HANDLE_LED_BLUE_OFF();//3 shot
+			Debug_Printf("LED_ERROR", 1);
+		break;
+
+		case BODY_LED_SHOT:
+			HANDLE_LED_RED_OFF();//1 boot
+			HANDLE_LED_GREED_OFF();//2 err
+			HANDLE_LED_BLUE_ON();//3 shot
+			Debug_Printf("LED_SHOT", 1);
+		break;
+	}
+
+}
 void IO_Config()
 {
 	uint8_t is_pumpOn = (m_io.waterPumpPwrEn == 1);
@@ -586,7 +620,7 @@ void IO_Config()
 
 //	Level_Check();
 	HP_Connect_Config();
-	Flow_Stop_Check();
+//	Flow_Stop_Check();
 
 	Battery_Read();
 	RTC_Config();
