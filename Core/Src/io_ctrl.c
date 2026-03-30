@@ -316,10 +316,7 @@ void Cooling_ON(uint8_t num)
 void HP_Connect_Config()
 {
 	static uint32_t timeStamp;
-	static uint8_t step = STEP0;
-	static uint8_t liveCnt;
-	static uint8_t insert1, insert2;
-	static uint8_t cartrigeDetectFail = 1;
+	static uint8_t isCartDetectCnt = 0;
 
 	int flowINt;
 
@@ -332,20 +329,23 @@ void HP_Connect_Config()
 
 		if(IS_HP1_INSERT())
 		{
-			if(m_io.HP1_Insert != CATRIGE_INSERT)Debug_Printf("CATRIGE_INSERT",1);
-			m_io.HP1_Insert = CATRIGE_INSERT;
+			if(m_io.HP1_Insert != HP_INSERT)Debug_Printf("HP_INSERT",1);
+			m_io.HP1_Insert = HP_INSERT;
 		}
 		else
 		{
-			if(m_io.HP1_Insert != CATRIGE_UN_INSERT)Debug_Printf("CATRIGE_UN_INSERT",1);
-			m_io.HP1_Insert = CATRIGE_UN_INSERT;
+			if(m_io.HP1_Insert != HP_UN_INSERT)Debug_Printf("HP_UN_INSERT",1);
+			m_io.HP1_Insert = HP_UN_INSERT;
 			m_eep.catridgeDetect = CATRIGE_CHK_UN_DETECT;
 		}
 
-
-
+		if(!m_hand1.cartDetectFlag && isCartDetectCnt<3)
+		{
+			Tx_Hand1_Msg(CMD_CATRIDGE_EVENT, 1);
+			isCartDetectCnt++;
+		}
 	}
-	if(m_io.HP1_Insert == CATRIGE_INSERT)
+	if(m_io.HP1_Insert == HP_INSERT)
 	{
 		if(!m_io.HP1PwrEn)HP1_Pwr_ON();
 	}
@@ -355,9 +355,10 @@ void HP_Connect_Config()
 	}
 
 
-	if((m_io.HP1_Insert == CATRIGE_INSERT) && (m_eep.catridgeDetect != CATRIGE_CHK_UN_DETECT))
+	if((m_io.HP1_Insert == HP_INSERT) && (m_eep.catridgeDetect != CATRIGE_CHK_UN_DETECT))
 	{
 		m_io.sol1OnStatus = 1;//SOL1_ON();
+		isCartDetectCnt = 0;
 	}
 	else
 	{
@@ -519,7 +520,7 @@ void IO_Init()
 	m_io.sol1OnStatus = 0;
 
 
-	m_io.HP1_Insert = CATRIGE_YET_INSERT;
+	m_io.HP1_Insert = HP_YET_INSERT;
 	m_eep.catridgeDetect = CATRIGE_CHK_UN_DETECT;
 
 	m_io.rtcEn = 1;

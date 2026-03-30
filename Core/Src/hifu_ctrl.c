@@ -965,7 +965,8 @@ void Rf_Init()
 	RF_Pwr_ON();
 
 
-	Rf_TD_BHB003_Table_260212_test();
+	//Rf_TD_BHB003_Table_260212_test();
+	Rf_TD_BHA001_Table_260306();
 
 
 
@@ -1014,7 +1015,7 @@ void LCD_Init()
 {
 	HAL_Delay(500);
 
-	m_rf.energy = 50;
+	m_rf.energy = 32;
 	m_rf.pulseDuration = 50;
 	m_rf.postCooling = 5;
 	m_rf.interval = 1;
@@ -1783,7 +1784,19 @@ void RF_Pwm_Conter_Common(uint8_t pulseNum)
 	}
 }
 
+void RF_PWM_Force_Stop()
+{
+	if(m_rf.pluseOn)
+	{
+		m_rf.pluseOn = 0;
+		HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_LOW);
+		Pulse_Trig_TimeSave();
+		m_rf.pluseLevel = PWM_H1_LEVEL;
+		m_rf.expEndFlag = 1;
+		m_rf.readyFlag = READY_ON;// for go off
+	}
 
+}
 void RF_Eg_Exp_Conter()
 {
 	if(m_rf.egExpOn)
@@ -1824,7 +1837,7 @@ void LCD_Status_Tret()
 		testExpFlag =1;
 #endif
 		}
-#if 0
+#if 1
 	if(HAL_GetTick()- m_rf.preCooltime> PRECOOL_TIMEOUT && m_rf.preCooltime)
 	{
 		Ready_ON();
@@ -2610,10 +2623,9 @@ void Rf_Config()
 	LCD_Status_Tret();
 	Exp_Config();
 	AutoCal_Config();
-	RF_Borad_FeedBack_Test();
 
 #else
-
+	RF_Borad_FeedBack_Test();
 	Rf_Test();
 #endif
 

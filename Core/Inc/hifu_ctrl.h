@@ -343,6 +343,7 @@ typedef struct
 	uint8_t liveChkCnt;
 	uint8_t tempDutyEn;
 	uint8_t cartAllOk;
+	uint16_t cartDetectFlag;
 } HAND_T;
 
 
@@ -380,6 +381,7 @@ void Tx_RF_FRQ_Module(uint8_t ch, uint16_t frequency);
 void CARTRIGE_REQ_DATA(uint8_t idx);
 void Err_Init();
 void Get_Err_StatusBitFlag();
+void RF_PWM_Force_Stop();
 
 
 /*  			function end  			*/

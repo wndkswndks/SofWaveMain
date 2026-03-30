@@ -287,6 +287,7 @@ void Ready_OFF()
 	Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_STNBY);
 	m_rf.readyFlag = READY_OFF;
 	SOL1_OFF();
+	RF_PWM_Force_Stop();
 
 }
 
@@ -527,9 +528,9 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 	if(add==0)return;
 	Debug_LCD_Printf(DEBUG_RX, add, data);
 
-	if(m_rf.treatStatus == STATUS_TRET)
+	if(m_rf.treatStatus == STATUS_TRET ||m_rf.treatStatus == STATUS_PRECOOLING)
 	{
-		if(add != CMD_LCD_STATUS)
+		if(add != CMD_LCD_STATUS && add != CMD_DEVICE_STATUS)
 		{
 
 			Ready_OFF();
@@ -889,7 +890,7 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 		case CMD_LCD_STATUS:
 			if(data == STATUS_PRECOOLING)
 			{
-				if(m_eep.catridgeDetect != CATRIGE_CHK_UN_DETECT && (m_io.HP1_Insert == CATRIGE_INSERT))
+				if(m_eep.catridgeDetect != CATRIGE_CHK_UN_DETECT && (m_io.HP1_Insert == HP_INSERT))
 				{
 					m_rf.preCooltime = HAL_GetTick();
 					m_rf.treatStatus = STATUS_PRECOOLING;
@@ -987,6 +988,11 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 			if(m_rf.testPulseOption == 1)
 			{
 				m_rf.interval = 0;
+				Tx_LCD_Msg(CMD_INTERVAL, m_rf.interval);
+			}
+			else if(m_rf.testPulseOption == 2)
+			{
+				m_rf.interval = 1;
 				Tx_LCD_Msg(CMD_INTERVAL, m_rf.interval);
 			}
 
@@ -1138,6 +1144,7 @@ void Hand_Rx_Parssing(uint8_t add, uint32_t data)
 
 			case CMD_CATRIDGE_EVENT:
 				m_eep.catridgeDetect = data;
+				m_hand1.cartDetectFlag = 1;
 				switch (data)
 				{
 					case CATRIGE_CHK_OK:
@@ -1409,6 +1416,10 @@ void Uart_Tx_Polling_Status()
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
 			txData = 8000 + m_io.level1Status;
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
+			txData = 9000 + m_io.HP1_Insert;
+			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
+			txData = 10000 +m_eep.catridgeDetect;
+			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
 			timeStamp2 = HAL_GetTick();
 		}
 
@@ -1429,7 +1440,7 @@ void Uart_Tx_Polling_Status()
 
 void UartRxDataProcess()
 {
-	if(m_rf.pluseOn) return;
+//	if(m_rf.pluseOn) return;
 	UartRx1DataProcess();
 	UartRx2DataProcess();//hp
 	UartRx4DataProcess();//gen
