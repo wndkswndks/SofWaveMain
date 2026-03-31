@@ -966,8 +966,8 @@ void Rf_Init()
 	RF_Pwr_ON();
 
 
-//	Rf_TD_BHB003_Table_260212_test();
-	Rf_TD_BHA001_Table_260306();
+	Rf_TD_BHB003_Table_260212_test();
+//	Rf_TD_BHA001_Table_260306();
 
 
 

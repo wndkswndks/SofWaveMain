@@ -938,7 +938,7 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 		case CMD_LCD_STATUS:
 			if(data == STATUS_PRECOOLING)
 			{
-//				if(m_eep.catridgeDetect != CATRIGE_CHK_UN_DETECT && (m_io.HP1_Insert == HP_INSERT))
+				if(m_eep.catridgeDetect != CATRIGE_CHK_UN_DETECT && (m_io.HP1_Insert == HP_INSERT))
 				{
 					m_rf.preCooltime = HAL_GetTick();
 					m_rf.treatStatus = STATUS_PRECOOLING;
