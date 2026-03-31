@@ -291,7 +291,7 @@ void Ready_OFF()
 
 }
 
-void CMD_Is_All_Live()
+void CMD_Is_All_Live_ORG()
 {
 	uint8_t rxLiveStatus = 0;
 
@@ -321,13 +321,61 @@ void CMD_Is_All_Live()
 	}
 	if(m_hand1.liveOk == 0 && m_rf.liveOk==0)
 	{
-		Tx_LCD_Msg(CMD_DO_ALL_LIVE, LIVE_ALL_DETH);
+		Tx_LCD_Msg(CMD_DO_ALL_LIVE, LIVE_HP_DETH);
 	}
 	else
 	{
 		rxLiveStatus = m_hand1.liveOk*10 + m_rf.liveOk;
 		Tx_LCD_Msg(CMD_DO_ALL_LIVE, rxLiveStatus);
 	}
+
+
+
+}
+
+void CMD_Is_All_Live(uint8_t who)
+{
+	uint8_t rxLiveStatus = 0;
+
+	switch (who)
+	{
+		case LIVE_HP:
+			m_hand1.liveChkCnt = 0;
+			m_hand1.liveOk = 0;
+			for(int i =0 ;i < 3;i++)
+			{
+				Tx_Hand1_Msg(CMD_DO_ALL_LIVE, 0);
+				HAL_Delay(100);
+				UartRx2DataProcess();
+			}
+			if(m_hand1.liveChkCnt >= 2)
+			{
+				m_hand1.liveOk = 1;
+				Tx_LCD_Msg(CMD_DO_ALL_LIVE, LIVE_HP);
+			}
+			else
+			{
+				$start$
+			}
+
+		break;
+
+		case LIVE_RF:
+			m_rf.liveChkCnt = 0;
+			m_rf.liveOk = 0;
+			for(int i =0 ;i < 3;i++)
+			{
+				Tx_RF_GenStatus_Check();
+			}
+			if(m_rf.liveChkCnt >= 2)
+			{
+				m_rf.liveOk = 1;
+				Tx_LCD_Msg(CMD_DO_ALL_LIVE, LIVE_RF);
+			}
+		break;
+	}
+
+
 
 
 
@@ -890,7 +938,7 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 		case CMD_LCD_STATUS:
 			if(data == STATUS_PRECOOLING)
 			{
-				if(m_eep.catridgeDetect != CATRIGE_CHK_UN_DETECT && (m_io.HP1_Insert == HP_INSERT))
+//				if(m_eep.catridgeDetect != CATRIGE_CHK_UN_DETECT && (m_io.HP1_Insert == HP_INSERT))
 				{
 					m_rf.preCooltime = HAL_GetTick();
 					m_rf.treatStatus = STATUS_PRECOOLING;
@@ -938,13 +986,12 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 		break;
 
 		case CMD_DO_ALL_LIVE:
+
 			CMD_Is_All_Live();
-//			Tx_LCD_Msg(CMD_DO_ALL_LIVE, 11);
 		break;
 
 		case CMD_GET_ALL_CART:
 			Tx_Hand1_Msg(CMD_GET_ALL_CART, 0);
-//			Tx_LCD_Msg(CMD_GET_ALL_CART_END, 11);
 		break;
 
 		case CMD_GET_ALL_CART_END:
@@ -1001,10 +1048,10 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 
 		case CMD_VIBE_LEVEL:
 			m_rf.vibeLevel++;
-			m_rf.vibeLevel %= 5;
+			m_rf.vibeLevel %= 3;
 			Tx_LCD_Msg(CMD_VIBE_LEVEL, m_rf.vibeLevel);
 
-			Tx_Hand1_Msg(CMD_DEBUG_VIBE, m_rf.vibeLevel);
+			Tx_Hand1_Msg(CMD_VIBE_LEVEL, m_rf.vibeLevel);
 		break;
 
 		case CMD_HAND_FOOT:

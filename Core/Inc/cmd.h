@@ -80,6 +80,9 @@ typedef enum
 	CMD_RTC_SEC = 49,
 	CMD_RTC_EN = 50,
 	CMD_CART_ALLOW = 51,
+	CMD_VIBE_LEVEL = 52,
+	CMD_DEBUG_VIBE = 53,
+
 
 	CMD_CATRIDGE_STATUS    = 56,
 	CMD_CATRIDGE_EVENT= 57,
@@ -93,7 +96,6 @@ typedef enum
 	CMD_ERR_EVENT = 64,
 	CMD_AGING_BUTTON = 65,
 	CMD_AUTO_EXP = 66,
-	CMD_VIBE_LEVEL = 67,
 	CMD_IS_CATRIDGE    = 68,
 	CMD_HAND_FOOT	 = 69,
 
@@ -132,7 +134,6 @@ typedef enum
 	CMD_DEBUG_PELTIER = 195,
 	CMD_WATT_FEEDBACK = 196,
 	CMD_BODY_LED_TEST = 197,
-	CMD_DEBUG_VIBE = 198,
 	CMD_TTTEST = 199,
 
 	CMD_HP1_ADD = 200,
@@ -311,7 +312,7 @@ void Tx_LCD_Msg_NoDebug(uint8_t add, uint16_t data);
 void Tx_RF_Msg(uint8_t* buff, uint8_t len);
 void AutoCal_Tx_IP_Msg();
 void AutoCal_Tx_Z_Msg();
-void CMD_Is_All_Live();
+void CMD_Is_All_Live(uint8_t who);
 
 void UartRx2DataProcess();
 void Uart_Init();

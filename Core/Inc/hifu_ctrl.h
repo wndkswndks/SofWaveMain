@@ -123,9 +123,10 @@ typedef enum
 	RF_RX_COMMON = 0,
 	RF_RX_CALLBACK = 1,
 
-	LIVE_ALL_DETH = 0,
 	LIVE_HP = 10,
 	LIVE_RF = 1,
+	LIVE_HP_DETH = 20,
+	LIVE_RF_DETH = 2,
 
 	RTC_REG_YY = 0x06,
 	RTC_REG_MM = 0x05,

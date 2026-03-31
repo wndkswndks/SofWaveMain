@@ -740,92 +740,93 @@ void Rf_TD_BHA001_Table_260306()
 	m_eep.rfFrqBuff[6] = 12075;
 	m_eep.rfFrqBuff[7] = 12055;
 
+	m_eep.rfWattBuff[0] = 0;
 
-	m_eep.rfFrqBuff[0] = 0;
+	m_eep.rfWattBuff[1] = 19;
+	m_eep.rfWattBuff[2] = 59;
+	m_eep.rfWattBuff[3] = 91;
+	m_eep.rfWattBuff[4] = 119;
+	m_eep.rfWattBuff[5] = 147;
+	m_eep.rfWattBuff[6] = 177;
+	m_eep.rfWattBuff[7] = 205;
+	m_eep.rfWattBuff[8] = 225;
+	m_eep.rfWattBuff[9] = 247;
+	m_eep.rfWattBuff[10] = 265;
+	m_eep.rfWattBuff[11] = 290;
 
-	m_eep.rfFrqBuff[1] = 19;
-	m_eep.rfFrqBuff[2] = 59;
-	m_eep.rfFrqBuff[3] = 91;
-	m_eep.rfFrqBuff[4] = 119;
-	m_eep.rfFrqBuff[5] = 147;
-	m_eep.rfFrqBuff[6] = 177;
-	m_eep.rfFrqBuff[7] = 205;
-	m_eep.rfFrqBuff[8] = 225;
-	m_eep.rfFrqBuff[9] = 247;
-	m_eep.rfFrqBuff[10] = 265;
-	m_eep.rfFrqBuff[11] = 290;
+	m_eep.rfWattBuff[12] = 23;
+	m_eep.rfWattBuff[13] = 61;
+	m_eep.rfWattBuff[14] = 93;
+	m_eep.rfWattBuff[15] = 121;
+	m_eep.rfWattBuff[16] = 149;
+	m_eep.rfWattBuff[17] = 177;
+	m_eep.rfWattBuff[18] = 199;
+	m_eep.rfWattBuff[19] = 221;
+	m_eep.rfWattBuff[20] = 241;
+	m_eep.rfWattBuff[21] = 261;
+	m_eep.rfWattBuff[22] = 290;
 
-	m_eep.rfFrqBuff[12] = 23;
-	m_eep.rfFrqBuff[13] = 61;
-	m_eep.rfFrqBuff[14] = 93;
-	m_eep.rfFrqBuff[15] = 121;
-	m_eep.rfFrqBuff[16] = 149;
-	m_eep.rfFrqBuff[17] = 177;
-	m_eep.rfFrqBuff[18] = 199;
-	m_eep.rfFrqBuff[19] = 221;
-	m_eep.rfFrqBuff[20] = 241;
-	m_eep.rfFrqBuff[21] = 261;
-	m_eep.rfFrqBuff[22] = 290;
+	m_eep.rfWattBuff[23] = 23;
+	m_eep.rfWattBuff[24] = 65;
+	m_eep.rfWattBuff[25] = 97;
+	m_eep.rfWattBuff[26] = 127;
+	m_eep.rfWattBuff[27] = 153;
+	m_eep.rfWattBuff[28] = 181;
+	m_eep.rfWattBuff[29] = 203;
+	m_eep.rfWattBuff[30] = 225;
+	m_eep.rfWattBuff[31] = 245;
+	m_eep.rfWattBuff[32] = 267;
+	m_eep.rfWattBuff[33] = 290;
 
-	m_eep.rfFrqBuff[23] = 23;
-	m_eep.rfFrqBuff[24] = 65;
-	m_eep.rfFrqBuff[25] = 97;
-	m_eep.rfFrqBuff[26] = 127;
-	m_eep.rfFrqBuff[27] = 153;
-	m_eep.rfFrqBuff[28] = 181;
-	m_eep.rfFrqBuff[29] = 203;
-	m_eep.rfFrqBuff[30] = 225;
-	m_eep.rfFrqBuff[31] = 245;
-	m_eep.rfFrqBuff[32] = 267;
-	m_eep.rfFrqBuff[33] = 290;
+	m_eep.rfWattBuff[34] = 19;
+	m_eep.rfWattBuff[35] = 63;
+	m_eep.rfWattBuff[36] = 99;
+	m_eep.rfWattBuff[37] = 129;
+	m_eep.rfWattBuff[38] = 159;
+	m_eep.rfWattBuff[39] = 187;
+	m_eep.rfWattBuff[40] = 211;
+	m_eep.rfWattBuff[41] = 235;
+	m_eep.rfWattBuff[42] = 257;
+	m_eep.rfWattBuff[43] = 277;
+	m_eep.rfWattBuff[44] = 290;
 
-	m_eep.rfFrqBuff[34] = 19;
-	m_eep.rfFrqBuff[35] = 63;
-	m_eep.rfFrqBuff[36] = 99;
-	m_eep.rfFrqBuff[37] = 129;
-	m_eep.rfFrqBuff[38] = 159;
-	m_eep.rfFrqBuff[39] = 187;
-	m_eep.rfFrqBuff[40] = 211;
-	m_eep.rfFrqBuff[41] = 235;
-	m_eep.rfFrqBuff[42] = 257;
-	m_eep.rfFrqBuff[43] = 277;
-	m_eep.rfFrqBuff[44] = 290;
+	m_eep.rfWattBuff[45] = 21;
+	m_eep.rfWattBuff[46] = 65;
+	m_eep.rfWattBuff[47] = 99;
+	m_eep.rfWattBuff[48] = 125;
+	m_eep.rfWattBuff[49] = 157;
+	m_eep.rfWattBuff[50] = 183;
+	m_eep.rfWattBuff[51] = 209;
+	m_eep.rfWattBuff[52] = 233;
+	m_eep.rfWattBuff[53] = 251;
+	m_eep.rfWattBuff[54] = 269;
+	m_eep.rfWattBuff[55] = 290;
 
-	m_eep.rfFrqBuff[45] = 21;
-	m_eep.rfFrqBuff[46] = 65;
-	m_eep.rfFrqBuff[47] = 99;
-	m_eep.rfFrqBuff[48] = 125;
-	m_eep.rfFrqBuff[49] = 157;
-	m_eep.rfFrqBuff[50] = 183;
-	m_eep.rfFrqBuff[51] = 209;
-	m_eep.rfFrqBuff[52] = 233;
-	m_eep.rfFrqBuff[53] = 251;
-	m_eep.rfFrqBuff[54] = 269;
-	m_eep.rfFrqBuff[55] = 290;
+	m_eep.rfWattBuff[56] = 27;
+	m_eep.rfWattBuff[57] = 75;
+	m_eep.rfWattBuff[58] = 109;
+	m_eep.rfWattBuff[59] = 139;
+	m_eep.rfWattBuff[60] = 163;
+	m_eep.rfWattBuff[61] = 189;
+	m_eep.rfWattBuff[62] = 213;
+	m_eep.rfWattBuff[63] = 235;
+	m_eep.rfWattBuff[64] = 255;
+	m_eep.rfWattBuff[65] = 275;
+	m_eep.rfWattBuff[66] = 290;
 
-	m_eep.rfFrqBuff[56] = 27;
-	m_eep.rfFrqBuff[57] = 75;
-	m_eep.rfFrqBuff[58] = 109;
-	m_eep.rfFrqBuff[59] = 139;
-	m_eep.rfFrqBuff[60] = 163;
-	m_eep.rfFrqBuff[61] = 189;
-	m_eep.rfFrqBuff[62] = 213;
-	m_eep.rfFrqBuff[63] = 235;
-	m_eep.rfFrqBuff[64] = 255;
-	m_eep.rfFrqBuff[65] = 275;
-	m_eep.rfFrqBuff[66] = 290;
+	m_eep.rfWattBuff[67] = 35;
+	m_eep.rfWattBuff[68] = 73;
+	m_eep.rfWattBuff[69] = 105;
+	m_eep.rfWattBuff[70] = 131;
+	m_eep.rfWattBuff[71] = 159;
+	m_eep.rfWattBuff[72] = 187;
+	m_eep.rfWattBuff[73] = 213;
+	m_eep.rfWattBuff[74] = 237;
+	m_eep.rfWattBuff[75] = 259;
+	m_eep.rfWattBuff[76] = 279;
+	m_eep.rfWattBuff[77] = 290;
 
-	m_eep.rfFrqBuff[67] = 35;
-	m_eep.rfFrqBuff[68] = 73;
-	m_eep.rfFrqBuff[69] = 105;
-	m_eep.rfFrqBuff[70] = 131;
-	m_eep.rfFrqBuff[71] = 159;
-	m_eep.rfFrqBuff[72] = 187;
-	m_eep.rfFrqBuff[73] = 213;
-	m_eep.rfFrqBuff[74] = 237;
-	m_eep.rfFrqBuff[75] = 259;
-	m_eep.rfFrqBuff[76] = 279;
-	m_eep.rfFrqBuff[77] = 290;
+
 
 }
 
@@ -965,8 +966,8 @@ void Rf_Init()
 	RF_Pwr_ON();
 
 
-	Rf_TD_BHB003_Table_260212_test();
-//	Rf_TD_BHA001_Table_260306();
+//	Rf_TD_BHB003_Table_260212_test();
+	Rf_TD_BHA001_Table_260306();
 
 
 
@@ -2563,6 +2564,10 @@ void Exp_Nomal_Config()
 				HAL_Delay(200);
 				RF_Pwm_On();
 				Body_Led_Ctrl(BODY_LED_SHOT);
+				float tempF = (m_rf.pulseDuration + (m_rf.testPulseOption-1)*m_rf.interval*10)*0.66;// 2/3 = 0.66
+				tempF *= 100.0;
+				uint16_t vibeOnPointTime = tempF;
+				Tx_Hand1_Msg(CMD_DEBUG_VIBE, vibeOnPointTime);
 				step = STEP1;
 			}
 		break;
