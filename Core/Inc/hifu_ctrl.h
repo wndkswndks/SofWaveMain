@@ -291,7 +291,7 @@ typedef struct
 	uint32_t lastRfGenTxTime;
 	uint8_t liveChkCnt;
 	uint8_t liveOk;
-	uint8_t testPulseOption;
+	uint8_t PulseOption;
 	uint8_t pulseNum;
 	uint8_t pulseBuff[13];
 	uint8_t pulseMaxBuff[13];

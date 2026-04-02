@@ -1032,8 +1032,8 @@ void LCD_Init()
 	Tx_LCD_Msg(CMD_TOTAL_JOULE, m_rf.totaEnergy);
 	Tx_LCD_Msg(CMD_CURRENT_SHOT, m_rf.currentShot);
 	Tx_LCD_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
-	m_rf.testPulseOption = 2;
-	Tx_LCD_Msg(CMD_TEST_PULSE, m_rf.testPulseOption);
+	m_rf.PulseOption = 2;
+	Tx_LCD_Msg(CMD_TEST_PULSE, m_rf.PulseOption);
 
 	Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_STNBY);
 	m_rf.switchHandFoot = SWITCH_HAND;
@@ -1811,7 +1811,26 @@ void RF_Eg_Exp_Conter()
 	}
 }
 
+void Vibe_Time_Cal()
+{
+	float tempF;
+	if(m_rf.PulseOption==1)
+	{
+		if(m_rf.pulseDuration>20) tempF = m_rf.pulseDuration - 20;
+		else tempF = 0;
 
+	}
+	else
+	{
+		tempF = (m_rf.pulseDuration + (m_rf.PulseOption-1)*m_rf.interval*10);// 2/3 = 0.66
+		tempF -=  ((float)m_rf.pulseDuration/m_rf.PulseOption);
+	}
+
+	tempF *= 100.0;
+	uint16_t vibeOnPointTime = tempF;
+	Tx_Hand1_Msg(CMD_DEBUG_VIBE, vibeOnPointTime);
+
+}
 
 
 void LCD_Status_Tret()
@@ -1828,6 +1847,8 @@ void LCD_Status_Tret()
 			TX_RF_Max_Ontime_Set();
 
 			Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_TRET);
+			Tx_Hand1_Msg(CMD_LCD_STATUS, STATUS_TRET);
+
 			m_rf.treatStatus = STATUS_TRET;
 
 			m_rf.preCooltime = 0;
@@ -1848,6 +1869,7 @@ void LCD_Status_Tret()
 		TX_RF_Max_Ontime_Set();
 
 		Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_TRET);
+		Tx_Hand1_Msg(CMD_LCD_STATUS, STATUS_TRET);
 		m_rf.treatStatus = STATUS_TRET;
 
 		m_rf.preCooltime = 0;
@@ -2557,17 +2579,15 @@ void Exp_Nomal_Config()
 		case STEP0:
 			if(testExpFlag || Exp_Shot_Chk())
 			{
-				HAL_Delay(200);
+				HAL_Delay(100);//200org
 				testExpFlag = 0;
 				Tx_LCD_Msg(CMD_LCD_EXP, LCD_EXP_START);
 				Tx_Hand1_Msg(CMD_LCD_EXP, LCD_EXP_START);
-				HAL_Delay(200);
+				HAL_Delay(100);//200org
 				RF_Pwm_On();
 				Body_Led_Ctrl(BODY_LED_SHOT);
-				float tempF = (m_rf.pulseDuration + (m_rf.testPulseOption-1)*m_rf.interval*10)*0.66;// 2/3 = 0.66
-				tempF *= 100.0;
-				uint16_t vibeOnPointTime = tempF;
-				Tx_Hand1_Msg(CMD_DEBUG_VIBE, vibeOnPointTime);
+				Vibe_Time_Cal();
+
 				step = STEP1;
 			}
 		break;
@@ -2576,7 +2596,7 @@ void Exp_Nomal_Config()
 #if 0
 			RF_Pwm_Conter_Individual();
 #else
-			RF_Pwm_Conter_Common(m_rf.testPulseOption);
+			RF_Pwm_Conter_Common(m_rf.PulseOption);
 #endif
 			if(m_rf.expEndFlag) step = STEP2;
 		break;

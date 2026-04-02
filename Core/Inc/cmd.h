@@ -71,7 +71,7 @@ typedef enum
 	CMD_ISSUED_MM = 40,
 	CMD_ISSUED_DD = 41,
 	CMD_DAY_REQ = 42,
-	CMD_RTC = 43,
+
 	CMD_RTC_YY = 44,
 	CMD_RTC_MM = 45,
 	CMD_RTC_DD = 46,
@@ -97,6 +97,7 @@ typedef enum
 	CMD_AGING_BUTTON = 65,
 	CMD_AUTO_EXP = 66,
 	CMD_IS_CATRIDGE    = 68,
+	CMD_SYS_CHK_OK = 67,
 	CMD_HAND_FOOT	 = 69,
 
 	CMD_DO_ALL_LIVE = 70,

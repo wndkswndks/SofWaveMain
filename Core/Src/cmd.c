@@ -285,6 +285,7 @@ void Ready_OFF()
 {
 	m_rf.treatStatus = STATUS_STNBY;
 	Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_STNBY);
+	Tx_Hand1_Msg(CMD_LCD_STATUS, STATUS_STNBY);
 	m_rf.readyFlag = READY_OFF;
 	SOL1_OFF();
 	RF_PWM_Force_Stop();
@@ -355,7 +356,8 @@ void CMD_Is_All_Live(uint8_t who)
 			}
 			else
 			{
-				$start$
+				m_hand1.liveOk = 0;
+				Tx_LCD_Msg(CMD_DO_ALL_LIVE, LIVE_HP_DETH);
 			}
 
 		break;
@@ -371,6 +373,11 @@ void CMD_Is_All_Live(uint8_t who)
 			{
 				m_rf.liveOk = 1;
 				Tx_LCD_Msg(CMD_DO_ALL_LIVE, LIVE_RF);
+			}
+			else
+			{
+				m_rf.liveOk = 0;
+				Tx_LCD_Msg(CMD_DO_ALL_LIVE, LIVE_RF_DETH);
 			}
 		break;
 	}
@@ -392,9 +399,9 @@ void Debug_Rx_Parssing(uint8_t add, uint32_t data)
 	{
 
 		case CMD_TEST_PULSE:
-			m_rf.testPulseOption++;
-			if(m_rf.testPulseOption == 5) m_rf.testPulseOption = 1;
-			Tx_LCD_Msg(CMD_TEST_PULSE, m_rf.testPulseOption);
+			m_rf.PulseOption++;
+			if(m_rf.PulseOption == 5) m_rf.PulseOption = 1;
+			Tx_LCD_Msg(CMD_TEST_PULSE, m_rf.PulseOption);
 		break;
 
 		case CMD_TEST_FORCE_PAGE_CHANGE:
@@ -653,7 +660,7 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 		break;
 
 		case CMD_INTERVAL:
-			if(m_rf.testPulseOption == 1)
+			if(m_rf.PulseOption == 1)
 			{
 				m_rf.interval = 0;
 			}
@@ -668,8 +675,8 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 
 			if(m_rf.interval==0)
 			{
-				m_rf.testPulseOption = 1;
-				Tx_LCD_Msg(CMD_TEST_PULSE, m_rf.testPulseOption);
+				m_rf.PulseOption = 1;
+				Tx_LCD_Msg(CMD_TEST_PULSE, m_rf.PulseOption);
 			}
 
 			Tx_LCD_Msg(CMD_INTERVAL, m_rf.interval);
@@ -850,10 +857,6 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 			Tx_Hand1_Msg(CMD_DAY_REQ, data);
 		break;
 
-		case CMD_RTC:
-			Tx_LCD_Msg(CMD_RTC, data);
-			Tx_Hand1_Msg(CMD_RTC, data);
-		break;
 
 		case CMD_INFO_UI_DESING:
 			m_io.infoUiDesing = data;
@@ -987,7 +990,7 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 
 		case CMD_DO_ALL_LIVE:
 
-			CMD_Is_All_Live();
+			CMD_Is_All_Live(data);
 		break;
 
 		case CMD_GET_ALL_CART:
@@ -1027,17 +1030,17 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 		break;
 
 		case CMD_TEST_PULSE:
-			m_rf.testPulseOption++;
-			if(m_rf.testPulseOption == 5) m_rf.testPulseOption = 1;
+			m_rf.PulseOption++;
+			if(m_rf.PulseOption == 5) m_rf.PulseOption = 1;
 
-			Tx_LCD_Msg(CMD_TEST_PULSE, m_rf.testPulseOption);
+			Tx_LCD_Msg(CMD_TEST_PULSE, m_rf.PulseOption);
 
-			if(m_rf.testPulseOption == 1)
+			if(m_rf.PulseOption == 1)
 			{
 				m_rf.interval = 0;
 				Tx_LCD_Msg(CMD_INTERVAL, m_rf.interval);
 			}
-			else if(m_rf.testPulseOption == 2)
+			else if(m_rf.PulseOption == 2)
 			{
 				m_rf.interval = 1;
 				Tx_LCD_Msg(CMD_INTERVAL, m_rf.interval);
@@ -1152,12 +1155,15 @@ void Hand_Rx_Parssing(uint8_t add, uint32_t data)
 
 			if(m_rf.switchHandFoot == SWITCH_HAND)
 			{
-				testExpFlag = 1;
-				Debug_Printf("EXP_HAND",1);
+				if(!m_rf.pluseOn)
+				{
+					testExpFlag = 1;
+					Debug_Printf("EXP_HAND",1);
+				}
 			}
 			else
 			{
-				Debug_Printf("NOW FOOT MODE",1);
+				Debug_Printf("NOW HAND MODE",1);
 			}
 
 			break;
