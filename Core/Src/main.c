@@ -88,10 +88,9 @@ int main(void)
 
   /* USER CODE END SysInit */
 
-  /* Initialize alzl configured peripherals */
+  /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_UART5_Init();
-
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
   MX_USART3_UART_Init();
@@ -99,6 +98,7 @@ int main(void)
   MX_ADC1_Init();
   MX_I2C1_Init();
   MX_SPI1_Init();
+  MX_ADC2_Init();
   /* USER CODE BEGIN 2 */
   Uart_Init();
   Eeprom_All_Read();
@@ -178,7 +178,7 @@ void SystemClock_Config(void)
     Error_Handler();
   }
   PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC;
-  PeriphClkInit.AdcClockSelection = RCC_ADCPCLK2_DIV2;
+  PeriphClkInit.AdcClockSelection = RCC_ADCPCLK2_DIV6;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
     Error_Handler();
