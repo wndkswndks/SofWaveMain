@@ -259,256 +259,11 @@ float Get_NTC_Temperature_j(uint32_t adc_value) {
     return temperature_c;
 }
 
-float Get_NTC_Temperature(uint32_t adc_value) {
-    if (adc_value == 0) return -99.0f; // 에러 방지
-
-    // 1. 전압 분배 법칙을 이용한 현재 NTC 저항 계산
-    // V_out = (adc_value / 4095) * Vcc
-    // R_ntc = R_pullup * (V_out / (Vcc - V_out))
-    // 이를 간소화하면:
-    float r_ntc = R_PULLUP * ((float)adc_value / (ADC_MAX - (float)adc_value));
-
-    // 2. Steinhart-Hart 식 적용
-    float temperature_k;
-    temperature_k = 1.0f / ((1.0f / T25) + (1.0f / B_VALUE) * log(r_ntc / R25));
-
-    // 3. 섭씨로 변환
-    return temperature_k - 273.15f;
-}
 /* 메인 루프 사용 예시 */
 // uint32_t adc_raw = HAL_ADC_GetValue(&hadc1);
 // float current_temp = Get_NTC_Temperature(adc_raw);
 
 //==========================================================================================================
-//클로드
-/** ADC 분해능: 12-bit → 4096 */
-#define NTC_ADC_RESOLUTION  4096U
-
-/** 기준 전압 (mV) */
-#define NTC_VREF_MV         3300U
-
-/** 풀업 저항 (Ω) */
-#define NTC_R_PULLUP        24000.0f
-
-/** NTC 기준 저항 @ 25°C (Ω) */
-#define NTC_R25             10000.0f
-
-/** NTC B 상수 (K) ? 데이터시트 B25/85 = 3984 K */
-#define NTC_B_CONST         3984.0f
-
-/** 기준 온도 (K) = 25°C */
-#define NTC_T25_K           298.15f
-
-/** ADC 평균 샘플 횟수 (노이즈 저감) */
-#define NTC_SAMPLE_COUNT    16U
-
-/** 온도 유효 범위 (°C) ? 데이터시트: -55 ~ +125°C */
-#define NTC_TEMP_MIN        -55.0f
-#define NTC_TEMP_MAX        125.0f
-
-/** 오류 반환값 (측정 실패 or 범위 초과) */
-#define NTC_INVALID_TEMP    -999.0f
-
-/* ─── 공개 함수 ───────────────────────────────────────────── */
-
-/**
- * @brief  NTC 드라이버 초기화 (ADC 보정 실행)
- * @note   HAL_ADC 초기화 이후에 호출할 것
- */
-void NTC_Init(void);
-
-/**
- * @brief  현재 온도를 섭씨(°C)로 반환
- * @return 온도(°C), 측정 실패 시 NTC_INVALID_TEMP
- */
-float NTC_ReadTemperature(void);
-
-/**
- * @brief  ADC 원시값으로부터 NTC 저항값(Ω) 계산
- * @param  adc_raw  12-bit ADC 값 (0~4095)
- * @return NTC 저항값(Ω)
- */
-float NTC_CalcResistance(uint16_t adc_raw);
-
-/**
- * @brief  NTC 저항값으로부터 온도(°C) 계산 (B-파라미터 방정식)
- * @param  resistance  NTC 저항값(Ω)
- * @return 온도(°C)
- */
-float NTC_CalcTemperature(float resistance);
-
-/**
- * @brief  ADC 멀티 샘플링 평균값 취득
- * @param  count  샘플 횟수
- * @return 평균 ADC 원시값
- */
-uint16_t NTC_GetADCAverage(uint32_t count);
-
-
-
-/**
- * @file    ntc.c
- * @brief   NTCALUG03A103GC NTC 온도 측정 드라이버 구현
- *
- * 참고 데이터시트: Vishay NTCALUG03A / LUG39A Mini Lug Series
- *   - R25 = 10 kΩ, B25/85 = 3984 K, tolerance ±2%
- *
- * 온도 계산 흐름:
- *   ADC raw → V_ADC → R_NTC → T(K) → T(°C)
- */
-
-
-/* ─── 내부 함수 선언 ──────────────────────────────────────── */
-static uint16_t ADC_ReadOnce(void);
-
-/* ???????????????????????????????????????????????????????????
- * 공개 함수 구현
- * ??????????????????????????????????????????????????????????? */
-
-/**
- * @brief NTC 드라이버 초기화
- *        STM32F103의 ADC는 사용 전 보정(Calibration)을 권장.
- */
-void NTC_Init(void)
-{
-    /* ADC 보정 실행 ? HAL_ADCEx_Calibration_Start()는
-     * STM32F1 HAL에서 지원됨 (F4/F7는 다를 수 있음)         */
-    if (HAL_ADCEx_Calibration_Start(&hadc2) != HAL_OK)
-    {
-        /* 보정 실패 시 Error_Handler() 호출 또는 로깅 처리 */
-        Error_Handler();
-    }
-}
-
-/**
- * @brief 온도 측정 메인 함수
- *
- * 내부 동작:
- *   1. NTC_SAMPLE_COUNT 회 ADC 샘플링 후 평균
- *   2. ADC raw → R_NTC 계산
- *   3. R_NTC → °C 변환 (B-파라미터 방정식)
- *   4. 유효 범위 확인 후 반환
- */
-float NTC_ReadTemperature(void)
-{
-    /* 1. 멀티 샘플 평균 ADC 값 취득 */
-    uint16_t adc_avg = NTC_GetADCAverage(NTC_SAMPLE_COUNT);
-
-    /* ADC 포화 체크 (단선: 4095, 단락: 0) */
-    if (adc_avg == 0 || adc_avg >= (NTC_ADC_RESOLUTION - 1))
-    {
-        return NTC_INVALID_TEMP;
-    }
-
-    /* 2. ADC → NTC 저항 */
-    float resistance = NTC_CalcResistance(adc_avg);
-
-    /* 3. 저항 → 온도 */
-    float temperature = NTC_CalcTemperature(resistance);
-
-    /* 4. 동작 범위 체크 */
-    if (temperature < NTC_TEMP_MIN || temperature > NTC_TEMP_MAX)
-    {
-        return NTC_INVALID_TEMP;
-    }
-
-    return temperature;
-}
-
-/**
- * @brief ADC raw → NTC 저항값(Ω) 계산
- *
- * 전압 분배 회로:
- *   V_ADC = Vref × R_NTC / (R_pullup + R_NTC)
- *   → R_NTC = R_pullup × ADC_raw / (ADC_resolution - ADC_raw)
- *
- * @param adc_raw  0~4095 (12-bit ADC)
- * @return         R_NTC (Ω)
- */
-float NTC_CalcResistance(uint16_t adc_raw)
-{
-    /*
-     * NTC가 풀다운에 연결되어 있으므로:
-     *   V_ADC = 3.3 × R_NTC / (R_pullup + R_NTC)
-     *   ADC_raw / ADC_res = R_NTC / (R_pullup + R_NTC)
-     *   → R_NTC = R_pullup × ADC_raw / (ADC_res - ADC_raw)
-     */
-    float adc_f = (float)adc_raw;
-    float res_f = (float)NTC_ADC_RESOLUTION;
-
-    return NTC_R_PULLUP * adc_f / (res_f - adc_f);
-}
-
-/**
- * @brief NTC 저항값 → 온도(°C) 계산
- *
- * B-파라미터 방정식:
- *   1/T = 1/T25 + (1/B) × ln(R_NTC / R25)
- *   T(°C) = T(K) - 273.15
- *
- * @param resistance  R_NTC (Ω)
- * @return            온도 (°C)
- */
-float NTC_CalcTemperature(float resistance)
-{
-    /*
-     * 1/T = 1/T25 + (1/B) * ln(R/R25)
-     * T   = 1 / (1/T25 + (1/B) * ln(R/R25))
-     */
-    float ln_ratio = logf(resistance / NTC_R25);
-    float inv_T    = (1.0f / NTC_T25_K) + (1.0f / NTC_B_CONST) * ln_ratio;
-    float temp_K   = 1.0f / inv_T;
-
-    return temp_K - 273.15f;
-}
-
-/**
- * @brief ADC 멀티 샘플 평균
- *
- * @param count  샘플 횟수 (권장: 16 이상)
- * @return       평균 ADC raw 값
- */
-uint16_t NTC_GetADCAverage(uint32_t count)
-{
-    uint32_t sum = 0;
-
-    for (uint32_t i = 0; i < count; i++)
-    {
-        sum += ADC_ReadOnce();
-    }
-
-    return (uint16_t)(sum / count);
-}
-
-/* ???????????????????????????????????????????????????????????
- * 내부 함수 구현
- * ??????????????????????????????????????????????????????????? */
-
-/**
- * @brief ADC 단일 변환 1회 수행 후 결과 반환
- * @return 12-bit ADC raw 값 (오류 시 0)
- */
-static uint16_t ADC_ReadOnce(void)
-{
-    if (HAL_ADC_Start(&hadc2) != HAL_OK)
-    {
-        return 0;
-    }
-
-    if (HAL_ADC_PollForConversion(&hadc2, 10U) != HAL_OK)
-    {
-        HAL_ADC_Stop(&hadc2);
-        return 0;
-    }
-
-    uint16_t value = (uint16_t)HAL_ADC_GetValue(&hadc2);
-    HAL_ADC_Stop(&hadc2);
-	adcQQ2 = value;
-
-    return value;
-}
-
-
 
 
 //==========================================================================================================
@@ -522,12 +277,14 @@ uint32_t chilTerm = 0;
 void Chiller_Temperature_Read()
 {
 	static uint32_t timeStamp, timeStamp2;
-	HAL_ADC_Start(&hadc2);
-    HAL_ADC_PollForConversion(&hadc2, HAL_MAX_DELAY);
-    uint32_t adc = (uint16_t)HAL_ADC_GetValue(&hadc2);
-    HAL_ADC_Stop(&hadc2);
-	adcQQ2 = adc;
-	chillerTemp = Get_NTC_Temperature_j(adc);
+#if 0
+HAL_ADC_Start(&hadc2);
+HAL_ADC_PollForConversion(&hadc2, HAL_MAX_DELAY);
+uint32_t adc = (uint16_t)HAL_ADC_GetValue(&hadc2);
+HAL_ADC_Stop(&hadc2);
+adcQQ2 = adc;
+chillerTemp = Get_NTC_Temperature_j(adc);
+#endif
 
 
 if(HAL_GetTick()-timeStamp >= 1000)
@@ -920,8 +677,7 @@ void IO_Config()
 
 	Battery_Read();
 	RTC_Config();
-	Chiller_Temperature_Read();
-//	temperatureQQ = NTC_ReadTemperature();
+//	Chiller_Temperature_Read();
 
  }
 

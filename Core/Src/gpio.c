@@ -53,29 +53,31 @@ void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOE, BUZZER_Pin|BAT_CHG_ON_Pin|HP1_PWR_EN_Pin|HP2_Boot_CONTROL_Pin
-                          |HP2_RST_CONTROL_Pin|HP2_PWR_EN_Pin|LED_DR2_Pin|LED_DR1_Pin, GPIO_PIN_RESET);
+                          |HP2_RST_CONTROL_Pin|HP2_PWR_EN_Pin|PELTIER_PWR_ON_Pin|LED_DR2_Pin
+                          |LED_DR1_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, PELTIER_DA_OUT_Pin|COOLING_LV3_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOC, SPI1_NSS_Pin|CON_SOL2_ON_Pin|CON_SOL1_ON_Pin|COOLING_LV5_Pin
                           |COOLING_LV4_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, HP1_RST_CONTROL_Pin|HP1_Boot_CONTROL_Pin|MP3_PREVIOUS_VOLMI_Pin|MP3_NEXT_VOLUP_Pin
-                          |MP3_PLAY_PAUSE_Pin|MP3_WORK_MODE_Pin|COOLING_LV2_Pin|COOLING_LV1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, HP1_RST_CONTROL_Pin|HP1_Boot_CONTROL_Pin|MP3_PREVIOUS_VOLMI_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOD, MP3_DEVICE_SWITCH_Pin|MP3_PLAY_MODE_Pin|MP3_Segment1_Pin|MP3_Segment2_Pin
-                          |MP3_Segment3_Pin|MP3_Segment4_Pin|CILLER_PWR_ON_Pin|WATER_PUMP_PWR_EN_Pin
-                          |RF_PWR_EN_Pin|AC_RLY_ON_Pin|BUFFER_ON_Pin|HANDLE_LED_BLUE_Pin
-                          |HANDLE_LED_GREED_Pin|HANDLE_LED_RED_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, COOLING_LV3_Pin|RF_Pulse_Signal_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOD, HP1_PELT_ON_Pin|COOLING_LV2_Pin|COOLING_LV1_Pin|HP1_PELT_OND11_Pin
+                          |RF_Pulse_Signal_Pin|CILLER_PWR_ON_Pin|WATER_PUMP_PWR_EN_Pin|RF_PWR_EN_Pin
+                          |AC_RLY_ON_Pin|BUFFER_ON_Pin|HANDLE_LED_BLUE_Pin|HANDLE_LED_GREED_Pin
+                          |HANDLE_LED_RED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : BUZZER_Pin BAT_CHG_ON_Pin HP1_PWR_EN_Pin HP2_Boot_CONTROL_Pin
-                           HP2_RST_CONTROL_Pin HP2_PWR_EN_Pin LED_DR2_Pin LED_DR1_Pin */
+                           HP2_RST_CONTROL_Pin HP2_PWR_EN_Pin PELTIER_PWR_ON_Pin LED_DR2_Pin
+                           LED_DR1_Pin */
   GPIO_InitStruct.Pin = BUZZER_Pin|BAT_CHG_ON_Pin|HP1_PWR_EN_Pin|HP2_Boot_CONTROL_Pin
-                          |HP2_RST_CONTROL_Pin|HP2_PWR_EN_Pin|LED_DR2_Pin|LED_DR1_Pin;
+                          |HP2_RST_CONTROL_Pin|HP2_PWR_EN_Pin|PELTIER_PWR_ON_Pin|LED_DR2_Pin
+                          |LED_DR1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -101,6 +103,13 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(FLOWSENSOR_OUT_GPIO_Port, &GPIO_InitStruct);
 
+  /*Configure GPIO pins : PELTIER_DA_OUT_Pin COOLING_LV3_Pin */
+  GPIO_InitStruct.Pin = PELTIER_DA_OUT_Pin|COOLING_LV3_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
   /*Configure GPIO pins : SPI1_NSS_Pin CON_SOL2_ON_Pin CON_SOL1_ON_Pin COOLING_LV5_Pin
                            COOLING_LV4_Pin */
   GPIO_InitStruct.Pin = SPI1_NSS_Pin|CON_SOL2_ON_Pin|CON_SOL1_ON_Pin|COOLING_LV5_Pin
@@ -110,34 +119,25 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : HP1_RST_CONTROL_Pin HP1_Boot_CONTROL_Pin MP3_PREVIOUS_VOLMI_Pin MP3_NEXT_VOLUP_Pin
-                           MP3_PLAY_PAUSE_Pin MP3_WORK_MODE_Pin COOLING_LV2_Pin COOLING_LV1_Pin */
-  GPIO_InitStruct.Pin = HP1_RST_CONTROL_Pin|HP1_Boot_CONTROL_Pin|MP3_PREVIOUS_VOLMI_Pin|MP3_NEXT_VOLUP_Pin
-                          |MP3_PLAY_PAUSE_Pin|MP3_WORK_MODE_Pin|COOLING_LV2_Pin|COOLING_LV1_Pin;
+  /*Configure GPIO pins : HP1_RST_CONTROL_Pin HP1_Boot_CONTROL_Pin MP3_PREVIOUS_VOLMI_Pin */
+  GPIO_InitStruct.Pin = HP1_RST_CONTROL_Pin|HP1_Boot_CONTROL_Pin|MP3_PREVIOUS_VOLMI_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : MP3_DEVICE_SWITCH_Pin MP3_PLAY_MODE_Pin MP3_Segment1_Pin MP3_Segment2_Pin
-                           MP3_Segment3_Pin MP3_Segment4_Pin CILLER_PWR_ON_Pin WATER_PUMP_PWR_EN_Pin
-                           RF_PWR_EN_Pin AC_RLY_ON_Pin BUFFER_ON_Pin HANDLE_LED_BLUE_Pin
-                           HANDLE_LED_GREED_Pin HANDLE_LED_RED_Pin */
-  GPIO_InitStruct.Pin = MP3_DEVICE_SWITCH_Pin|MP3_PLAY_MODE_Pin|MP3_Segment1_Pin|MP3_Segment2_Pin
-                          |MP3_Segment3_Pin|MP3_Segment4_Pin|CILLER_PWR_ON_Pin|WATER_PUMP_PWR_EN_Pin
-                          |RF_PWR_EN_Pin|AC_RLY_ON_Pin|BUFFER_ON_Pin|HANDLE_LED_BLUE_Pin
-                          |HANDLE_LED_GREED_Pin|HANDLE_LED_RED_Pin;
+  /*Configure GPIO pins : HP1_PELT_ON_Pin COOLING_LV2_Pin COOLING_LV1_Pin HP1_PELT_OND11_Pin
+                           RF_Pulse_Signal_Pin CILLER_PWR_ON_Pin WATER_PUMP_PWR_EN_Pin RF_PWR_EN_Pin
+                           AC_RLY_ON_Pin BUFFER_ON_Pin HANDLE_LED_BLUE_Pin HANDLE_LED_GREED_Pin
+                           HANDLE_LED_RED_Pin */
+  GPIO_InitStruct.Pin = HP1_PELT_ON_Pin|COOLING_LV2_Pin|COOLING_LV1_Pin|HP1_PELT_OND11_Pin
+                          |RF_Pulse_Signal_Pin|CILLER_PWR_ON_Pin|WATER_PUMP_PWR_EN_Pin|RF_PWR_EN_Pin
+                          |AC_RLY_ON_Pin|BUFFER_ON_Pin|HANDLE_LED_BLUE_Pin|HANDLE_LED_GREED_Pin
+                          |HANDLE_LED_RED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : COOLING_LV3_Pin RF_Pulse_Signal_Pin */
-  GPIO_InitStruct.Pin = COOLING_LV3_Pin|RF_Pulse_Signal_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pin : RF_GPIO_IN_Pin */
   GPIO_InitStruct.Pin = RF_GPIO_IN_Pin;
@@ -145,11 +145,17 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(RF_GPIO_IN_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : AC_INPUT_STATE_Pin */
-  GPIO_InitStruct.Pin = AC_INPUT_STATE_Pin;
+  /*Configure GPIO pin : FLOWSENSOR_B_OUT_Pin */
+  GPIO_InitStruct.Pin = FLOWSENSOR_B_OUT_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(AC_INPUT_STATE_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(FLOWSENSOR_B_OUT_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : FOOT_SW_IN_Pin FOOT_INSERT_Pin AC_INPUT_STATE_Pin */
+  GPIO_InitStruct.Pin = FOOT_SW_IN_Pin|FOOT_INSERT_Pin|AC_INPUT_STATE_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
