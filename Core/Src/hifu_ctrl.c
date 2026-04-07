@@ -1832,7 +1832,44 @@ void Vibe_Time_Cal()
 
 }
 
+int cccnt;
+int ChilerTemp_CycleBuff[20];
+int ChilerTempCnt;
 
+void ChilerTemp_Cycle()
+{
+	if(HAL_GetTick()<20000)return;
+	static uint8_t step = STEP0;
+	switch (step)
+	{
+		case STEP0:
+			if(m_hand1.temprature<= 100)
+			{
+				step = STEP1;
+			}
+		break;
+
+		case STEP1:
+			static uint32_t timeStamp;
+			static uint8_t once = 1;
+			if(HAL_GetTick()-timeStamp >= 1000*150 ||once)
+			{
+				once = 0;
+				ChilerTemp_CycleBuff[ChilerTempCnt] = m_hand1.temprature;
+				ChilerTempCnt++;
+				ChilerTempCnt %= 20;
+				AC_RLY_L();
+				HAL_Delay(1000);
+				AC_RLY_H();
+				Debug_Printf("off chil",1);
+				timeStamp = HAL_GetTick();
+			}
+			if(m_hand1.temprature<= 75)
+		break;
+
+	}
+
+}
 void LCD_Status_Tret()
 {
 	if(m_rf.pluseOn) return;
@@ -2648,6 +2685,7 @@ void Rf_Config()
 	LCD_Status_Tret();
 	Exp_Config();
 	AutoCal_Config();
+//	ChilerTemp_Cycle();
 
 #else
 	RF_Borad_FeedBack_Test();

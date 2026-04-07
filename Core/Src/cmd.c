@@ -463,6 +463,21 @@ void Debug_Rx_Parssing(uint8_t add, uint32_t data)
 			else Ciller_Pwr_OFF();
 		break;
 
+		case CMD_DEBUG_CHLLER_TEST:
+			if (data)
+			{
+				AC_RLY_H();
+				Debug_Printf("AC_RLY_H",1);
+			}
+			else
+			{
+				AC_RLY_L();
+				Debug_Printf("AC_RLY_L",1);
+			}
+
+		break;
+
+
 		case CMD_DEBUG_PELTIER:
 			Tx_Hand1_Msg(CMD_HP1_ADD, data);
 		break;
@@ -1454,6 +1469,7 @@ void Uart_Tx_Polling_Status()
 
 		if(HAL_GetTick()-timeStamp2 >= 1000)
 		{
+
 			uint16_t txData;
 			txData = 1000 + m_hand1.temprature;
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
@@ -1473,6 +1489,8 @@ void Uart_Tx_Polling_Status()
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
 			txData = 10000 +m_eep.catridgeDetect;
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
+
+			m_io.flowSensorFrq = 0;
 			timeStamp2 = HAL_GetTick();
 		}
 

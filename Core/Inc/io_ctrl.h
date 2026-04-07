@@ -132,6 +132,8 @@
 #define SD__INSERT_SIGNAL2_L()    		HAL_GPIO_WritePin(SD__INSERT_SIGNAL2_GPIO_Port, SD__INSERT_SIGNAL2_Pin, GPIO_PIN_RESET)
 
 
+#define AC_RLY_H()               		HAL_GPIO_WritePin(AC_RLY_ON_GPIO_Port, AC_RLY_ON_Pin, GPIO_PIN_SET)
+#define AC_RLY_L()                		HAL_GPIO_WritePin(AC_RLY_ON_GPIO_Port, AC_RLY_ON_Pin, GPIO_PIN_RESET)
 
 
 
@@ -289,6 +291,7 @@ void RF_Pwr_ON();
 void IO_Config();
 void RTC_Init(void);
 void Body_Led_Ctrl(uint8_t mode);
+void Chiller_Temperature_Read();
 
 
 /*  			function end  			*/
