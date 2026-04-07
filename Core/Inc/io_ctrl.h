@@ -88,35 +88,6 @@
 #define HP2_INSERT_H()           		HAL_GPIO_WritePin(HP2_INSERT_GPIO_Port, HP2_INSERT_Pin, GPIO_PIN_SET)
 #define HP2_INSERT_L()            		HAL_GPIO_WritePin(HP2_INSERT_GPIO_Port, HP2_INSERT_Pin, GPIO_PIN_RESET)
 
-#define MP3_PREVIOUS_VOLMI_H()   		HAL_GPIO_WritePin(MP3_PREVIOUS_VOLMI_GPIO_Port, MP3_PREVIOUS_VOLMI_Pin, GPIO_PIN_SET)
-#define MP3_PREVIOUS_VOLMI_L()    		HAL_GPIO_WritePin(MP3_PREVIOUS_VOLMI_GPIO_Port, MP3_PREVIOUS_VOLMI_Pin, GPIO_PIN_RESET)
-
-#define MP3_NEXT_VOLUP_H()       		HAL_GPIO_WritePin(MP3_NEXT_VOLUP_GPIO_Port, MP3_NEXT_VOLUP_Pin, GPIO_PIN_SET)
-#define MP3_NEXT_VOLUP_L()        		HAL_GPIO_WritePin(MP3_NEXT_VOLUP_GPIO_Port, MP3_NEXT_VOLUP_Pin, GPIO_PIN_RESET)
-
-#define MP3_PLAY_PAUSE_H()       		HAL_GPIO_WritePin(MP3_PLAY_PAUSE_GPIO_Port, MP3_PLAY_PAUSE_Pin, GPIO_PIN_SET)
-#define MP3_PLAY_PAUSE_L()        		HAL_GPIO_WritePin(MP3_PLAY_PAUSE_GPIO_Port, MP3_PLAY_PAUSE_Pin, GPIO_PIN_RESET)
-
-#define MP3_WORK_MODE_H()        		HAL_GPIO_WritePin(MP3_WORK_MODE_GPIO_Port, MP3_WORK_MODE_Pin, GPIO_PIN_SET)
-#define MP3_WORK_MODE_L()         		HAL_GPIO_WritePin(MP3_WORK_MODE_GPIO_Port, MP3_WORK_MODE_Pin, GPIO_PIN_RESET)
-
-#define MP3_DEVICE_SWITCH_H()    		HAL_GPIO_WritePin(MP3_DEVICE_SWITCH_GPIO_Port, MP3_DEVICE_SWITCH_Pin, GPIO_PIN_SET)
-#define MP3_DEVICE_SWITCH_L()     		HAL_GPIO_WritePin(MP3_DEVICE_SWITCH_GPIO_Port, MP3_DEVICE_SWITCH_Pin, GPIO_PIN_RESET)
-
-#define MP3_PLAY_MODE_H()        		HAL_GPIO_WritePin(MP3_PLAY_MODE_GPIO_Port, MP3_PLAY_MODE_Pin, GPIO_PIN_SET)
-#define MP3_PLAY_MODE_L()         		HAL_GPIO_WritePin(MP3_PLAY_MODE_GPIO_Port, MP3_PLAY_MODE_Pin, GPIO_PIN_RESET)
-
-#define MP3_Segment1_H()         		HAL_GPIO_WritePin(MP3_Segment1_GPIO_Port, MP3_Segment1_Pin, GPIO_PIN_SET)
-#define MP3_Segment1_L()          		HAL_GPIO_WritePin(MP3_Segment1_GPIO_Port, MP3_Segment1_Pin, GPIO_PIN_RESET)
-
-#define MP3_Segment2_H()         		HAL_GPIO_WritePin(MP3_Segment2_GPIO_Port, MP3_Segment2_Pin, GPIO_PIN_SET)
-#define MP3_Segment2_L()          		HAL_GPIO_WritePin(MP3_Segment2_GPIO_Port, MP3_Segment2_Pin, GPIO_PIN_RESET)
-
-#define MP3_Segment3_H()         		HAL_GPIO_WritePin(MP3_Segment3_GPIO_Port, MP3_Segment3_Pin, GPIO_PIN_SET)
-#define MP3_Segment3_L()          		HAL_GPIO_WritePin(MP3_Segment3_GPIO_Port, MP3_Segment3_Pin, GPIO_PIN_RESET)
-
-#define MP3_Segment4_H()         		HAL_GPIO_WritePin(MP3_Segment4_GPIO_Port, MP3_Segment4_Pin, GPIO_PIN_SET)
-#define MP3_Segment4_L()          		HAL_GPIO_WritePin(MP3_Segment4_GPIO_Port, MP3_Segment4_Pin, GPIO_PIN_RESET)
 
 #define RF_PWR_EN_H()            		HAL_GPIO_WritePin(RF_PWR_EN_GPIO_Port, RF_PWR_EN_Pin, GPIO_PIN_SET)
 #define RF_PWR_EN_L()             		HAL_GPIO_WritePin(RF_PWR_EN_GPIO_Port, RF_PWR_EN_Pin, GPIO_PIN_RESET)
@@ -183,20 +154,7 @@
 
 
 /*  			enum start  			*/
-typedef enum
-{
-	MP3_PREVIOUS_VOLMI,
-	MP3_NEXT_VOLUP,
-	MP3_PLAY_PAUSE,
-	MP3_WORK_MODE,
-	MP3_DEVICE_SWITCH,
-	MP3_PLAY_MODE,
-	MP3_Segment1,
-	MP3_Segment2,
-	MP3_Segment3,
-	MP3_Segment4,
 
-} MP3_E;
 
 typedef enum
 {
@@ -208,7 +166,6 @@ typedef enum
 typedef enum
 {
 	BUZZER_ON_TIME = 50,
-	MP3_ON_TIME = 50,
 
 	COOL_LV1 = 1,
 	COOL_LV2 = 2,
@@ -241,7 +198,6 @@ typedef struct
 	uint8_t HP2PwrEn;
 	uint8_t dipState;
 	uint8_t buzzerOn;
-	uint8_t mp3On;
 	float battery;
 	uint8_t rfPwrEn;
 	uint8_t sol1On;
