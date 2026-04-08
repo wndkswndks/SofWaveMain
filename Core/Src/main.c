@@ -130,8 +130,6 @@ int main(void)
   Rf_Config();
 #else
   Error_Check_Config();
-  IO_Test();
-  RTC_Test();
 
 #endif
 
