@@ -106,6 +106,11 @@
 #define AC_RLY_H()               		HAL_GPIO_WritePin(AC_RLY_ON_GPIO_Port, AC_RLY_ON_Pin, GPIO_PIN_SET)
 #define AC_RLY_L()                		HAL_GPIO_WritePin(AC_RLY_ON_GPIO_Port, AC_RLY_ON_Pin, GPIO_PIN_RESET)
 
+#define HP1_PELT_ON()         			HAL_GPIO_WritePin(HP1_PELT_OND11_GPIO_Port, HP1_PELT_OND11_Pin, GPIO_PIN_SET)
+#define HP1_PELT_OFF()        			HAL_GPIO_WritePin(HP1_PELT_OND11_GPIO_Port, HP1_PELT_OND11_Pin, GPIO_PIN_RESET)
+
+#define PELTIER_PWR_ON()      			HAL_GPIO_WritePin(PELTIER_PWR_ON_GPIO_Port, PELTIER_PWR_ON_Pin, GPIO_PIN_SET)
+#define PELTIER_PWR_OFF()      			HAL_GPIO_WritePin(PELTIER_PWR_ON_GPIO_Port, PELTIER_PWR_ON_Pin, GPIO_PIN_RESET)
 
 
 //LED

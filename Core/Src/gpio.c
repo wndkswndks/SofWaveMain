@@ -97,11 +97,11 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : FLOWSENSOR_OUT_Pin */
-  GPIO_InitStruct.Pin = FLOWSENSOR_OUT_Pin;
+  /*Configure GPIO pins : FLOWSENSOR_OUT_Pin FLOWSENSOR_B_OUT_Pin */
+  GPIO_InitStruct.Pin = FLOWSENSOR_OUT_Pin|FLOWSENSOR_B_OUT_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(FLOWSENSOR_OUT_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PELTIER_DA_OUT_Pin COOLING_LV3_Pin */
   GPIO_InitStruct.Pin = PELTIER_DA_OUT_Pin|COOLING_LV3_Pin;
@@ -144,12 +144,6 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(RF_GPIO_IN_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : FLOWSENSOR_B_OUT_Pin */
-  GPIO_InitStruct.Pin = FLOWSENSOR_B_OUT_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(FLOWSENSOR_B_OUT_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : FOOT_SW_IN_Pin FOOT_INSERT_Pin AC_INPUT_STATE_Pin */
   GPIO_InitStruct.Pin = FOOT_SW_IN_Pin|FOOT_INSERT_Pin|AC_INPUT_STATE_Pin;

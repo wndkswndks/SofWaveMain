@@ -563,6 +563,8 @@ void IO_Init()
     BUZZER_L();
 	AC_RLY_H();
 
+	HP1_PELT_ON();
+	PELTIER_PWR_ON();
 
 
 	SOL1_OFF();
