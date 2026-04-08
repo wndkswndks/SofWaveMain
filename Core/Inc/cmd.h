@@ -60,7 +60,7 @@ typedef enum
 
 	CMD_ERR = 31,
 	CMD_ALRAM = 32,
-	CMD_INFO = 33,
+
 	CMD_OK = 34,
 
 	CMD_CART_ID  = 35,

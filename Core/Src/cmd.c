@@ -292,47 +292,7 @@ void Ready_OFF()
 
 }
 
-void CMD_Is_All_Live_ORG()
-{
-	uint8_t rxLiveStatus = 0;
 
-
-	m_hand1.liveChkCnt = 0;
-	m_hand1.liveOk = 0;
-	for(int i =0 ;i < 3;i++)
-	{
-		Tx_Hand1_Msg(CMD_DO_ALL_LIVE, 0);
-		HAL_Delay(100);
-		UartRx2DataProcess();
-	}
-	if(m_hand1.liveChkCnt >= 2)
-	{
-		m_hand1.liveOk = 1;
-	}
-
-	m_rf.liveChkCnt = 0;
-	m_rf.liveOk = 0;
-	for(int i =0 ;i < 3;i++)
-	{
-		Tx_RF_GenStatus_Check();
-	}
-	if(m_rf.liveChkCnt >= 2)
-	{
-		m_rf.liveOk = 1;
-	}
-	if(m_hand1.liveOk == 0 && m_rf.liveOk==0)
-	{
-		Tx_LCD_Msg(CMD_DO_ALL_LIVE, LIVE_HP_DETH);
-	}
-	else
-	{
-		rxLiveStatus = m_hand1.liveOk*10 + m_rf.liveOk;
-		Tx_LCD_Msg(CMD_DO_ALL_LIVE, rxLiveStatus);
-	}
-
-
-
-}
 
 void CMD_Is_All_Live(uint8_t who)
 {
