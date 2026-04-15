@@ -920,7 +920,7 @@ void IO_Config()
 
 	Battery_Read();
 	RTC_Config();
-	Chiller_Temperature_Read();
+//	Chiller_Temperature_Read();
 //	temperatureQQ = NTC_ReadTemperature();
 
  }

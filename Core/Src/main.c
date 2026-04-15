@@ -128,9 +128,9 @@ int main(void)
 #if 1
   IO_Config();
   UartRxDataProcess();
-  Error_Check_Config();
   Rf_Config();
 #else
+  Error_Check_Config();
   IO_Test();
   RTC_Test();
 

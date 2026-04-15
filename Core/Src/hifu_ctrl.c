@@ -565,6 +565,7 @@ void Rf_TD_BHB001_Table_260212()//260212
 	m_eep.rfWattBuff[65] = 164 ; //1.0w
 	m_eep.rfWattBuff[76] = 156 ; //1.0w
 
+
 }
 void Rf_TD_BHB002_Table_260212()//260212
 {
@@ -578,13 +579,27 @@ void Rf_TD_BHB002_Table_260212()//260212
 	m_eep.rfFrqBuff[6] = 11352;
 	m_eep.rfFrqBuff[7] = 11332;
 
-	m_eep.rfWattBuff[10] = 162 ; //1.0w
-	m_eep.rfWattBuff[21] = 144 ; //1.0w
-	m_eep.rfWattBuff[32] = 144 ; //1.0w
-	m_eep.rfWattBuff[43] = 156 ; //1.0w
-	m_eep.rfWattBuff[54] = 154 ; //1.0w
-	m_eep.rfWattBuff[65] = 152 ; //1.0w
-	m_eep.rfWattBuff[76] = 146 ; //1.0w
+
+
+
+#if 0//OLD BOARD
+		m_eep.rfWattBuff[10] = 162 ; //1.0w
+		m_eep.rfWattBuff[21] = 144 ; //1.0w
+		m_eep.rfWattBuff[32] = 144 ; //1.0w
+		m_eep.rfWattBuff[43] = 156 ; //1.0w
+		m_eep.rfWattBuff[54] = 154 ; //1.0w
+		m_eep.rfWattBuff[65] = 152 ; //1.0w
+		m_eep.rfWattBuff[76] = 146 ; //1.0w
+#else//NEW BOARD
+		m_eep.rfWattBuff[10] = 332 ; //1.0w
+		m_eep.rfWattBuff[21] = 328 ; //1.0w
+		m_eep.rfWattBuff[32] = 326 ; //1.0w
+		m_eep.rfWattBuff[43] = 326 ; //1.0w
+		m_eep.rfWattBuff[54] = 324 ; //1.0w
+		m_eep.rfWattBuff[65] = 324 ; //1.0w
+		m_eep.rfWattBuff[76] = 326 ; //1.0w
+
+#endif
 
 
 }
@@ -696,6 +711,7 @@ void Rf_TD_BHB004_Table_260212()//260212
 	m_eep.rfFrqBuff[6] = 11352;
 	m_eep.rfFrqBuff[7] = 11380;
 
+#if 0//OLD BOARD
 	m_eep.rfWattBuff[10] = 150 ; //1.0w
 	m_eep.rfWattBuff[21] = 152 ; //1.0w
 	m_eep.rfWattBuff[32] = 154 ; //1.0w
@@ -703,6 +719,15 @@ void Rf_TD_BHB004_Table_260212()//260212
 	m_eep.rfWattBuff[54] = 162 ; //1.0w
 	m_eep.rfWattBuff[65] = 158 ; //1.0w
 	m_eep.rfWattBuff[76] = 156 ; //1.0w
+#else//NEW BOARD
+	m_eep.rfWattBuff[10] = 318 ; //1.0w
+	m_eep.rfWattBuff[21] = 334 ; //1.0w
+	m_eep.rfWattBuff[32] = 340 ; //1.0w
+	m_eep.rfWattBuff[43] = 318 ; //1.0w
+	m_eep.rfWattBuff[54] = 332 ; //1.0w
+	m_eep.rfWattBuff[65] = 328 ; //1.0w
+	m_eep.rfWattBuff[76] = 334 ; //1.0w
+#endif
 
 }
 
@@ -718,6 +743,8 @@ void Rf_TD_BHB005_Table_260212()//260212
 	m_eep.rfFrqBuff[6] = 11322;
 	m_eep.rfFrqBuff[7] = 11307;
 
+
+#if 0//OLD BOARD
 	m_eep.rfWattBuff[10] = 190 ; //1.0w
 	m_eep.rfWattBuff[21] = 186 ; //1.0w
 	m_eep.rfWattBuff[32] = 180 ; //1.0w
@@ -725,6 +752,16 @@ void Rf_TD_BHB005_Table_260212()//260212
 	m_eep.rfWattBuff[54] = 176 ; //1.0w
 	m_eep.rfWattBuff[65] = 168 ; //1.0w
 	m_eep.rfWattBuff[76] = 158 ; //1.0w
+#else//NEW BOARD
+	m_eep.rfWattBuff[10] = 328 ; //1.0w
+	m_eep.rfWattBuff[21] = 396 ; //1.0w
+	m_eep.rfWattBuff[32] = 326 ; //1.0w
+	m_eep.rfWattBuff[43] = 324; //1.0w
+	m_eep.rfWattBuff[54] = 334 ; //1.0w
+	m_eep.rfWattBuff[65] = 322 ; //1.0w
+	m_eep.rfWattBuff[76] = 322 ; //1.0w
+
+#endif
 
 }
 
@@ -966,7 +1003,7 @@ void Rf_Init()
 	RF_Pwr_ON();
 
 
-	Rf_TD_BHB003_Table_260212_test();
+	Rf_TD_BHB005_Table_260212();
 //	Rf_TD_BHA001_Table_260306();
 
 
@@ -1994,7 +2031,7 @@ int compare_32(const void *a, const void *b)    // 오름차순 비교 함수 (uint32_t 
 }
 
 
-int wattDa = 0;
+int wattDa = 320;
 int trandu = 0;
 int tranduOut = 6;
 int frqQ = 10500;
@@ -2295,7 +2332,7 @@ void AutoCal_Config_1watt()
 	memset(m_rf.FeedBackWBuff, 0, sizeof(m_rf.FeedBackWBuff));
 	m_rf.FeedBackCnt = 0;
 
-	if(wattDa<200)
+	if(wattDa<400)
 	{
 		wattDa += 2 ;
 	}
@@ -2333,7 +2370,7 @@ void AutoCal_Config_1watt()
 		{
 			printf("NEXT !!\r\n");
 			trandu++;
-			wattDa = 140;
+			wattDa = 320;
 		}
 		else
 		{
@@ -2684,7 +2721,7 @@ void Rf_Config()
 #if 1
 	LCD_Status_Tret();
 	Exp_Config();
-	AutoCal_Config();
+	AutoCal_Config_1watt();
 //	ChilerTemp_Cycle();
 
 #else
