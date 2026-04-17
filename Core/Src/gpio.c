@@ -64,7 +64,7 @@ void MX_GPIO_Init(void)
                           |COOLING_LV4_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, HP1_RST_CONTROL_Pin|HP1_Boot_CONTROL_Pin|MP3_PREVIOUS_VOLMI_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, HP1_RST_CONTROL_Pin|HP1_Boot_CONTROL_Pin|MP3_PREVIOUS_VOLMI_Pin|VBAT_ADC_EN_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOD, HP1_PELT_ON_Pin|COOLING_LV2_Pin|COOLING_LV1_Pin|HP1_PELT_OND11_Pin
@@ -119,8 +119,8 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : HP1_RST_CONTROL_Pin HP1_Boot_CONTROL_Pin MP3_PREVIOUS_VOLMI_Pin */
-  GPIO_InitStruct.Pin = HP1_RST_CONTROL_Pin|HP1_Boot_CONTROL_Pin|MP3_PREVIOUS_VOLMI_Pin;
+  /*Configure GPIO pins : HP1_RST_CONTROL_Pin HP1_Boot_CONTROL_Pin MP3_PREVIOUS_VOLMI_Pin VBAT_ADC_EN_Pin */
+  GPIO_InitStruct.Pin = HP1_RST_CONTROL_Pin|HP1_Boot_CONTROL_Pin|MP3_PREVIOUS_VOLMI_Pin|VBAT_ADC_EN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

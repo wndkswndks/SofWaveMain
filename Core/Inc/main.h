@@ -144,6 +144,8 @@ void Error_Handler(void);
 #define HANDLE_LED_GREED_GPIO_Port GPIOD
 #define HANDLE_LED_RED_Pin GPIO_PIN_7
 #define HANDLE_LED_RED_GPIO_Port GPIOD
+#define VBAT_ADC_EN_Pin GPIO_PIN_4
+#define VBAT_ADC_EN_GPIO_Port GPIOB
 #define FOOT_SW_IN_Pin GPIO_PIN_5
 #define FOOT_SW_IN_GPIO_Port GPIOB
 #define FOOT_INSERT_Pin GPIO_PIN_6
