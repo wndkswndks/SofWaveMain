@@ -186,6 +186,10 @@ typedef enum
 	BODY_LED_BOOT = 1,
 	BODY_LED_ERROR = 2,
 	BODY_LED_SHOT = 3,
+
+	ADC_CH_RTC_BATTERY = 0,
+	ADC_CH_PELTIER = 1,
+	ADC_CH_WATER_TEMP = 2,
 } IO_E;
 
 

@@ -1177,33 +1177,33 @@ void Hand_Rx_Parssing(uint8_t add, uint32_t data)
 				{
 					case CATRIGE_CHK_OK:
 
-						//if(m_rf.sysChkFlag)Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_OK);
+						if(m_rf.sysChkFlag)Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_OK);
 
 						Debug_Printf("CATRIDGE Detect",1);
 					break;
 
 					case CATRIGE_CHK_NEW:
-						//Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_NEW);
+						Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_NEW);
 						Debug_Printf("CATRIDGE Detect NeW",1);
 					break;
 
 					case CATRIGE_CHK_I2C_READ_ERR:
-						//Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_I2C_READ_ERR);
+						Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_I2C_READ_ERR);
 						Debug_Printf("CATRIDGE Detect I2C read Err",1);
 					break;
 
 					case CATRIGE_CHK_I2C_WRITE_ERR:
-						//Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_I2C_WRITE_ERR);
+						Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_I2C_WRITE_ERR);
 						Debug_Printf("CATRIDGE Detec I2C write Err",1);
 					break;
 
 					case CATRIGE_CHK_REMIND_ZERO_ERR:
-						//Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_REMIND_ZERO_ERR);
+						Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_REMIND_ZERO_ERR);
 						Debug_Printf("CATRIDGE Detect Remind zero Err",1);
 					break;
 
 					case CATRIGE_CHK_UN_DETECT:
-						//Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_UN_DETECT);
+						Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_UN_DETECT);
 						Debug_Printf("CATRIDGE Undetect",1);
 					break;
 				}

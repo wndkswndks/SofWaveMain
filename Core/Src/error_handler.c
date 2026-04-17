@@ -359,7 +359,7 @@ m_err.errDataBuff[IDX_CATRIGE_NEW]
 
 void Error_Check_Main()
 {
-#if 0
+#if 1
 	Check_Status(m_io.level1Status, 0, IDX_LEVEL_LOW);
 	Check_Max_Min(m_io.flowSensorFrq, FLOW_LOW_MAX, FLOW_LOW_MIN, IDX_FLOW_LIMIT_UNDER);
 
@@ -369,7 +369,6 @@ void Error_Check_Main()
 
 	Check_Status(m_err.autoCalStatus, 0, IDX_AUTO_CAL_COMU_ERR);
 	Check_Time(m_io.hour, m_io.min, m_io.sec, IDX_RTC_ERR);
-
 
 #endif
 
@@ -387,7 +386,7 @@ void Error_Check_HP()
 
 
 
-#if 0
+#if 1
 	m_err.handTimeout++;
 	if(Check_Max(m_err.handTimeout, COMU_MAX_CNT, IDX_HAND_COMU_ERR)){}
 	if(Check_Status(m_err.preCoolStatus, 0, IDX_PRE_COOL_ERR)){}
@@ -397,17 +396,7 @@ void Error_Check_HP()
 	else if(Check_Min(m_hand1.temprature, TEMP_LOW_VALUE, IDX_TEMP_LOW)){}
 
 
-//==================================
-
-
-
-
-	if(Check_Status_Rvrs(m_eep.catridgeDetect, CATRIGE_CHK_NEW, IDX_CATRIGE_NEW_DETECT)){}
-
-	if(Check_Status_Rvrs(m_eep.catridgeDetect, CATRIGE_CHK_I2C_READ_ERR, IDX_CATRIGE_I2C_ERR)){}
-	else if(Check_Status_Rvrs(m_eep.catridgeDetect, CATRIGE_CHK_I2C_WRITE_ERR, IDX_CATRIGE_I2C_ERR)){}
-	else if(Check_Status_Rvrs(m_eep.catridgeDetect, CATRIGE_CHK_UN_DETECT, IDX_CATRIGE_UN_DETECT)){}
-	else
+	if(m_eep.catridgeDetect == CATRIGE_CHK_OK)
 	{
 		for(int i = 1; i <= 7; i++)
 		{
@@ -440,12 +429,6 @@ void Error_Check_HP()
 		}
 	}
 
-//==================================
-
-
-
-
-
 #endif
 
 	if(m_err.txEn)Error_Buff_HP_Tx();
@@ -454,11 +437,11 @@ void Error_Check_HP()
 
 void Error_Check_RF()
 {
-#if 0
+#if 1
 	m_err.rfTimeout++;
 	Tx_RF_GenStatus_Check();
 	Check_Max(m_err.rfTimeout, COMU_MAX_CNT, IDX_RF_COMU_ERR);//E02
-	Check_Status(m_err.rfStatus, 0, IDX_RF_STATUS_ERR);//E14
+//	Check_Status(m_err.rfStatus, 0, IDX_RF_STATUS_ERR);//E14
 #if 0
 #endif
 
@@ -471,7 +454,7 @@ void Error_Check_RF()
 void Error_Check_Config()
 {
 	static uint32_t timeStamp;
-
+	if(HAL_GetTick()<4000) return;
 	if(m_rf.pluseOn) return;
 	if(HAL_GetTick()-timeStamp >= 1000)
 	{

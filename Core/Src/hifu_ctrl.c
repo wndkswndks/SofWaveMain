@@ -1926,14 +1926,12 @@ void LCD_Status_Tret()
 			m_rf.preCooltime = 0;
 			m_err.preCoolStatus = 0;
 
-#if 0
-		HAL_Delay(500);
-		testExpFlag =1;
-#endif
 		}
-#if 1
+
 	if(HAL_GetTick()- m_rf.preCooltime> PRECOOL_TIMEOUT && m_rf.preCooltime)
 	{
+		m_err.preCoolStatus = 1;
+#if 0
 		Ready_ON();
 
 		Tx_RF_FRQ_ALL_Module();
@@ -1945,9 +1943,9 @@ void LCD_Status_Tret()
 		m_rf.treatStatus = STATUS_TRET;
 
 		m_rf.preCooltime = 0;
-		m_err.preCoolStatus = 1;
-	}
 #endif
+	}
+
 
 	}
 

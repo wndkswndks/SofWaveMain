@@ -128,8 +128,8 @@ int main(void)
   IO_Config();
   UartRxDataProcess();
   Rf_Config();
-#else
   Error_Check_Config();
+#else
 
 #endif
 

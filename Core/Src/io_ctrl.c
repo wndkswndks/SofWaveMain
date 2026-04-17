@@ -209,10 +209,31 @@ void Cooling_ON(uint8_t num)
 	}
 }
 
+
+ void ADC1_Channel_Selection(uint8_t ch)
+ {
+   ADC_ChannelConfTypeDef sConfig = {0};
+   if(ch == 0) sConfig.Channel = ADC_CHANNEL_10;
+   else if(ch == 1)  sConfig.Channel = ADC_CHANNEL_13;
+   else if(ch == 2)  sConfig.Channel = ADC_CHANNEL_1;
+
+   else return;
+
+   sConfig.Rank = ADC_REGULAR_RANK_1;
+   sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+   {
+	 Error_Handler();
+   }
+
+ }
+
  uint16_t adcQQ,adcQQ2;
 
  void Battery_Read(void)
 {
+
+	ADC1_Channel_Selection(ADC_CH_RTC_BATTERY);
     HAL_ADC_Start(&hadc1);
     HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
     uint16_t adc = (uint16_t)HAL_ADC_GetValue(&hadc1);
@@ -473,55 +494,7 @@ uint8_t IO_ErrCnt_Chk(uint8_t BooL, uint8_t idx )
 
 	return eventOn;
 }
-void Flow_Stop_Check_ORG()
-{
 
-	uint8_t is_flowOk = (2<m_io.flowSensorFrq&&m_io.flowSensorFrq<40);
-//	uint8_t is_flowOk = 1;//(3<m_io.flowSensorFrq);
-	int flowINt;
-	static uint32_t timeStamp;
-	uint8_t flowErr = 0;
-	static uint8_t flowErrAccu;
-
-	flowINt = m_io.flowSensorFrq*10.0;
-	if(HAL_GetTick()-timeStamp >= 1000)
-	{
-
-		timeStamp = HAL_GetTick();
-
-		if(!m_io.flowSensorFrqChk)
-		{
-			flowErr++;
-			Debug_Printf("m_io.flowPulseCnt",1);
-		}
-		if(is_flowOk)
-		{
-			flowErr++;
-			Debug_Printf("is_flowOk Fail",1);
-			printf("flowINt = %d \r\n",flowINt);
-		}
-		m_io.flowPulseCnt = 0;
-
-		if(!flowErrAccu &&flowErr)
-		{
-			if(m_io.sol1On)
-			{
-				Debug_Printf("1111",1);
-				SOL1_OFF();
-			}
-			else
-			{
-				Debug_Printf("2222",1);
-				flowErrAccu = 1;
-				Ciller_Pwr_OFF();//나중에 플로우 값 정상들어와야지 켜지게 하기
-				WaterPump_Pwr_OFF();
-				Debug_Printf("CILLER PUMP_FLOW END",1);
-			}
-		}
-		m_io.flowSensorFrqChk = 0;
-	}
-
-}
 
 void Flow_Stop_Check()
 {
@@ -566,6 +539,7 @@ void IO_Init()
 	HP1_PELT_ON();
 	PELTIER_PWR_ON();
 
+	BAT_CHG_ON_H();
 
 	SOL1_OFF();
 	m_io.sol1OnStatus = 0;
