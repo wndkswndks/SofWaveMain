@@ -454,7 +454,7 @@ void Error_Check_RF()
 void Error_Check_Config()
 {
 	static uint32_t timeStamp;
-	if(HAL_GetTick()<4000) return;
+	if(!m_rf.sysChkFlag) return;
 	if(m_rf.pluseOn) return;
 	if(HAL_GetTick()-timeStamp >= 1000)
 	{
