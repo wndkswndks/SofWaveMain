@@ -470,6 +470,19 @@ void Debug_Rx_Parssing(uint8_t add, uint32_t data)
 			Tx_LCD_Msg(CMD_ERR, data);
 		break;
 
+		case CMD_MAIN_RESET:
+			NVIC_SystemReset();
+		break;
+
+		case CMD_HP_RESET:
+
+				HP1_RST_CONTROL_H();
+				HAL_Delay(100);
+				HP1_RST_CONTROL_L();
+
+		break;
+
+
 
 
 		case CMD_DEBUG_VIBE:
@@ -909,6 +922,7 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 
 		case CMD_SYS_CHK:
 			m_rf.sysChkFlag = 1;
+			m_err.txEn = 1;
 			Body_Led_Ctrl(BODY_LED_NOMAL);
 			Tx_Hand1_Msg(CMD_SYS_CHK, 1);
 		break;

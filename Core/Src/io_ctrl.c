@@ -540,7 +540,7 @@ void IO_Init()
 	PELTIER_PWR_ON();
 
 	BAT_CHG_ON_H();
-	BAT_ADC_EN_H();
+//	BAT_ADC_EN_H();
 
 	SOL1_OFF();
 	m_io.sol1OnStatus = 0;

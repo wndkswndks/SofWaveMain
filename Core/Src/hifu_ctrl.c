@@ -1931,7 +1931,7 @@ void LCD_Status_Tret()
 	if(HAL_GetTick()- m_rf.preCooltime> PRECOOL_TIMEOUT && m_rf.preCooltime)
 	{
 		m_err.preCoolStatus = 1;
-#if 0
+#if 1
 		Ready_ON();
 
 		Tx_RF_FRQ_ALL_Module();

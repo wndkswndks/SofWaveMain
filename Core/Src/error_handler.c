@@ -117,6 +117,7 @@ uint8_t Check_Common(uint8_t status, uint8_t cmd)
 			Set_Err_StatusBitFlag(cmd, 0);
 			m_err.errCheckBuff[cmd] = 0;
 			printf("[ERR %u] Clear \r\n",cmd);
+			Body_Led_Ctrl(BODY_LED_NOMAL);
 
 		}
 		m_err.errCntBuff[cmd] = 0;
