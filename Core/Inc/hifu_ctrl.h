@@ -40,7 +40,7 @@
 #define STX	0x02
 #define ETX	0x03
 
-
+#if 0 //OLD BOARD
 #define BHB0003_1W_1	174
 #define BHB0003_1W_2	140
 #define BHB0003_1W_3	170
@@ -48,6 +48,17 @@
 #define BHB0003_1W_5	152
 #define BHB0003_1W_6	162
 #define BHB0003_1W_7	160
+
+#else //NEW BOARD
+#define BHB0003_1W_1	365
+#define BHB0003_1W_2	294
+#define BHB0003_1W_3	357
+#define BHB0003_1W_4	348
+#define BHB0003_1W_5	319
+#define BHB0003_1W_6	340
+#define BHB0003_1W_7	336
+
+#endif
 
 
 
