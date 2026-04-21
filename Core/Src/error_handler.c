@@ -364,12 +364,12 @@ void Error_Check_Main()
 	Check_Status(m_io.level1Status, 0, IDX_LEVEL_LOW);
 	Check_Max_Min(m_io.flowSensorFrq, FLOW_LOW_MAX, FLOW_LOW_MIN, IDX_FLOW_LIMIT_UNDER);
 
-	if(Check_Max(m_io.battery*10.0, BATTRY_LIMIT_MAX, IDX_BATTRY_LIMIT_OVER)){}
-	else if(Check_Min(m_io.battery*10.0, BATTRY_LIMIT_MIN, IDX_BATTRY_LIMIT_UNDER)){}
-	else if(Check_Min(m_io.battery*10.0, BATTRY_NOMAL_MIN, IDX_BATTRY_LIMIT_LOW)){}
+//	if(Check_Max(m_io.battery*10.0, BATTRY_LIMIT_MAX, IDX_BATTRY_LIMIT_OVER)){}
+//	else if(Check_Min(m_io.battery*10.0, BATTRY_LIMIT_MIN, IDX_BATTRY_LIMIT_UNDER)){}
+//	else if(Check_Min(m_io.battery*10.0, BATTRY_NOMAL_MIN, IDX_BATTRY_LIMIT_LOW)){}
 
 	Check_Status(m_err.autoCalStatus, 0, IDX_AUTO_CAL_COMU_ERR);
-	Check_Time(m_io.hour, m_io.min, m_io.sec, IDX_RTC_ERR);
+//	Check_Time(m_io.hour, m_io.min, m_io.sec, IDX_RTC_ERR);
 
 #endif
 
