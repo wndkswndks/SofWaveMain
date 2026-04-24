@@ -23,7 +23,7 @@ typedef enum
 	TEMP_OUT_MIN = -100,
 
 
-	COMU_MAX_CNT = 3,
+	COMU_MAX_CNT = 10,
 	FLOW_ZERO = 0,
 	FLOW_LOW_MAX = 40,
 	FLOW_LOW_MIN = 2,
