@@ -38,6 +38,16 @@ void Err_Init()
 		  case IDX_BATTRY_LIMIT_OVER:
 		  case IDX_BATTRY_LIMIT_UNDER:
 		  case IDX_BATTRY_LIMIT_LOW:
+		  case IDX_CATRIGE_ID_ERR:
+		  case IDX_CATRIGE_MANU_ERR:
+		  case IDX_CATRIGE_MANU_OVER_ERR:
+		  case IDX_CATRIGE_ISUE_ERR:
+		  case IDX_CATRIGE_ISUE_OVER_ERR:
+		  case IDX_CATRIGE_WATT_ERR:
+		  case IDX_CATRIGE_FRQ_ERR:
+		  case IDX_CATRIGE_RESHOT_ERR:
+		  case IDX_CATRIGE_RESHOT_LOW:
+		  case IDX_CATRIGE_RESHOT_ZERO:
 			   m_err.errStandBuff[i] = 5;
 		  break;
 
