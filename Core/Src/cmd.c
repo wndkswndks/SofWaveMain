@@ -1065,6 +1065,9 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 			Ciller_Pwr_ON();//나중에 플로우 값 정상들어와야지 켜지게 하기
 		break;
 
+		case CMD_TEMP_OFFSET:
+			Tx_Hand1_Msg(CMD_TEMP_OFFSET, data);
+		break;
 
 
 
@@ -1275,6 +1278,9 @@ void Hand_Rx_Parssing(uint8_t add, uint32_t data)
 				}
 			break;
 
+			case CMD_TEMP_OFFSET:
+				Tx_LCD_Msg(CMD_TEMP_OFFSET, data);
+			break;
 
 
 
