@@ -727,50 +727,6 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 			Tx_RF_Watt_Module(RF_WATT_CH6, data);
 		break;
 
-		case CMD_PLUSE_NUM:
-			if(data == 0 ||data > 12 ) break;
-			m_rf.pulseNum = data;
-		break;
-
-		case CMD_PLUSE_EN:
-			if(data == 0 || data > 4) break;
-			uint8_t endisValue;
-			if(m_rf.pulseEndisBuff[data])
-			{
-				m_rf.pulseEndisBuff[data] = 0;
-			}
-			else
-			{
-				m_rf.pulseEndisBuff[data] = 1;
-			}
-
-			endisValue = data*10 + m_rf.pulseEndisBuff[data];
-			Tx_LCD_Msg(CMD_PLUSE_EN, endisValue);
-			CurrentEnergy_Cal();
-		break;
-
-
-		case CMD_PLUSE_BTN_UP_DN:
-			uint16_t pulseData = 0;
-			if(m_rf.pulseNum == 0 ||m_rf.pulseNum > 12 ) break;
-			if(data == BUTTON_UP)
-			{
-				if(m_rf.pulseBuff[m_rf.pulseNum]< m_rf.pulseMaxBuff[m_rf.pulseNum])
-				{
-					m_rf.pulseBuff[m_rf.pulseNum]++;
-				}
-			}
-			else if(data == BUTTON_DN)
-			{
-				if(m_rf.pulseBuff[m_rf.pulseNum]>m_rf.pulseMinBuff[m_rf.pulseNum])
-				{
-					m_rf.pulseBuff[m_rf.pulseNum]--;
-				}
-			}
-			pulseData = m_rf.pulseNum*100 + m_rf.pulseBuff[m_rf.pulseNum];
-			Tx_LCD_Msg(CMD_PLUSE_VALUE, pulseData);
-			CurrentEnergy_Cal();
-		break;
 
 		case CMD_TEST_FORCE_PAGE_CHANGE:
 			LCD_Init();

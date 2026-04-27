@@ -381,9 +381,7 @@ void Tx_RF_FeedBack_Check();
 void Error_Check_Config();
 void LCD_Init();
 int AutoCal_Avg();
-void PulseData_Sand(uint8_t num, uint16_t data);
-void PulseEn_Sand(uint8_t num, uint16_t enDis);
-void CurrentEnergy_Cal();
+
 void Tx_RF_FRQ_ALL_Module();
 void Test_Init();
 void Tx_RF_Watt_Zero_ALL_Module();

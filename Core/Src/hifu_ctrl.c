@@ -1074,63 +1074,6 @@ void LCD_Init()
 	m_rf.switchHandFoot = SWITCH_HAND;
 
 }
-void LCD_Max_Init()
-{
-	HAL_Delay(500);
-
-
-
-	PulseData_Sand(IDX_MAIN_P1_WATT, 1);
-	PulseData_Sand(IDX_MAIN_P1_DURATION_TIME, 10);
-	PulseData_Sand(IDX_MAIN_P1_INTERVAL_TIME, 5);
-	PulseData_Sand(IDX_MAIN_P2_WATT, 1);
-	PulseData_Sand(IDX_MAIN_P2_DURATION_TIME, 10);
-	PulseData_Sand(IDX_MAIN_P2_INTERVAL_TIME, 5);
-	PulseData_Sand(IDX_MAIN_P3_WATT, 1);
-	PulseData_Sand(IDX_MAIN_P3_DURATION_TIME, 10);
-	PulseData_Sand(IDX_MAIN_P3_INTERVAL_TIME, 5);
-	PulseData_Sand(IDX_MAIN_P4_WATT, 1);
-	PulseData_Sand(IDX_MAIN_P4_DURATION_TIME, 10);
-	PulseData_Sand(IDX_MAIN_POSTCO0L_TIME, 10);
-
-	PulseEn_Sand(1, PULSE_ENABLE);
-	PulseEn_Sand(2, PULSE_ENABLE);
-	PulseEn_Sand(3, PULSE_ENABLE);
-	PulseEn_Sand(4, PULSE_ENABLE);
-	CurrentEnergy_Cal();
-
-	m_rf.currentShot = 0;
-	m_rf.totaEnergy = 0;
-	Tx_LCD_Msg(CMD_TOTAL_JOULE, m_rf.totaEnergy);
-	Tx_LCD_Msg(CMD_CURRENT_SHOT, m_rf.currentShot);
-	Tx_LCD_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
-
-	Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_STNBY);
-
-}
-
-void PulseData_Sand(uint8_t num, uint16_t data)
-{
-	uint16_t pulseData;
-	if(num>12)return;
-
-	m_rf.pulseBuff[num] = data;
-	pulseData = num*100 + data;
-	Tx_LCD_Msg(CMD_PLUSE_VALUE, pulseData);
-
-}
-void PulseEn_Sand(uint8_t num, uint16_t enDis)
-{
-	uint16_t pulseData;
-	if(num>4)return;
-
-	pulseData = num*10 + enDis;
-	m_rf.pulseEndisBuff[num] = enDis;
-	Tx_LCD_Msg(CMD_PLUSE_EN, pulseData);
-
-}
-
-
 
 
 void RF_Watt_All_Calculate()
@@ -1554,6 +1497,8 @@ void RF_Pwm_On()
 
 void RF_eg_Exp_On(uint32_t expTime)
 {
+	Debug_Printf("RF_eg_Exp_On ",0);
+	printf("%u \r\n",expTime);
 	m_rf.egExpOn = 1;
 	m_rf.pluseEgTimeStamp = HAL_GetTick();
 	m_rf.pluseEnginerHigh = expTime;
@@ -1650,118 +1595,6 @@ void PulseEnDisCheck()
 	}
 
 
-}
-
-
-void RF_Pwm_Conter_Individual()
-{
-
-	uint32_t pulse1Htime = m_rf.pulseBuff[IDX_MAIN_P1_DURATION_TIME] * TIME_100MS;
-	uint32_t pulse1Ltime = m_rf.pulseBuff[IDX_MAIN_P1_INTERVAL_TIME]* TIME_100MS;
-	uint32_t pulse2Htime = m_rf.pulseBuff[IDX_MAIN_P2_DURATION_TIME]* TIME_100MS;
-	uint32_t pulse2Ltime = m_rf.pulseBuff[IDX_MAIN_P2_INTERVAL_TIME]* TIME_100MS;
-	uint32_t pulse3Htime = m_rf.pulseBuff[IDX_MAIN_P3_DURATION_TIME]* TIME_100MS;
-	uint32_t pulse3Ltime = m_rf.pulseBuff[IDX_MAIN_P3_INTERVAL_TIME]* TIME_100MS;
-	uint32_t pulse4Htime = m_rf.pulseBuff[IDX_MAIN_P4_DURATION_TIME]* TIME_100MS;
-	uint32_t pulseCooltime = m_rf.pulseBuff[IDX_MAIN_POSTCO0L_TIME]* TIME_100MS;
-
-
-	if(pulse1Ltime>109)pulse1Ltime -= 109;
-	if(pulse2Ltime>109)pulse2Ltime -= 109;
-	if(pulse3Ltime>109)pulse3Ltime -= 109;
-
-
-	if(m_rf.pluseOn)
-	{
-		switch (m_rf.pluseLevel)
-		{
-			case PWM_H1_LEVEL:
-				HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_HIGH);
-				if(HAL_GetTick() - m_rf.pluseTimeStamp> pulse1Htime)
-				{
-					m_rf.pluseTimeStamp = HAL_GetTick();
-//					Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_L1_LEVEL);
-					Pulse_Trig_TimeSave();
-					m_rf.pluseLevel = PWM_L1_LEVEL;
-				}
-			break;
-
-			case PWM_L1_LEVEL:
-				HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_LOW);
-				if(HAL_GetTick() - m_rf.pluseTimeStamp>pulse1Ltime)
-				{
-					PulseEnDisCheck();
-					m_rf.pluseTimeStamp = HAL_GetTick();
-
-				}
-			break;
-
-			case PWM_H2_LEVEL:
-
-				HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_HIGH);
-				if(HAL_GetTick() - m_rf.pluseTimeStamp> pulse2Htime)
-				{
-					m_rf.pluseTimeStamp = HAL_GetTick();
-//					Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_L2_LEVEL);
-					Pulse_Trig_TimeSave();
-					m_rf.pluseLevel = PWM_L2_LEVEL;
-				}
-			break;
-
-			case PWM_L2_LEVEL:
-				HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_LOW);
-				if(HAL_GetTick() - m_rf.pluseTimeStamp> pulse2Ltime)
-				{
-					PulseEnDisCheck();
-					m_rf.pluseTimeStamp = HAL_GetTick();
-				}
-			break;
-
-			case PWM_H3_LEVEL:
-				HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_HIGH);
-				if(HAL_GetTick() - m_rf.pluseTimeStamp> pulse3Htime)
-				{
-					m_rf.pluseTimeStamp = HAL_GetTick();
-//					Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_L3_LEVEL);
-					Pulse_Trig_TimeSave();
-					m_rf.pluseLevel = PWM_L3_LEVEL;
-				}
-			break;
-
-			case PWM_L3_LEVEL:
-				HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_LOW);
-				if(HAL_GetTick() - m_rf.pluseTimeStamp> pulse3Ltime)
-				{
-					PulseEnDisCheck();
-					m_rf.pluseTimeStamp = HAL_GetTick();
-				}
-			break;
-
-			case PWM_H4_LEVEL:
-				HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_HIGH);
-				if(HAL_GetTick() - m_rf.pluseTimeStamp> pulse4Htime)
-				{
-					m_rf.pluseTimeStamp = HAL_GetTick();
-//					Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_COOL_LEVEL);
-					Pulse_Trig_TimeSave();
-					m_rf.pluseLevel = PWM_COOL_LEVEL;
-				}
-			break;
-
-			case PWM_COOL_LEVEL:
-				HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_LOW);
-				if(HAL_GetTick() - m_rf.pluseTimeStamp> pulseCooltime)
-				{
-					m_rf.expEndFlag = 1;
-					m_rf.pluseOn = 0;
-					Pulse_Trig_TimeSave();
-					Exp_Total_Log();
-					m_rf.pluseLevel = PWM_H1_LEVEL;
-				}
-			break;
-
-		}
-	}
 }
 
 
@@ -2579,29 +2412,6 @@ void Rf_Test()
 }
 
 
-void CurrentEnergy_Cal()
-{
-	uint16_t pulse1Htime =m_rf.pulseBuff[IDX_MAIN_P1_DURATION_TIME];
-	uint16_t pulse2Htime = m_rf.pulseBuff[IDX_MAIN_P2_DURATION_TIME];
-	uint16_t pulse3Htime = m_rf.pulseBuff[IDX_MAIN_P3_DURATION_TIME];
-	uint16_t pulse4Htime = m_rf.pulseBuff[IDX_MAIN_P4_DURATION_TIME];
-	uint16_t pulse1Watt  = m_rf.pulseBuff[IDX_MAIN_P1_WATT];
-	uint16_t pulse2Watt  = m_rf.pulseBuff[IDX_MAIN_P2_WATT];
-	uint16_t pulse3Watt  = m_rf.pulseBuff[IDX_MAIN_P3_WATT];
-	uint16_t pulse4Watt  = m_rf.pulseBuff[IDX_MAIN_P4_WATT];
-	uint16_t energy = 0;
-
-	if(m_rf.pulseEndisBuff[1]) energy += (pulse1Htime * pulse1Watt);
-	if(m_rf.pulseEndisBuff[2]) energy += (pulse2Htime * pulse2Watt);
-	if(m_rf.pulseEndisBuff[3]) energy += (pulse3Htime * pulse3Watt);
-	if(m_rf.pulseEndisBuff[4]) energy += (pulse4Htime * pulse4Watt);
-
-
-	m_rf.currentEnergy = energy;
-
-	Tx_LCD_Msg(CMD_CURRENT_JOULE, m_rf.currentEnergy);
-
-}
 
 uint8_t Exp_Shot_Chk()
 {
@@ -2663,11 +2473,7 @@ void Exp_Nomal_Config()
 		break;
 
 		case STEP1:
-#if 0
-			RF_Pwm_Conter_Individual();
-#else
 			RF_Pwm_Conter_Common(m_rf.PulseOption);
-#endif
 			if(m_rf.expEndFlag) step = STEP2;
 		break;
 
