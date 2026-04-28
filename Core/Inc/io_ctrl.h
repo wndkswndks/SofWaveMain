@@ -21,6 +21,8 @@
 #define IS_AC_INPUT_STATE()        (HAL_GPIO_ReadPin(AC_INPUT_STATE_GPIO_Port, AC_INPUT_STATE_Pin) != 0)
 #define IS_HP1_SHOT_PUSH()         (HAL_GPIO_ReadPin(HP1_SHOT_PUSH_GPIO_Port, HP1_SHOT_PUSH_Pin) == 0)
 #define IS_HP1_INSERT()            (HAL_GPIO_ReadPin(HP1_INSERT_GPIO_Port, HP1_INSERT_Pin) == 0)
+#define IS_HP1_FOOT_PUSH()         (HAL_GPIO_ReadPin(FOOT_SW_IN_GPIO_Port, FOOT_SW_IN_Pin) == 0)
+
 #define IS_HP2_SHOT_PUSH()         (HAL_GPIO_ReadPin(HP2_SHOT_PUSH_GPIO_Port, HP2_SHOT_PUSH_Pin) == 0)
 #define IS_HP2_INSERT()            (HAL_GPIO_ReadPin(HP2_INSERT_GPIO_Port, HP2_INSERT_Pin) != 0)
 #define IS_STATE_A_ON()            (HAL_GPIO_ReadPin(STATE_A_GPIO_Port, STATE_A_Pin) == 0)

@@ -2429,7 +2429,7 @@ uint8_t Exp_Shot_Chk()
 	}
 	else if(m_rf.switchHandFoot == SWITCH_FOOT)
 	{
-		if (IS_HP2_SHOT_PUSH())
+		if (IS_HP1_FOOT_PUSH())
 		{
 			return 1;
 		}
