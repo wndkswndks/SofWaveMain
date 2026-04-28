@@ -306,7 +306,7 @@ void CMD_Is_All_Live(uint8_t who)
 			for(int i =0 ;i < 3;i++)
 			{
 				Tx_Hand1_Msg(CMD_DO_ALL_LIVE, 0);
-				HAL_Delay(100);
+				HAL_Delay(50);
 				UartRx2DataProcess();
 			}
 			if(m_hand1.liveChkCnt >= 2)
