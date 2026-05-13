@@ -95,10 +95,6 @@ void HP1_Pwr_OFF()
 }
 
 
-int HP1_InsertOOn, HP1_InsertOOff;
-int HP1_InsertOOnI, HP1_InsertOOffI;
-
-
 
 void HP2_Pwr_ON()
 {
@@ -290,8 +286,6 @@ float Get_NTC_Temperature_j(uint32_t adc_value) {
 //==========================================================================================================
 
 float chillerTemp;
- uint8_t cntLow, cntHigh;
- uint8_t flagLow = 1, flagHigh;
 uint8_t chilFlag = 0;
 uint32_t chilTerm = 0;
 
@@ -659,7 +653,6 @@ void Body_Led_Ctrl(uint8_t mode)
 
 }
 
-float temperatureQQ;
 
 void IO_Config()
 {

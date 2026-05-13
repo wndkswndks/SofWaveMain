@@ -351,8 +351,7 @@ void CMD_Is_All_Live(uint8_t who)
 
 extern int wattDa;
 
-//static
-uint8_t agingCnt, updn;
+
 void Debug_Rx_Parssing(uint8_t add, uint32_t data)
 {
 

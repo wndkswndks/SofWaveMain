@@ -6,13 +6,7 @@ uint8_t testExpFlag;
 
 
 RF_T m_rf;
-EEPROM_T m_eep =
-{
-//	.rfFrqBuff = {0, 11000, 11000, 11000, 11000, 11000, 11000, 11000},
-//	.rfFrqBuff = {0, 11035, 11027, 10962, 10992, 11062, 11045, 11060},//td no 1
-	.rfFrqBuff = {0, 11090, 11037, 11030, 11025, 11102, 10972, 11115},//td no 2
-
-};
+EEPROM_T m_eep;
 
 HAND_T m_hand1;
 
@@ -1002,35 +996,6 @@ void Rf_Init()
 
 
 	Rf_TD_BHB003_Table_260212_test();
-//	Rf_TD_BHA001_Table_260306();
-
-
-
-	m_rf.pulseMaxBuff[IDX_MAIN_P1_WATT]			= 10;
-	m_rf.pulseMaxBuff[IDX_MAIN_P1_DURATION_TIME]= 50;
-	m_rf.pulseMaxBuff[IDX_MAIN_P1_INTERVAL_TIME]= 50;
-	m_rf.pulseMaxBuff[IDX_MAIN_P2_WATT]         = 10;
-	m_rf.pulseMaxBuff[IDX_MAIN_P2_DURATION_TIME]= 50;
-	m_rf.pulseMaxBuff[IDX_MAIN_P2_INTERVAL_TIME]= 50;
-	m_rf.pulseMaxBuff[IDX_MAIN_P3_WATT]         = 10;
-	m_rf.pulseMaxBuff[IDX_MAIN_P3_DURATION_TIME]= 50;
-	m_rf.pulseMaxBuff[IDX_MAIN_P3_INTERVAL_TIME]= 50;
-	m_rf.pulseMaxBuff[IDX_MAIN_P4_WATT]         = 10;
-	m_rf.pulseMaxBuff[IDX_MAIN_P4_DURATION_TIME]= 50;
-	m_rf.pulseMaxBuff[IDX_MAIN_POSTCO0L_TIME]   = 30;
-
-	m_rf.pulseMinBuff[IDX_MAIN_P1_WATT]			= 1;
-	m_rf.pulseMinBuff[IDX_MAIN_P1_DURATION_TIME]= 10;
-	m_rf.pulseMinBuff[IDX_MAIN_P1_INTERVAL_TIME]= 0;
-	m_rf.pulseMinBuff[IDX_MAIN_P2_WATT]         = 1;
-	m_rf.pulseMinBuff[IDX_MAIN_P2_DURATION_TIME]= 10;
-	m_rf.pulseMinBuff[IDX_MAIN_P2_INTERVAL_TIME]= 0;
-	m_rf.pulseMinBuff[IDX_MAIN_P3_WATT]         = 1;
-	m_rf.pulseMinBuff[IDX_MAIN_P3_DURATION_TIME]= 10;
-	m_rf.pulseMinBuff[IDX_MAIN_P3_INTERVAL_TIME]= 0;
-	m_rf.pulseMinBuff[IDX_MAIN_P4_WATT]         = 1;
-	m_rf.pulseMinBuff[IDX_MAIN_P4_DURATION_TIME]= 10;
-	m_rf.pulseMinBuff[IDX_MAIN_POSTCO0L_TIME]   = 0;
 
 
 
@@ -1285,7 +1250,7 @@ void Tx_RF_FRQ_ALL_Module( )
 
 
 
-void Tx_RF_Watt_ALL_Module_org( )
+void Tx_RF_Watt_ALL_Module( )
 {
 
 	uint8_t len = 0;
@@ -1336,67 +1301,6 @@ void Tx_RF_Watt_ALL_Module_org( )
 
 
 
-
-void Tx_RF_Watt_ALL_Module(uint16_t watt)
-{
-
-	uint8_t len = 0;
-
-
-
-	ddTimeStart1(); //wndksdebug
-	len = RF_NUM_FIX + 16;
-	m_rf.txBuff[RF_INDEX_STX] = STX;
-	m_rf.txBuff[RF_INDEX_LEN] = len;
-	m_rf.txBuff[RF_INDEX_ADDR] = 'B';//���ʷ����� B, �ý��� b
-	m_rf.txBuff[RF_INDEX_CMD] = ALL_CH_OUTPUT_SET;
-
-
-
-	m_rf.watt = watt;
-	if(m_rf.watt > MAX_WATT_IDX) m_rf.watt = MAX_WATT_IDX;
-	int idx = m_rf.watt;
-	for(int i =0 ;i < 7; i++)
-	{
-		m_rf.rfwattBuff[i] = m_eep.rfWattBuff[idx+(i*11)];
-	}
-
-	m_rf.txBuff[RF_INDEX_DATA+0] = (m_rf.rfwattBuff[RF_WATT_CH0]>>8)&0xff;
-	m_rf.txBuff[RF_INDEX_DATA+1] = (m_rf.rfwattBuff[RF_WATT_CH0])&0xff;
-
-	m_rf.txBuff[RF_INDEX_DATA+2] = (m_rf.rfwattBuff[RF_WATT_CH1]>>8)&0xff;
-	m_rf.txBuff[RF_INDEX_DATA+3] = (m_rf.rfwattBuff[RF_WATT_CH1])&0xff;
-
-	m_rf.txBuff[RF_INDEX_DATA+4] = (m_rf.rfwattBuff[RF_WATT_CH2]>>8)&0xff;
-	m_rf.txBuff[RF_INDEX_DATA+5] = (m_rf.rfwattBuff[RF_WATT_CH2])&0xff;
-
-	m_rf.txBuff[RF_INDEX_DATA+6] = (m_rf.rfwattBuff[RF_WATT_CH3]>>8)&0xff;
-	m_rf.txBuff[RF_INDEX_DATA+7] = (m_rf.rfwattBuff[RF_WATT_CH3])&0xff;
-
-	m_rf.txBuff[RF_INDEX_DATA+8] = (m_rf.rfwattBuff[RF_WATT_CH4]>>8)&0xff;
-	m_rf.txBuff[RF_INDEX_DATA+9] = (m_rf.rfwattBuff[RF_WATT_CH4])&0xff;
-
-	m_rf.txBuff[RF_INDEX_DATA+10] = (m_rf.rfwattBuff[RF_WATT_CH5]>>8)&0xff;
-	m_rf.txBuff[RF_INDEX_DATA+11] = (m_rf.rfwattBuff[RF_WATT_CH5])&0xff;
-
-	m_rf.txBuff[RF_INDEX_DATA+12] = (m_rf.rfwattBuff[RF_WATT_CH6]>>8)&0xff;
-	m_rf.txBuff[RF_INDEX_DATA+13] = (m_rf.rfwattBuff[RF_WATT_CH6])&0xff;
-
-	m_rf.txBuff[RF_INDEX_DATA+14] = (m_rf.rfwattBuff[RF_WATT_CH6]>>8)&0xff;
-	m_rf.txBuff[RF_INDEX_DATA+15] = (m_rf.rfwattBuff[RF_WATT_CH6])&0xff;
-
-
-	for(int i =0 ;i <= RF_INDEX_DATA+15 ;i++)
-	{
-		m_rf.txBuff[RF_INDEX_DATA+16] ^= m_rf.txBuff[i];
-	}
-	m_rf.txBuff[RF_INDEX_DATA+17] = ETX;
-	Debug_Tx_RF_All_Watt_Printf();
-	Tx_RF_Msg(m_rf.txBuff, len);
-	memset(m_rf.txBuff, 0, 30);
-
-
-}
 
 
 
@@ -1508,11 +1412,7 @@ void Pulse_Trig_TimeSave()
 	m_rf.trigTemeStamp[m_rf.trigCnt++] = HAL_GetTick();
 	m_rf.trigCnt %= 30;
 }
-void Get_PluseWatt(uint16_t watt)
-{
-	m_rf.getWattBuff[m_rf.getWattCnt++] = watt;
-	m_rf.getWattCnt %= 10;
-}
+
 
 void Exp_Total_Log()
 {
@@ -1549,48 +1449,6 @@ void Exp_Total_Log()
 
 	Tx_RF_FeedBack_Check();
 	printf(">>================================ \r\n");
-
-}
-void PulseEnDisCheck()
-{
-	uint16_t pulse2Watt = m_rf.pulseBuff[IDX_MAIN_P2_WATT];
-	uint16_t pulse3Watt = m_rf.pulseBuff[IDX_MAIN_P3_WATT];
-	uint16_t pulse4Watt = m_rf.pulseBuff[IDX_MAIN_P4_WATT];
-
-	if(m_rf.pulseEndisBuff[2] && !m_rf.pulseEndisChkBuff[2] )
-	{
-		m_rf.pulseEndisChkBuff[2] = 1;
-		Tx_RF_Watt_ALL_Module(pulse2Watt);
-//		Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_H2_LEVEL);
-		Pulse_Trig_TimeSave();
-		Get_PluseWatt(pulse2Watt);
-		m_rf.pluseLevel = PWM_H2_LEVEL;
-	}
-	else if(m_rf.pulseEndisBuff[3] && !m_rf.pulseEndisChkBuff[3] )
-	{
-		m_rf.pulseEndisChkBuff[3] = 1;
-		Tx_RF_Watt_ALL_Module(pulse3Watt);
-//		Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_H3_LEVEL);
-		Pulse_Trig_TimeSave();
-		Get_PluseWatt(pulse3Watt);
-		m_rf.pluseLevel = PWM_H3_LEVEL;
-	}
-	else if(m_rf.pulseEndisBuff[4] && !m_rf.pulseEndisChkBuff[4] )
-	{
-		m_rf.pulseEndisChkBuff[4] = 1;
-		Tx_RF_Watt_ALL_Module(pulse4Watt);
-//		Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_H4_LEVEL);
-		Pulse_Trig_TimeSave();
-		Get_PluseWatt(pulse4Watt);
-		m_rf.pluseLevel = PWM_H4_LEVEL;
-	}
-	else
-	{
-//		Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_COOL_LEVEL);
-		Pulse_Trig_TimeSave();
-		m_rf.pluseLevel = PWM_COOL_LEVEL;
-	}
-
 
 }
 
@@ -1678,20 +1536,6 @@ void RF_Eg_Exp_Conter()
 		}
 	}
 }
-void RF_Eg_Exp_Conter_test()
-{
-	if(m_rf.egExpOn)
-	{
-		if(HAL_GetTick()- m_rf.pluseEgTimeStamp > m_rf.pluseEnginerHigh)
-		{
-			HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_LOW);
-			HAL_Delay(200);
-			HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_HIGH);
-			m_rf.pluseEgTimeStamp = HAL_GetTick();
-//			m_rf.expEndFlag = 1;
-		}
-	}
-}
 
 void Vibe_Time_Cal()
 {
@@ -1714,7 +1558,6 @@ void Vibe_Time_Cal()
 
 }
 
-int cccnt;
 int ChilerTemp_CycleBuff[20];
 int ChilerTempCnt;
 
@@ -1762,7 +1605,7 @@ void LCD_Status_Tret()
 			Ready_ON();
 
 			Tx_RF_FRQ_ALL_Module();
-			Tx_RF_Watt_ALL_Module_org();
+			Tx_RF_Watt_ALL_Module();
 			TX_RF_Max_Ontime_Set();
 
 			Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_TRET);
@@ -1782,7 +1625,7 @@ void LCD_Status_Tret()
 		Ready_ON();
 
 		Tx_RF_FRQ_ALL_Module();
-		Tx_RF_Watt_ALL_Module_org();
+		Tx_RF_Watt_ALL_Module();
 		TX_RF_Max_Ontime_Set();
 
 		Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_TRET);

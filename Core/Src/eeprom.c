@@ -74,7 +74,6 @@ HAL_StatusTypeDef CAT24C16_ReadWord(I2C_HandleTypeDef *hi2c, uint16_t abs_addr, 
 }
 
 
-uint8_t bufQQ[255] = {0};
 void Eeprom_All_Read(void)
 {
 

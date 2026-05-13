@@ -253,7 +253,6 @@ typedef struct
 {
 	char cmd;
 	uint8_t txBuff[30];
-	uint8_t fBuff[16];
 	uint8_t rxBuff[30];
 	uint8_t rxCnt;
 	uint8_t rxBuffPassing[30];
@@ -273,7 +272,6 @@ typedef struct
 	uint32_t postCooling;
 	uint32_t interval;
 	uint32_t currentShot;
-	uint16_t currentEnergy;
 	uint16_t totaEnergy;
 	uint8_t egExpOn;
 	uint8_t watt;
@@ -285,17 +283,10 @@ typedef struct
 
 	uint32_t rfFrqBuff[8];
 	uint32_t rfwattBuff[8];
-	uint8_t rfFrqFlag;
-	uint8_t rfWattFlag;
-	uint8_t rfFrqCh;
-	uint8_t rfWattCh;
-	uint8_t maxOntimeFlag;
 	uint8_t readyFlag;
-	uint8_t rfTxFlag;
 	int FeedBackW;
 	int FeedBackWBuff[70];
 	uint8_t autoCalFlag;
-	uint8_t autoCalStep;
 	uint8_t autoCalWattLevel;
 	uint8_t FeedBackCnt;
 	uint32_t lastLcdTxTime;
@@ -303,19 +294,10 @@ typedef struct
 	uint8_t liveChkCnt;
 	uint8_t liveOk;
 	uint8_t PulseOption;
-	uint8_t pulseNum;
-	uint8_t pulseBuff[13];
-	uint8_t pulseMaxBuff[13];
-	uint8_t pulseMinBuff[13];
-	uint8_t pulseNowWattNum;
-	uint8_t pulseEndisBuff[5];
-	uint8_t pulseEndisChkBuff[5];
 	uint8_t agingCnt;
 	uint8_t agingUpDn;
 	uint32_t trigTemeStamp[30];
 	uint8_t trigCnt;
-	uint8_t getWattBuff[10];
-	uint8_t getWattCnt;
 	uint8_t feedBackTest;
 	uint16_t remainingShotNegative;
 	uint8_t vibeLevel;

@@ -235,9 +235,7 @@ typedef struct
 	uint8_t hour;
 	uint8_t min;
 	uint8_t sec;
-	uint8_t minPre;
 	uint8_t rtcEn;
-	uint8_t hp1CoolOk;
 }IO_T;
 
 /*  			enum end  				*/

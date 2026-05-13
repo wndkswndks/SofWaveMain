@@ -161,49 +161,18 @@ typedef struct
 	uint8_t handComuErr;
 	uint8_t handTimeout;
 
-	uint8_t lcdComuErr;
-	uint8_t lcdTimeout;
-
-	uint8_t tempOut;
-	uint8_t tempLimitUnder;
-	uint8_t tempLow;
-
 	uint8_t flowLimitUnder;
 	uint8_t flowZero;
 
-	uint8_t levelLow;
-
 	uint8_t autoCalComuErr;
 	uint8_t autoCalStatus;
-
-	uint8_t preCoolErr;
 	uint8_t preCoolStatus;
 
-	uint8_t battryLimitOver;
-	uint8_t battryLimitUnder;
-	uint8_t battryLimitLow;
-
-	uint8_t RtcErr;
-	uint8_t catrigeIDErr;
-	uint8_t catrigeManuErr;
-	uint8_t catrigeManuOverErr;
-	uint8_t catrigeIsueErr;
-	uint8_t catrigeIsueOverErr;
-	uint8_t catrigeWattErr;
-	uint8_t catrigeFrqErr;
-	uint8_t catrigeReShotErr;
-	uint8_t catrigeReShotLow;
-	uint8_t catrigeReShotZero;
-
-	uint8_t errTxDoneBuff[50];
 	uint8_t errCntBuff[50];
 	uint8_t errStandBuff[50];
 	uint8_t errDataBuff[50];
 	uint8_t errCheckBuff[50];
 	uint16_t errStatus[4];
-	uint8_t errTraceCnt;
-	uint16_t errChkCnt;
-	uint16_t okChkCnt;
 	uint8_t statusTx;
 	uint8_t txEn;
 
