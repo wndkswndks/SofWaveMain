@@ -8,20 +8,6 @@
 #include "error_handler.h"
 ERROR_T m_err;
 
-void Error_Test_Init()
-{
-//	m_err.txEn = 1;
-
-	m_hand1.temprature = 200;
-	m_io.level1Status = 0;
-	m_io.flowSensorFrq = 3;
-	m_io.battery = 3.3;
-	m_err.autoCalStatus = 0;
-	m_io.hour = 1;
-	m_io.min = 15;
-	m_io.sec = 45;
-
-}
 
 
 void Err_Init()
@@ -372,7 +358,10 @@ void Error_Check_Main()
 {
 #if 1
 	Check_Status(m_io.level1Status, 0, IDX_LEVEL_LOW);
-	Check_Max_Min(m_io.flowSensorFrq, FLOW_LOW_MAX, FLOW_LOW_MIN, IDX_FLOW_LIMIT_UNDER);
+	Check_Status(m_err.flowLimitUnder, 0, IDX_FLOW_LIMIT_UNDER);
+	Check_Status(m_err.flowZero, 0, IDX_FLOW_LIMIT_UNDER);
+
+
 
 //	if(Check_Max(m_io.battery*10.0, BATTRY_LIMIT_MAX, IDX_BATTRY_LIMIT_OVER)){}
 //	else if(Check_Min(m_io.battery*10.0, BATTRY_LIMIT_MIN, IDX_BATTRY_LIMIT_UNDER)){}

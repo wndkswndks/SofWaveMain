@@ -279,6 +279,7 @@ void AutoCal_Tx_Z_Msg()
 void Ready_ON()
 {
 	m_rf.readyFlag = READY_ON;
+	Debug_Printf("READY_ON",1);
 }
 
 void Ready_OFF()
@@ -348,6 +349,7 @@ void CMD_Is_All_Live(uint8_t who)
 
 }
 
+extern int wattDa;
 
 //static
 uint8_t agingCnt, updn;
@@ -443,9 +445,15 @@ void Debug_Rx_Parssing(uint8_t add, uint32_t data)
 		break;
 
 		case CMD_WATT_FEEDBACK:
-//			Tx_RF_FeedBack_Check();
-			m_rf.feedBackTest = data;
 			Debug_Printf("CMD_WATT_FEEDBACK START",1);
+			m_rf.feedBackTest = data;
+			uint8_t fbTd = data/1000;
+			uint16_t fbDa = data%1000;
+			Tx_RF_Watt_Zero_ALL_Module();
+			Tx_RF_Watt_Module(fbTd, fbDa);
+			RF_eg_Exp_On(2000);
+			HAL_Delay(2000);
+			Tx_RF_FeedBack_Check();
 		break;
 
 		case CMD_IS_CATRIDGE:
@@ -738,6 +746,9 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 			TX_RF_Max_Ontime_Set();
 			Tx_RF_FRQ_ALL_Module();
 			RF_eg_Exp_On(data*100);
+
+//			Tx_Hand1_Msg(CMD_VIBE_LEVEL, 2);
+//			Tx_Hand1_Msg(CMD_DEBUG_VIBE, 1);
 		break;
 
 		case CMD_OK:
@@ -1099,21 +1110,6 @@ void Hand_Rx_Parssing(uint8_t add, uint32_t data)
 				Tx_LCD_Msg(CMD_MANUFAC_DD, data);
 			break;
 
-			case CMD_LCD_EXP:
-
-			if(m_rf.switchHandFoot == SWITCH_HAND)
-			{
-				if(!m_rf.pluseOn)
-				{
-					testExpFlag = 1;
-					Debug_Printf("EXP_HAND",1);
-				}
-			}
-			else
-			{
-				Debug_Printf("NOW HAND MODE",1);
-			}
-
 			break;
 
 
@@ -1426,7 +1422,6 @@ void Uart_Tx_Polling_Status()
 			txData = 10000 +m_eep.catridgeDetect;
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
 
-			m_io.flowSensorFrq = 0;
 			timeStamp2 = HAL_GetTick();
 		}
 

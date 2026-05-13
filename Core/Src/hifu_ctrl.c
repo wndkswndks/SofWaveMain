@@ -1050,28 +1050,40 @@ void Hand_Init()//
 void LCD_Init()
 {
 	HAL_Delay(500);
-
+#if 0
 	m_rf.energy = 32;
 	m_rf.pulseDuration = 50;
 	m_rf.postCooling = 5;
+	m_rf.PulseOption = 2;
 	m_rf.interval = 1;
+	m_rf.currentShot = 0;
+	m_rf.totaEnergy = 0;
+	m_rf.switchHandFoot = SWITCH_HAND;
+#else
+	m_rf.energy = 50;
+	m_rf.pulseDuration = 50;
+	m_rf.postCooling = 0;
+	m_rf.PulseOption = 1;
+	m_rf.interval = 0;
+	m_rf.currentShot = 0;
+	m_rf.totaEnergy = 0;
+	m_rf.switchHandFoot = SWITCH_FOOT;
+
+#endif
 
 
 	Tx_LCD_Msg(CMD_ENERGY, m_rf.energy);
 	Tx_LCD_Msg(CMD_PULSE_DURATION, m_rf.pulseDuration);
 	Tx_LCD_Msg(CMD_POST_COOLING, m_rf.postCooling);
+	Tx_LCD_Msg(CMD_TEST_PULSE, m_rf.PulseOption);
 	Tx_LCD_Msg(CMD_INTERVAL, m_rf.interval);
 
-	m_rf.currentShot = 0;
-	m_rf.totaEnergy = 0;
-	Tx_LCD_Msg(CMD_TOTAL_JOULE, m_rf.totaEnergy);
 	Tx_LCD_Msg(CMD_CURRENT_SHOT, m_rf.currentShot);
+	Tx_LCD_Msg(CMD_TOTAL_JOULE, m_rf.totaEnergy);
+	Tx_LCD_Msg(CMD_HAND_FOOT, m_rf.switchHandFoot);
 	Tx_LCD_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
-	m_rf.PulseOption = 2;
-	Tx_LCD_Msg(CMD_TEST_PULSE, m_rf.PulseOption);
 
 	Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_STNBY);
-	m_rf.switchHandFoot = SWITCH_HAND;
 
 }
 
@@ -1469,22 +1481,7 @@ void Rx_RF_Get(uint8_t getData)
 
 	m_rf.lastTimeStamp = HAL_GetTick();
 }
-void RF_Max_Pwm_On()
-{
-	uint16_t pulse1Watt = m_rf.pulseBuff[IDX_MAIN_P1_WATT];
-	Tx_RF_Watt_ALL_Module(pulse1Watt);
-	m_rf.pluseOn = 1;
-	Tx_Hand1_Msg(CMD_PULSE_TRIGER, PWM_H1_LEVEL);
-	m_rf.pluseTimeStamp = HAL_GetTick();
 
-	m_rf.pulseEndisChkBuff[1] = 0;
-	m_rf.pulseEndisChkBuff[2] = 0;
-	m_rf.pulseEndisChkBuff[3] = 0;
-	m_rf.pulseEndisChkBuff[4] = 0;
-	Pulse_Trig_TimeSave();
-	Get_PluseWatt(pulse1Watt);
-	m_rf.pluseLevel = PWM_H1_LEVEL;
-}
 
 void RF_Pwm_On()
 {
@@ -1661,8 +1658,11 @@ void RF_PWM_Force_Stop()
 		HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_LOW);
 		Pulse_Trig_TimeSave();
 		m_rf.pluseLevel = PWM_H1_LEVEL;
-		m_rf.expEndFlag = 1;
-		m_rf.readyFlag = READY_ON;// for go off
+		m_rf.readyFlag = READY_OFF;
+		m_rf.expEndFlag = 0;
+		Tx_LCD_Msg(CMD_LCD_EXP, LCD_EXP_END);
+		Tx_Hand1_Msg(CMD_LCD_EXP, LCD_EXP_END);
+		Body_Led_Ctrl(BODY_LED_NOMAL);
 	}
 
 }
@@ -1675,6 +1675,20 @@ void RF_Eg_Exp_Conter()
 			HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_LOW);
 			m_rf.egExpOn = 0;
 			m_rf.expEndFlag = 1;
+		}
+	}
+}
+void RF_Eg_Exp_Conter_test()
+{
+	if(m_rf.egExpOn)
+	{
+		if(HAL_GetTick()- m_rf.pluseEgTimeStamp > m_rf.pluseEnginerHigh)
+		{
+			HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_LOW);
+			HAL_Delay(200);
+			HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_HIGH);
+			m_rf.pluseEgTimeStamp = HAL_GetTick();
+//			m_rf.expEndFlag = 1;
 		}
 	}
 }
@@ -2274,6 +2288,8 @@ void AutoCal_Config_test_Frq()
 
 }
 
+
+uint8_t fBCh= 0;
 void RF_Borad_FeedBack_Test()
 {
 	static uint8_t step = STEP0;
@@ -2287,10 +2303,11 @@ void RF_Borad_FeedBack_Test()
 		case STEP0:
 
 			Tx_RF_Watt_Zero_ALL_Module();
-			Tx_RF_Watt_Module(1, wattDa);
+			Tx_RF_Watt_Module(fBCh, wattDa);
 			RF_eg_Exp_On(1000);
 			printf("wattDa = %d \r\n",wattDa);
 			timeStamp = HAL_GetTick();
+			m_rf.feedBackTest = 0;
 			step = STEP1;
 		break;
 
@@ -2328,7 +2345,16 @@ void RF_Borad_FeedBack_Test()
 
 
 }
-
+void RF_FeedBack_Cal(uint8_t* buff)
+{
+	uint16_t fbVal = 0;
+	printf("RF_FeedBack_Cal \r\n");
+	for(int i =0 ;i < 8;i++)
+	{
+		fbVal = (buff[4+i*2]<<8) |buff[4+i*2+1];
+		printf("[%d] %u \r\n",i, fbVal);
+	}
+}
 void RF_Rx_Parssing(uint8_t rxID)
 {
 	uint32_t timeStamp;
@@ -2388,6 +2414,7 @@ void RF_Rx_Parssing(uint8_t rxID)
 
 			case GEN_RF_VOLTAGE_REQ_R:
 				Debug_Printf("[RX_RF] GEN_RF_VOLTAGE_REQ_R",1);
+				RF_FeedBack_Cal(m_rf.rxBuffPassing);
 			break;
 
 			case ALL_CH_FREQ_SET_R:
@@ -2442,7 +2469,7 @@ uint8_t Exp_Shot_Chk()
 
 }
 
-void Exp_Nomal_Config()
+void Exp_Config()
 {
 	uint16_t totalEenerge;
 
@@ -2450,6 +2477,7 @@ void Exp_Nomal_Config()
 	if(m_rf.readyFlag != READY_ON)
 	{
 		if(testExpFlag)testExpFlag = 0;
+		step = STEP0;
 		return;
 	}
 
@@ -2513,10 +2541,6 @@ void Exp_Nomal_Config()
 }
 
 
-void Exp_Config()
-{
-	Exp_Nomal_Config();
-}
 void Rf_Config()
 {
 

@@ -503,7 +503,7 @@ void Flow_Stop_Check()
 	uint8_t is_flowOkSolOff = (10<m_io.flowSensorFrq&&m_io.flowSensorFrq<40);
 	static uint32_t timeStamp;
 
-
+	if(!m_rf.sysChkFlag) return;
 	if(HAL_GetTick()-timeStamp >= 1000)
 	{
 
@@ -511,17 +511,37 @@ void Flow_Stop_Check()
 
 		if(m_io.sol1On)
 		{
-			if(!is_flowOkSolOn || !m_io.flowSensorFrqChk) SOL1_OFF();
+			if(!is_flowOkSolOn)
+			{
+				SOL1_OFF();
+				m_err.flowLimitUnder = 1;
+			}
+			else m_err.flowLimitUnder = 0;
 		}
 		else
 		{
-			if(!is_flowOkSolOff || !m_io.flowSensorFrqChk)
+			if(!is_flowOkSolOff)
 			{
 				WaterPump_Pwr_OFF();
 				Ciller_Pwr_OFF();
+				m_err.flowLimitUnder = 1;
 			}
+			else m_err.flowLimitUnder = 0;
 		}
+
+		if(!m_io.flowSensorFrqChk)
+		{
+			m_err.flowZero = 1;
+		}
+		else
+		{
+			m_err.flowZero = 0;
+		}
+
+
 		m_io.flowSensorFrqChk = 0;
+
+
 	}
 
 }
