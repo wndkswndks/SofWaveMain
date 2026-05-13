@@ -226,19 +226,27 @@ void Cooling_ON(uint8_t num)
 
  uint16_t adcQQ,adcQQ2;
 
- void Battery_Read(void)
+
+void Battery_Read(void)
 {
+	static uint32_t timeStamp;
 
-	ADC1_Channel_Selection(ADC_CH_RTC_BATTERY);
-    HAL_ADC_Start(&hadc1);
-    HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
-    uint16_t adc = (uint16_t)HAL_ADC_GetValue(&hadc1);
-    HAL_ADC_Stop(&hadc1);
-	adcQQ = adc;
+	if(HAL_GetTick()-timeStamp >= 1000)
+	{
 
-	m_io.battery = 3.3* ((float)adc/4095);
+		ADC1_Channel_Selection(ADC_CH_RTC_BATTERY);
+		HAL_ADC_Start(&hadc1);
+		if(HAL_ADC_PollForConversion(&hadc1, 10) == HAL_OK) {
+			uint16_t adc = (uint16_t)HAL_ADC_GetValue(&hadc1);
+			adcQQ = adc;
+			m_io.battery = 3.6f * 2.0 * ((float)adc / 4095.0f);
+		}
+		HAL_ADC_Stop(&hadc1);
+		timeStamp = HAL_GetTick();
+	}
+
+
 }
-
 
 //==========================================================================================================
 //제미나이
