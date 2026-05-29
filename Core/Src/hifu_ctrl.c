@@ -29,6 +29,8 @@ int AutoWattDefulteTable[78] =
 };
 uint8_t AutoDaDefulteTable[78];
 
+int wattDa = 0;
+int wattDaInit = 350;
 
 uint32_t watt[5] ={10,100,5,20,30};
 void Test_Init()
@@ -633,6 +635,9 @@ void Rf_TD_BHB003_Table_260212()//260212
 void Rf_TD_BHB003_Table_260212_test()//260212
 {
 	//BHB003
+	wattDa = wattDaInit;
+
+#if 0 // nomal
 	m_eep.rfFrqBuff[0] = 0;
 	m_eep.rfFrqBuff[1] = 11447;
 	m_eep.rfFrqBuff[2] = 11285;
@@ -641,6 +646,42 @@ void Rf_TD_BHB003_Table_260212_test()//260212
 	m_eep.rfFrqBuff[5] = 11360;
 	m_eep.rfFrqBuff[6] = 11385;
 	m_eep.rfFrqBuff[7] = 11427;
+#endif
+
+
+#if 0 // pluse 200k
+		m_eep.rfFrqBuff[0] = 0;
+		m_eep.rfFrqBuff[1] = 11647;
+		m_eep.rfFrqBuff[2] = 11485;
+		m_eep.rfFrqBuff[3] = 11620;
+		m_eep.rfFrqBuff[4] = 11575;
+		m_eep.rfFrqBuff[5] = 11560;
+		m_eep.rfFrqBuff[6] = 11585;
+		m_eep.rfFrqBuff[7] = 11627;
+#endif
+
+#if 0 //MG 50
+		m_eep.rfFrqBuff[0] = 0;
+		m_eep.rfFrqBuff[1] = 10695;
+		m_eep.rfFrqBuff[2] = 10575;
+		m_eep.rfFrqBuff[3] = 10672;
+		m_eep.rfFrqBuff[4] = 10647;
+		m_eep.rfFrqBuff[5] = 10642;
+		m_eep.rfFrqBuff[6] = 10610;
+		m_eep.rfFrqBuff[7] = 10677;
+#endif
+
+#if 1 //Auto frq
+			m_eep.rfFrqBuff[0] = 0;
+			m_eep.rfFrqBuff[1] = 11080;
+			m_eep.rfFrqBuff[2] = 10950;
+			m_eep.rfFrqBuff[3] = 11090;
+			m_eep.rfFrqBuff[4] = 11090;
+			m_eep.rfFrqBuff[5] = 11100;
+			m_eep.rfFrqBuff[6] = 11160;
+			m_eep.rfFrqBuff[7] = 11080;
+#endif
+
 
 	m_eep.rfWattBuff[10] = BHB0003_1W_1 ; //1.0w
 	m_eep.rfWattBuff[11] = BHB0003_1W_1 ; //1.0w
@@ -1003,7 +1044,7 @@ void Rf_Init()
 	RF_Pwr_ON();
 
 
-	Rf_TD_BHB005_Table_260212();
+	Rf_TD_BHB003_Table_260212_test();
 //	Rf_TD_BHA001_Table_260306();
 
 
@@ -2031,10 +2072,9 @@ int compare_32(const void *a, const void *b)    // 오름차순 비교 함수 (uint32_t 
 }
 
 
-int wattDa = 320;
 int trandu = 0;
 int tranduOut = 6;
-int frqQ = 10500;
+int frqQ = 9800;
 int qsortBuff[5] = {0,};
 int qsort10Buff[10] = {0,};
 
@@ -2332,7 +2372,7 @@ void AutoCal_Config_1watt()
 	memset(m_rf.FeedBackWBuff, 0, sizeof(m_rf.FeedBackWBuff));
 	m_rf.FeedBackCnt = 0;
 
-	if(wattDa<400)
+	if(wattDa<500)
 	{
 		wattDa += 2 ;
 	}
@@ -2370,7 +2410,7 @@ void AutoCal_Config_1watt()
 		{
 			printf("NEXT !!\r\n");
 			trandu++;
-			wattDa = 320;
+			wattDa = wattDaInit;
 		}
 		else
 		{
@@ -2429,10 +2469,10 @@ void AutoCal_Config_test_Frq()
 //  printf(">>> %d\r\n",qsortBuff[4]);
 
 //  avg = AutoCal_Avg();
-  if(frqQ > 13000)
+  if(frqQ > 12000)
   {
   	Tx_RF_Watt_Zero_ALL_Module();
-  	frqQ = 10800;
+  	frqQ = 11000;
   	trandu++;
 //	Tx_RF_FRQ_Module(trandu, frqQ);
 
