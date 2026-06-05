@@ -559,7 +559,7 @@ void IO_Init()
 	AC_RLY_H();
 
 	HP1_PELT_ON();
-	PELTIER_PWR_ON();
+	PELTIER_PWR_OFF();
 
 	BAT_CHG_ON_H();
 //	BAT_ADC_EN_H();

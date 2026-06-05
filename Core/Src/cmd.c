@@ -900,6 +900,7 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 				{
 					m_rf.preCooltime = HAL_GetTick();
 					m_rf.treatStatus = STATUS_PRECOOLING;
+					PELTIER_PWR_ON();
 					Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_PRECOOLING);
 					if(m_io.sol1OnStatus) SOL1_ON();
 				}
@@ -907,6 +908,7 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 			else if(data == STATUS_STNBY)
 			{
 				Ready_OFF();
+				PELTIER_PWR_OFF();
 			}
 
 
