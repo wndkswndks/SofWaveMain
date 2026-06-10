@@ -648,6 +648,7 @@ void Body_Led_Ctrl(uint8_t mode)
 			HANDLE_LED_RED_OFF();//1 boot
 			HANDLE_LED_GREED_ON();//2 err
 			HANDLE_LED_BLUE_OFF();//3 shot
+			m_err.errLedViewTime = 5;
 			Debug_Printf("LED_ERROR", 1);
 		break;
 

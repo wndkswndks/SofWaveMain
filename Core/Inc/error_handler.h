@@ -68,7 +68,7 @@ typedef enum
 	WATER_LEVEL_HIGH = 0,
 	WATER_LEVEL_LOW = 1,
 
-	PRECOOL_TIMEOUT = 2000,
+	PRECOOL_TIMEOUT = 120000,
 
 	LEVEL_UNIT = 1000,
 	ERR_ENDIS_UNIT = 100,
@@ -175,6 +175,7 @@ typedef struct
 	uint16_t errStatus[4];
 	uint8_t statusTx;
 	uint8_t txEn;
+	uint32_t errLedViewTime;
 
 } ERROR_T;
 

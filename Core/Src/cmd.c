@@ -902,6 +902,7 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 					m_rf.treatStatus = STATUS_PRECOOLING;
 					PELTIER_PWR_ON();
 					Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_PRECOOLING);
+					Tx_Hand1_Msg(CMD_LCD_STATUS, STATUS_PRECOOLING);
 					if(m_io.sol1OnStatus) SOL1_ON();
 				}
 			}

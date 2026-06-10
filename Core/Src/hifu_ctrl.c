@@ -1015,7 +1015,7 @@ void Hand_Init()//
 void LCD_Init()
 {
 	HAL_Delay(500);
-#if 0
+#if 1
 	m_rf.energy = 32;
 	m_rf.pulseDuration = 50;
 	m_rf.postCooling = 5;
@@ -1025,14 +1025,14 @@ void LCD_Init()
 	m_rf.totaEnergy = 0;
 	m_rf.switchHandFoot = SWITCH_HAND;
 #else
-	m_rf.energy = 50;
+	m_rf.energy = 10;
 	m_rf.pulseDuration = 50;
 	m_rf.postCooling = 0;
 	m_rf.PulseOption = 1;
 	m_rf.interval = 0;
 	m_rf.currentShot = 0;
 	m_rf.totaEnergy = 0;
-	m_rf.switchHandFoot = SWITCH_FOOT;
+	m_rf.switchHandFoot = SWITCH_HAND;
 
 #endif
 

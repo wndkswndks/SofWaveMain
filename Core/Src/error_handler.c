@@ -127,7 +127,7 @@ uint8_t Check_Common(uint8_t status, uint8_t cmd)
 			{
 				m_err.errCntBuff[cmd] = 0;
 				m_err.errDataBuff[cmd] = cmd;
-				Body_Led_Ctrl(BODY_LED_ERROR);
+//				Body_Led_Ctrl(BODY_LED_ERROR);
 				Set_Err_StatusBitFlag(cmd, 1);
 				if(m_eepMain.errCntBuff[cmd]<999)
 				{
@@ -237,6 +237,19 @@ uint8_t Check_Time(uint8_t hour, uint8_t min, uint8_t sec, uint8_t cmd)
 
 	return returnValue;
 
+
+}
+void Error_Led_View()
+{
+	if(m_err.errLedViewTime )
+	{
+		m_err.errLedViewTime--;
+		if(!m_err.errLedViewTime)
+		{
+			Body_Led_Ctrl(BODY_LED_NOMAL);
+		}
+
+	}
 
 }
 void Error_Buff_Clear()
@@ -455,12 +468,13 @@ void Error_Check_Config()
 {
 	static uint32_t timeStamp;
 	if(!m_rf.sysChkFlag) return;
-	if(m_rf.pluseOn) return;
+//	if(m_rf.pluseOn) return;
 	if(HAL_GetTick()-timeStamp >= 1000)
 	{
 		Error_Check_Main();
 		Error_Check_HP();
 		Error_Check_RF();
+		Error_Led_View();
 
 		timeStamp = HAL_GetTick();
 	}
