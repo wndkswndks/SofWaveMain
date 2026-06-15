@@ -489,6 +489,21 @@ void Debug_Rx_Parssing(uint8_t add, uint32_t data)
 
 		break;
 
+		case CMD_HP_RF_ALL_SAND:
+			Rf_TD_BHB001_Table_260212();
+
+			for(int i =1 ;i <= 7;i++)
+			{
+				Tx_Hand1_Msg(CMD_TRANDU_FRQ_BASE+i, m_eep.rfFrqBuff[i]);
+			}
+
+			for(int i =1 ;i <= 77;i++)
+			{
+				Tx_Hand1_Msg(CMD_TRANDU_WATT_BASE+i, m_eep.rfWattBuff[i]);
+			}
+
+		break;
+
 
 
 

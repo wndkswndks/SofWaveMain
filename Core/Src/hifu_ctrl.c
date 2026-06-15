@@ -672,6 +672,7 @@ void Rf_TD_BHB002_Table_260212()//260212
 	m_eep.rfWattBuff[9] = 320; // 0.9W
 	m_eep.rfWattBuff[10] = 338; // 1.0W
 	m_eep.rfWattBuff[11] = 380;    // 1.1W
+
 	m_eep.rfWattBuff[12] = 58 ;//  0.1W
 	m_eep.rfWattBuff[13] = 112; // 0.2W
 	m_eep.rfWattBuff[14] = 150; // 0.3W
@@ -949,7 +950,7 @@ void Rf_TD_BHB004_Table_260212()//260212
 		m_eep.rfWattBuff[74] = 296; // 80
 		m_eep.rfWattBuff[75] = 320; // 90
 		m_eep.rfWattBuff[76] = 344; // 100
-		m_eep.rfWattBuff[76] = 380; // 110
+		m_eep.rfWattBuff[77] = 380; // 110
 
 #endif
 
@@ -1228,7 +1229,7 @@ void Rf_Init()
 	RF_Pwr_ON();
 
 
-	Rf_TD_BHB002_Table_260212();
+	Rf_TD_BHB001_Table_260212();
 
 
 
@@ -2616,17 +2617,9 @@ void Exp_Config()
 
 }
 
-int qqCntA, qqCntB;
 void Rf_Config()
 {
-	if (IS_HP1_SHOT_PUSH())
-	{
-		qqCntA++;
-	}
-	else
-	{
-		qqCntB++;
-	}
+
 
 #if 1
 	LCD_Status_Tret();

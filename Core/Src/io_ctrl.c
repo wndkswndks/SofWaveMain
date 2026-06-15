@@ -410,7 +410,7 @@ void HP_Connect_Config()
 
 		if(!m_hand1.cartDetectFlag && isCartDetectCnt<3)
 		{
-			Tx_Hand1_Msg(CMD_CATRIDGE_EVENT, 1);
+			Tx_Hand1_Msg(CMD_CATRIDGE_EVENT, 0XFF);
 			isCartDetectCnt++;
 		}
 
