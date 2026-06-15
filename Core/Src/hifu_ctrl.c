@@ -544,20 +544,98 @@ void Rf_TD_BHB001_Table_260212()//260212
 	//BHB001
 	m_eep.rfFrqBuff[0] = 0;
 	m_eep.rfFrqBuff[1] = 11395;
-	m_eep.rfFrqBuff[1] = 11402;
-	m_eep.rfFrqBuff[2] = 11400;
+	m_eep.rfFrqBuff[2] = 11402;
+	m_eep.rfFrqBuff[3] = 11400;
 	m_eep.rfFrqBuff[4] = 11392;
 	m_eep.rfFrqBuff[5] = 11407;
 	m_eep.rfFrqBuff[6] = 11402;
 	m_eep.rfFrqBuff[7] = 11412;
 
-	m_eep.rfWattBuff[10] = 160 ; //1.0w
-	m_eep.rfWattBuff[21] = 156 ; //1.0w
-	m_eep.rfWattBuff[32] = 88 ; //1.0w
-	m_eep.rfWattBuff[43] = 158 ; //1.0w
-	m_eep.rfWattBuff[54] = 162 ; //1.0w
-	m_eep.rfWattBuff[65] = 164 ; //1.0w
-	m_eep.rfWattBuff[76] = 156 ; //1.0w
+	m_eep.rfWattBuff[0] = 0;
+	m_eep.rfWattBuff[1] = 64  ;// 10
+	m_eep.rfWattBuff[2] = 118 ;// 20
+	m_eep.rfWattBuff[3] = 158 ;// 30
+	m_eep.rfWattBuff[4] = 188 ;// 40
+	m_eep.rfWattBuff[5] = 218 ;// 50
+	m_eep.rfWattBuff[6] = 244 ;// 60
+	m_eep.rfWattBuff[7] = 268 ;// 70
+	m_eep.rfWattBuff[8] = 294 ;// 80
+	m_eep.rfWattBuff[9] = 316 ;// 90
+	m_eep.rfWattBuff[10] = 336 ;// 100
+	m_eep.rfWattBuff[11] = 380;
+
+	m_eep.rfWattBuff[12] = 68  ;// 10
+	m_eep.rfWattBuff[13] = 118 ;// 20
+	m_eep.rfWattBuff[14] = 158 ;// 30
+	m_eep.rfWattBuff[15] = 190 ;// 40
+	m_eep.rfWattBuff[16] = 216 ;// 50
+	m_eep.rfWattBuff[17] = 244 ;// 60
+	m_eep.rfWattBuff[18] = 268 ;// 70
+	m_eep.rfWattBuff[19] = 292 ;// 80
+	m_eep.rfWattBuff[20] = 314 ;// 90
+	m_eep.rfWattBuff[21] = 336 ;// 100
+	m_eep.rfWattBuff[22] = 380;
+
+	m_eep.rfWattBuff[23] = 72  ;// 10
+	m_eep.rfWattBuff[24] = 116 ;// 20
+	m_eep.rfWattBuff[25] = 158 ;// 30
+	m_eep.rfWattBuff[26] = 192 ;// 40
+	m_eep.rfWattBuff[27] = 220 ;// 50
+	m_eep.rfWattBuff[28] = 242 ;// 60
+	m_eep.rfWattBuff[29] = 266 ;// 70
+	m_eep.rfWattBuff[30] = 290 ;// 80
+	m_eep.rfWattBuff[31] = 310 ;// 90
+	m_eep.rfWattBuff[32] = 330 ;// 100
+	m_eep.rfWattBuff[33] = 380;
+
+	m_eep.rfWattBuff[34] = 62  ;// 10
+	m_eep.rfWattBuff[35] = 110 ;// 20
+	m_eep.rfWattBuff[36] = 150 ;// 30
+	m_eep.rfWattBuff[37] = 182 ;// 40
+	m_eep.rfWattBuff[38] = 210 ;// 50
+	m_eep.rfWattBuff[39] = 238 ;// 60
+	m_eep.rfWattBuff[40] = 260 ;// 70
+	m_eep.rfWattBuff[41] = 282 ;// 80
+	m_eep.rfWattBuff[42] = 306 ;// 90
+	m_eep.rfWattBuff[43] = 324 ;// 100
+	m_eep.rfWattBuff[44] = 380;
+
+	m_eep.rfWattBuff[45] = 62  ;// 10
+	m_eep.rfWattBuff[46] = 112 ;// 20
+	m_eep.rfWattBuff[47] = 150 ;// 30
+	m_eep.rfWattBuff[48] = 184 ;// 40
+	m_eep.rfWattBuff[49] = 216 ;// 50
+	m_eep.rfWattBuff[50] = 242 ;// 60
+	m_eep.rfWattBuff[51] = 266 ;// 70
+	m_eep.rfWattBuff[52] = 290 ;// 80
+	m_eep.rfWattBuff[53] = 310 ;// 90
+	m_eep.rfWattBuff[54] = 330 ;// 100
+	m_eep.rfWattBuff[55] = 380;
+
+	m_eep.rfWattBuff[56] = 60  ;// 10
+	m_eep.rfWattBuff[57] = 116 ;// 20
+	m_eep.rfWattBuff[58] = 156 ;// 30
+	m_eep.rfWattBuff[59] = 190 ;// 40
+	m_eep.rfWattBuff[60] = 216 ;// 50
+	m_eep.rfWattBuff[61] = 248 ;// 60
+	m_eep.rfWattBuff[62] = 270 ;// 70
+	m_eep.rfWattBuff[63] = 294 ;// 80
+	m_eep.rfWattBuff[64] = 316 ;// 90
+	m_eep.rfWattBuff[65] = 338 ;// 100
+	m_eep.rfWattBuff[66] = 380;
+
+	m_eep.rfWattBuff[67] = 64  ;// 10
+	m_eep.rfWattBuff[68] = 114 ;// 20
+	m_eep.rfWattBuff[69] = 154 ;// 30
+	m_eep.rfWattBuff[70] = 186 ;// 40
+	m_eep.rfWattBuff[71] = 216 ;// 50
+	m_eep.rfWattBuff[72] = 244 ;// 60
+	m_eep.rfWattBuff[73] = 270 ;// 70
+	m_eep.rfWattBuff[74] = 294 ;// 80
+	m_eep.rfWattBuff[75] = 316 ;// 90
+	m_eep.rfWattBuff[76] = 334 ;// 100
+	m_eep.rfWattBuff[77] = 380 ;
+
 
 }
 void Rf_TD_BHB002_Table_260212()//260212
@@ -581,13 +659,90 @@ void Rf_TD_BHB002_Table_260212()//260212
 			m_eep.rfWattBuff[65] = 152 ; //1.0w
 			m_eep.rfWattBuff[76] = 146 ; //1.0w
 #else//NEW BOARD
-			m_eep.rfWattBuff[10] = 332 ; //1.0w
-			m_eep.rfWattBuff[21] = 328 ; //1.0w
-			m_eep.rfWattBuff[32] = 326 ; //1.0w
-			m_eep.rfWattBuff[43] = 326 ; //1.0w
-			m_eep.rfWattBuff[54] = 324 ; //1.0w
-			m_eep.rfWattBuff[65] = 324 ; //1.0w
-			m_eep.rfWattBuff[76] = 326 ; //1.0w
+
+	m_eep.rfWattBuff[0] = 0;
+	m_eep.rfWattBuff[1] = 64 ;//  0.1W
+	m_eep.rfWattBuff[2] = 114; // 0.2W
+	m_eep.rfWattBuff[3] = 56; // 0.3W
+	m_eep.rfWattBuff[4] = 188; // 0.4W
+	m_eep.rfWattBuff[5] = 216; // 0.5W
+	m_eep.rfWattBuff[6] = 248; // 0.6W
+	m_eep.rfWattBuff[7] = 272; // 0.7W
+	m_eep.rfWattBuff[8] = 296; // 0.8W
+	m_eep.rfWattBuff[9] = 320; // 0.9W
+	m_eep.rfWattBuff[10] = 338; // 1.0W
+	m_eep.rfWattBuff[11] = 380;    // 1.1W
+	m_eep.rfWattBuff[12] = 58 ;//  0.1W
+	m_eep.rfWattBuff[13] = 112; // 0.2W
+	m_eep.rfWattBuff[14] = 150; // 0.3W
+	m_eep.rfWattBuff[15] = 184; // 0.4W
+	m_eep.rfWattBuff[16] = 218; // 0.5W
+	m_eep.rfWattBuff[17] = 242; // 0.6W
+	m_eep.rfWattBuff[18] = 268; // 0.7W
+	m_eep.rfWattBuff[19] = 290; // 0.8W
+	m_eep.rfWattBuff[20] = 314; // 0.9W
+	m_eep.rfWattBuff[21] = 332; // 1.0W
+	m_eep.rfWattBuff[22] = 380;    // 1.1W
+
+	m_eep.rfWattBuff[23] = 68 ;//  0.1W
+	m_eep.rfWattBuff[24] = 116; // 0.2W
+	m_eep.rfWattBuff[25] = 154; // 0.3W
+	m_eep.rfWattBuff[26] = 182; // 0.4W
+	m_eep.rfWattBuff[27] = 218; // 0.5W
+	m_eep.rfWattBuff[28] = 240; // 0.6W
+	m_eep.rfWattBuff[29] = 266; // 0.7W
+	m_eep.rfWattBuff[30] = 290; // 0.8W
+	m_eep.rfWattBuff[31] = 316; // 0.9W
+	m_eep.rfWattBuff[32] = 334; // 1.0W
+	m_eep.rfWattBuff[33] = 380;    // 1.1W
+
+	m_eep.rfWattBuff[34] = 64 ;//  0.1W
+	m_eep.rfWattBuff[35] = 112; // 0.2W
+	m_eep.rfWattBuff[36] = 150; // 0.3W
+	m_eep.rfWattBuff[37] = 186; // 0.4W
+	m_eep.rfWattBuff[38] = 210; // 0.5W
+	m_eep.rfWattBuff[39] = 238; // 0.6W
+	m_eep.rfWattBuff[40] = 262; // 0.7W
+	m_eep.rfWattBuff[41] = 282; // 0.8W
+	m_eep.rfWattBuff[42] = 304; // 0.9W
+	m_eep.rfWattBuff[43] = 326; // 1.0W
+	m_eep.rfWattBuff[44] = 380;    // 1.1W
+
+	m_eep.rfWattBuff[45] = 66 ;//  0.1W
+	m_eep.rfWattBuff[46] = 116; // 0.2W
+	m_eep.rfWattBuff[47] = 148; // 0.3W
+	m_eep.rfWattBuff[48] = 190; // 0.4W
+	m_eep.rfWattBuff[49] = 218; // 0.5W
+	m_eep.rfWattBuff[50] = 246; // 0.6W
+	m_eep.rfWattBuff[51] = 266; // 0.7W
+	m_eep.rfWattBuff[52] = 296; // 0.8W
+	m_eep.rfWattBuff[53] = 316; // 0.9W
+	m_eep.rfWattBuff[54] = 336; // 1.0W
+	m_eep.rfWattBuff[55] = 380;    // 1.1W
+
+	m_eep.rfWattBuff[56] = 62 ;//  0.1W
+	m_eep.rfWattBuff[57] = 112; // 0.2W
+	m_eep.rfWattBuff[58] = 150; // 0.3W
+	m_eep.rfWattBuff[59] = 182; // 0.4W
+	m_eep.rfWattBuff[60] = 216; // 0.5W
+	m_eep.rfWattBuff[61] = 240; // 0.6W
+	m_eep.rfWattBuff[62] = 264; // 0.7W
+	m_eep.rfWattBuff[63] = 288; // 0.8W
+	m_eep.rfWattBuff[64] = 308; // 0.9W
+	m_eep.rfWattBuff[65] = 328; // 1.0W
+	m_eep.rfWattBuff[66] = 380;    // 1.1W
+
+	m_eep.rfWattBuff[67] = 58 ;//  0.1W
+	m_eep.rfWattBuff[68] = 110; // 0.2W
+	m_eep.rfWattBuff[69] = 148; // 0.3W
+	m_eep.rfWattBuff[70] = 180; // 0.4W
+	m_eep.rfWattBuff[71] = 212; // 0.5W
+	m_eep.rfWattBuff[72] = 236; // 0.6W
+	m_eep.rfWattBuff[73] = 266; // 0.7W
+	m_eep.rfWattBuff[74] = 288; // 0.8W
+	m_eep.rfWattBuff[75] = 308; // 0.9W
+	m_eep.rfWattBuff[76] = 326; // 1.0W
+	m_eep.rfWattBuff[77] = 380;    // 1.1W
 
 #endif
 
@@ -711,13 +866,91 @@ void Rf_TD_BHB004_Table_260212()//260212
 		m_eep.rfWattBuff[65] = 158 ; //1.0w
 		m_eep.rfWattBuff[76] = 156 ; //1.0w
 #else//NEW BOARD
-		m_eep.rfWattBuff[10] = 318 ; //1.0w
-		m_eep.rfWattBuff[21] = 334 ; //1.0w
-		m_eep.rfWattBuff[32] = 340 ; //1.0w
-		m_eep.rfWattBuff[43] = 318 ; //1.0w
-		m_eep.rfWattBuff[54] = 332 ; //1.0w
-		m_eep.rfWattBuff[65] = 328 ; //1.0w
-		m_eep.rfWattBuff[76] = 334 ; //1.0w
+		m_eep.rfWattBuff[1] = 0 ;
+		m_eep.rfWattBuff[1] = 66 ; // 10
+		m_eep.rfWattBuff[2] = 114; // 20
+		m_eep.rfWattBuff[3] = 150; // 30
+		m_eep.rfWattBuff[4] = 180; // 40
+		m_eep.rfWattBuff[5] = 212; // 50
+		m_eep.rfWattBuff[6] = 238; // 60
+		m_eep.rfWattBuff[7] = 262; // 70
+		m_eep.rfWattBuff[8] = 286; // 80
+		m_eep.rfWattBuff[9] = 308; // 90
+		m_eep.rfWattBuff[10] = 328;//100
+		m_eep.rfWattBuff[11] = 380;// 110
+
+		m_eep.rfWattBuff[12] = 66 ; // 10
+		m_eep.rfWattBuff[13] = 116; // 20
+		m_eep.rfWattBuff[14] = 154; // 30
+		m_eep.rfWattBuff[15] = 190; // 40
+		m_eep.rfWattBuff[16] = 222; // 50
+		m_eep.rfWattBuff[17] = 248; // 60
+		m_eep.rfWattBuff[18] = 274; // 70
+		m_eep.rfWattBuff[19] = 296; // 80
+		m_eep.rfWattBuff[20] = 318; // 90
+		m_eep.rfWattBuff[21] = 338; // 100
+		m_eep.rfWattBuff[22] = 380; // 110
+
+		m_eep.rfWattBuff[23] = 76 ; // 10
+		m_eep.rfWattBuff[24] = 126; // 20
+		m_eep.rfWattBuff[25] = 160; // 30
+		m_eep.rfWattBuff[26] = 196; // 40
+		m_eep.rfWattBuff[27] = 226; // 50
+		m_eep.rfWattBuff[28] = 258; // 60
+		m_eep.rfWattBuff[29] = 280; // 70
+		m_eep.rfWattBuff[30] = 302; // 80
+		m_eep.rfWattBuff[31] = 326; // 90
+		m_eep.rfWattBuff[32] = 348; // 100
+		m_eep.rfWattBuff[33] = 380; // 110
+
+		m_eep.rfWattBuff[34] = 64 ; // 10
+		m_eep.rfWattBuff[35] = 114; // 20
+		m_eep.rfWattBuff[36] = 148; // 30
+		m_eep.rfWattBuff[37] = 184; // 40
+		m_eep.rfWattBuff[38] = 212; // 50
+		m_eep.rfWattBuff[39] = 240; // 60
+		m_eep.rfWattBuff[40] = 266; // 70
+		m_eep.rfWattBuff[41] = 290; // 80
+		m_eep.rfWattBuff[42] = 310; // 90
+		m_eep.rfWattBuff[43] = 332; // 100
+		m_eep.rfWattBuff[44] = 380; // 110
+
+		m_eep.rfWattBuff[45] = 62 ; // 10
+		m_eep.rfWattBuff[46] = 110; // 20
+		m_eep.rfWattBuff[47] = 156; // 30
+		m_eep.rfWattBuff[48] = 194; // 40
+		m_eep.rfWattBuff[49] = 218; // 50
+		m_eep.rfWattBuff[50] = 246; // 60
+		m_eep.rfWattBuff[51] = 272; // 70
+		m_eep.rfWattBuff[52] = 294; // 80
+		m_eep.rfWattBuff[53] = 314; // 90
+		m_eep.rfWattBuff[54] = 338; // 100
+		m_eep.rfWattBuff[55] = 380; // 110
+
+		m_eep.rfWattBuff[56] = 64 ; // 10
+		m_eep.rfWattBuff[57] = 116; // 20
+		m_eep.rfWattBuff[58] = 152; // 30
+		m_eep.rfWattBuff[59] = 190; // 40
+		m_eep.rfWattBuff[60] = 216; // 50
+		m_eep.rfWattBuff[61] = 244; // 60
+		m_eep.rfWattBuff[62] = 268; // 70
+		m_eep.rfWattBuff[63] = 292; // 80
+		m_eep.rfWattBuff[64] = 312; // 90
+		m_eep.rfWattBuff[65] = 334; // 100
+		m_eep.rfWattBuff[66] = 380;// 110
+
+		m_eep.rfWattBuff[67] = 66 ; // 10
+		m_eep.rfWattBuff[68] = 114; // 20
+		m_eep.rfWattBuff[69] = 156; // 30
+		m_eep.rfWattBuff[70] = 192; // 40
+		m_eep.rfWattBuff[71] = 218; // 50
+		m_eep.rfWattBuff[72] = 248; // 60
+		m_eep.rfWattBuff[73] = 272; // 70
+		m_eep.rfWattBuff[74] = 296; // 80
+		m_eep.rfWattBuff[75] = 320; // 90
+		m_eep.rfWattBuff[76] = 344; // 100
+		m_eep.rfWattBuff[76] = 380; // 110
+
 #endif
 
 
@@ -995,7 +1228,7 @@ void Rf_Init()
 	RF_Pwr_ON();
 
 
-	Rf_TD_BHB003_Table_260212_test();
+	Rf_TD_BHB002_Table_260212();
 
 
 
@@ -1778,7 +2011,7 @@ void AutoCal_Config()
 	memset(m_rf.FeedBackWBuff, 0, sizeof(m_rf.FeedBackWBuff));
 	m_rf.FeedBackCnt = 0;
 
-	if(wattDa<300)
+	if(wattDa<400)
 	{
 		wattDa += 2 ;
 	}
@@ -2383,9 +2616,17 @@ void Exp_Config()
 
 }
 
-
+int qqCntA, qqCntB;
 void Rf_Config()
 {
+	if (IS_HP1_SHOT_PUSH())
+	{
+		qqCntA++;
+	}
+	else
+	{
+		qqCntB++;
+	}
 
 #if 1
 	LCD_Status_Tret();
