@@ -409,7 +409,7 @@ void Error_Check_HP()
 	else if(Check_Min(m_hand1.temprature, TEMP_LOW_VALUE, IDX_TEMP_LOW)){}
 
 
-	if(m_eep.catridgeDetect == CATRIGE_CHK_OK)
+	if(m_eep.catridgeDetect == CATRIGE_CHK_OK && m_eep.catridgeStatus == SING_UP_CODE)
 	{
 		for(int i = 1; i <= 7; i++)
 		{

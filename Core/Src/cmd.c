@@ -899,6 +899,11 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 
 				Tx_Hand1_Msg(CMD_CART_ALLOW, 1);
 			}
+			else
+			{
+				Tx_Hand1_Msg(CMD_CART_ALLOW, 0);
+			}
+
 		break;
 
 		case CMD_SYS_CHK:
@@ -1153,6 +1158,7 @@ void Hand_Rx_Parssing(uint8_t add, uint32_t data)
 
 			case CMD_CATRIDGE_STATUS:
 				m_eep.catridgeStatus = data;
+				Tx_LCD_Msg(CMD_CATRIDGE_STATUS, data);
 				//ï¿½Ö¾ï¿½ï¿½ï¿½ï¿?
 			break;
 

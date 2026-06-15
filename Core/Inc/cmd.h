@@ -14,6 +14,8 @@
 #define TX_BUFF_SIZE	30
 
 
+#define SING_UP_CODE   44
+#define NONE_SING_UP_CODE   33
 
 
 /*  			define end  			*/
