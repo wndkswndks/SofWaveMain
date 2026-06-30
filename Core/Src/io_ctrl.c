@@ -239,7 +239,7 @@ void Battery_Read(void)
 		if(HAL_ADC_PollForConversion(&hadc1, 10) == HAL_OK) {
 			uint16_t adc = (uint16_t)HAL_ADC_GetValue(&hadc1);
 			adcQQ = adc;
-			m_io.battery = 3.6f * 2.0 * ((float)adc / 4095.0f);
+			m_io.battery = 3.3f * ((float)adc / 4095.0f);
 		}
 		HAL_ADC_Stop(&hadc1);
 		timeStamp = HAL_GetTick();
@@ -534,6 +534,7 @@ void Flow_Stop_Check()
 		if(!m_io.flowSensorFrqChk)
 		{
 			m_err.flowZero = 1;
+			m_io.flowSensorFrq = 0;
 		}
 		else
 		{
