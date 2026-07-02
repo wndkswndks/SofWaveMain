@@ -430,7 +430,7 @@ void Check_CartAllData(uint8_t status)
 	if(m_eep.catridgeRxErrCnt <= 10)
 	{
 		LCD_Init();
-		Tx_LCD_Msg(CMD_GET_ALL_CART_END, 1);
+		Tx_LCD_Msg(CMD_GET_ALL_CART_END, status);
 		Debug_Printf("CartAllOk",1);
 		Debug_Printf_Value("catridgeRxErrCnt", m_eep.catridgeRxErrCnt, 1);
 		m_hand1.cartAllOk = 1;
@@ -1483,6 +1483,8 @@ void Uart_Tx_Polling_Status()
 			uint16_t txData;
 			txData = 1000 + m_hand1.temprature;
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
+			txData = 2000 + m_hand1.pwmDuty;
+			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
 			txData = 3000 + m_err.handTimeout;
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
 			txData = 4000 + m_err.rfTimeout;
@@ -1491,7 +1493,7 @@ void Uart_Tx_Polling_Status()
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
 			txData = 6000 + m_io.battery*10;
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
-			txData = 7000 + m_io.flowSensorFrq;
+			txData = 7000 + (m_io.flowSensorFrq*10.0);
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
 			txData = 8000 + m_io.level1Status;
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);

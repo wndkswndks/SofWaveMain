@@ -663,7 +663,16 @@ void Body_Led_Ctrl(uint8_t mode)
 
 }
 
+void WDT_LED_Config()
+{
+	static uint32_t timeStamp;
 
+	if(HAL_GetTick()-timeStamp >= 500)
+	{
+		LED_DR2_TOGGLE();
+		timeStamp = HAL_GetTick();
+	}
+}
 void IO_Config()
 {
 	uint8_t is_pumpOn = (m_io.waterPumpPwrEn == 1);
@@ -678,6 +687,8 @@ void IO_Config()
 	Battery_Read();
 	RTC_Config();
 //	Chiller_Temperature_Read();
+ 	WDT_LED_Config();
+
 
  }
 
