@@ -77,24 +77,24 @@ void Debug_Printf_Value(char* str, int data, uint8_t cr)
 
 }
 
-void Debug_HAND_Printf(uint8_t rxtx, uint8_t cmd, uint16_t data)
+void Debug_HAND_Printf(uint8_t rxtx, uint8_t cmd, int data)
 {
 #ifdef DEBUG_PRINT
 
 	if(rxtx != DEBUG_RX && rxtx != DEBUG_TX) return;
 	char rxtxStr[2][3] = {"Rx","Tx"};
-	printf("[%s_HAND] [%u,%u]\r\n",rxtxStr[rxtx], cmd, data);
+	printf("[%s_HAND] [%u,%d]\r\n",rxtxStr[rxtx], cmd, data);
 
 #endif
 
 }
 
-void Debug_LCD_Printf(uint8_t rxtx, uint8_t cmd, uint16_t data)
+void Debug_LCD_Printf(uint8_t rxtx, uint8_t cmd, int data)
 {
 #ifdef DEBUG_PRINT
 	if(rxtx != DEBUG_RX && rxtx != DEBUG_TX) return;
 	char rxtxStr[2][3] = {"Rx","Tx"};
-	printf("[%s_LCD] [%u,%u]\r\n",rxtxStr[rxtx], cmd, data);
+	printf("[%s_LCD] [%u,%d]\r\n",rxtxStr[rxtx], cmd, data);
 
 #endif
 
@@ -214,7 +214,7 @@ void Debug_Tx_FeedBack_Check_Printf()
 #endif
 }
 
-void Tx_LCD_Msg(uint8_t add, uint16_t data)
+void Tx_LCD_Msg(uint8_t add, int data)
 {
 	while(HAL_GetTick() -m_rf.lastLcdTxTime<20);
 
@@ -240,7 +240,7 @@ void Tx_LCD_Msg_NoDebug(uint8_t add, uint16_t data)
 
 }
 
-void Tx_Hand1_Msg(uint8_t add, uint16_t data)
+void Tx_Hand1_Msg(uint8_t add, int data)
 {
 	char str[20];
 	while(HAL_GetTick() -m_hand1.lastHPTxTime<20);
@@ -446,13 +446,22 @@ void Check_CartAllData(uint8_t status)
 
 extern int wattDa;
 
+int testVValue;
+uint32_t testVValueU32;
 
-void Debug_Rx_Parssing(uint8_t add, uint32_t data)
+void Debug_Rx_Parssing(uint8_t add, int data)
 {
 
 	if(add==0)return;
 	switch (add)
 	{
+		case CMD_TEST_DEBUG:
+			testVValue = data;
+			testVValueU32 =data;
+			Debug_Printf_Value("CMD_TEST_DEBUG", testVValue, 1);
+		break;
+
+
 
 		case CMD_TEST_PULSE:
 			m_rf.PulseOption++;
@@ -484,7 +493,7 @@ void Debug_Rx_Parssing(uint8_t add, uint32_t data)
 		break;
 		case CMD_TEMP_DUTY_ON:
 			Tx_Hand1_Msg(CMD_TEMP_DUTY_ON, data);
-			m_hand1.tempDutyEn = data;
+			m_hand1.commuChk = data;
 		break;
 
 		case CMD_RF_WATT_MEATER_IP:
@@ -680,7 +689,7 @@ void Debug_Rx_Parssing(uint8_t add, uint32_t data)
 
 
 
-void LCD_Rx_Parssing(uint8_t add, uint32_t data)
+void LCD_Rx_Parssing(uint8_t add, int data)
 {
 
 
@@ -1092,7 +1101,7 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 
 		case CMD_TEMP_DUTY_ON:
 			Tx_Hand1_Msg(CMD_TEMP_DUTY_ON, data);
-			m_hand1.tempDutyEn = data;
+			m_hand1.commuChk = data;
 		break;
 
 		case CMD_TEST_PULSE:
@@ -1202,7 +1211,7 @@ void LCD_Rx_Parssing(uint8_t add, uint32_t data)
 }
 
 
-void Hand_Rx_Parssing(uint8_t add, uint32_t data)
+void Hand_Rx_Parssing(uint8_t add, int data)
 {
 	if(add !=0)
 	{
@@ -1463,7 +1472,7 @@ void Uart_Tx_Polling_Status()
 {
 	static uint32_t timeStamp, timeStamp2;
 #if 0
-	if(m_hand1.tempDutyEn == 1)
+	if(m_hand1.commuChk == 1)
 	{
 		if(HAL_GetTick()-timeStamp >= 1000)
 		{
@@ -1615,10 +1624,15 @@ void Uart_Simple_Rx_Passing(UART_T* uart, uint8_t rxData)
 			}
 			else if(rxData == '-')//must start
 			{
-				uart->rxCmdData = -1;
+				uart->minusFlag = 1;
 			}
 			else if(rxData == ']')
 			{
+				if(uart->minusFlag)
+				{
+					uart->minusFlag = 0;
+					uart->rxCmdData *= -1;
+				}
 				uart->rxCmdChk |= (1<< uart->rxRingCnt);
 				uart->rxRingBuff[uart->rxRingCnt][IDX_RX_CMD] = uart->rxCmdAdd;
 				uart->rxRingBuff[uart->rxRingCnt][IDX_RX_DATA] = uart->rxCmdData;

@@ -400,10 +400,13 @@ void Error_Check_HP()
 
 
 #if 1
-	m_err.handTimeout++;
-	if(Check_Max(m_err.handTimeout, COMU_MAX_CNT, IDX_HAND_COMU_ERR)){}
-	if(Check_Status(m_err.preCoolStatus, 0, IDX_PRE_COOL_ERR)){}
+	if(m_hand1.commuChk)
+	{
+		m_err.handTimeout++;
+		if(Check_Max(m_err.handTimeout, COMU_MAX_CNT, IDX_HAND_COMU_ERR)){}
+		if(Check_Status(m_err.preCoolStatus, 0, IDX_PRE_COOL_ERR)){}
 
+	}
 	if(Check_Max_Min(m_hand1.temprature, TEMP_OUT_MAX, TEMP_OUT_MIN,IDX_TEMP_OUT)){}
 	else if(Check_Min(m_hand1.temprature, TEMP_MIN, IDX_TEMP_LIMIT_UNDER)){}
 	else if(Check_Min(m_hand1.temprature, TEMP_LOW_VALUE, IDX_TEMP_LOW)){}
@@ -451,9 +454,12 @@ void Error_Check_HP()
 void Error_Check_RF()
 {
 #if 1
-	m_err.rfTimeout++;
-	Tx_RF_GenStatus_Check();
-	Check_Max(m_err.rfTimeout, COMU_MAX_CNT, IDX_RF_COMU_ERR);//E02
+	if(m_hand1.commuChk)
+	{
+		m_err.rfTimeout++;
+		Tx_RF_GenStatus_Check();
+		Check_Max(m_err.rfTimeout, COMU_MAX_CNT, IDX_RF_COMU_ERR);//E02
+	}
 //	Check_Status(m_err.rfStatus, 0, IDX_RF_STATUS_ERR);//E14
 #if 0
 #endif

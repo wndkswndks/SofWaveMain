@@ -335,7 +335,7 @@ typedef struct
 	uint32_t lastHPTxTime;
 	uint8_t liveOk;
 	uint8_t liveChkCnt;
-	uint8_t tempDutyEn;
+	uint8_t commuChk;
 	uint8_t cartAllOk;
 	uint16_t cartDetectFlag;
 } HAND_T;

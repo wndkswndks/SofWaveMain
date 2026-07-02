@@ -1237,7 +1237,7 @@ void Rf_Init()
 void Hand_Init()//
 {
 
-	m_hand1.tempDutyEn = 1;
+	m_hand1.commuChk = 1;
 	Debug_Printf("HP1_CATRIGE_DETECT INIT",1);
 
 }

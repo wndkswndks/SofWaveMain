@@ -58,7 +58,7 @@ typedef enum
 
 	CMD_ERR = 31,
 	CMD_ALRAM = 32,
-
+	CMD_INFO = 33,
 	CMD_OK = 34,
 
 	CMD_CART_ID  = 35,
@@ -80,6 +80,7 @@ typedef enum
 	CMD_CART_ALLOW = 51,
 	CMD_VIBE_LEVEL = 52,
 	CMD_DEBUG_VIBE = 53,
+	CMD_TEST_DEBUG = 54,
 
 
 	CMD_CATRIDGE_STATUS    = 56,
@@ -282,7 +283,7 @@ typedef struct
 	uint32_t rxCmdChk;
 	uint8_t rxStep;
 	uint32_t traceBuff[10];
-
+	uint8_t minusFlag;
 
 } UART_T;
 
@@ -302,15 +303,15 @@ void UartRxDataProcess();
 
 void Debug_Rx_RF_Printf(uint8_t* buff, uint8_t cnt);
 void Debug_Tx_RF_Printf(uint8_t* buff,uint8_t len);
-void Debug_LCD_Printf(uint8_t rxtx, uint8_t cmd, uint16_t data);
-void Debug_HAND_Printf(uint8_t rxtx, uint8_t cmd, uint16_t data);
+void Debug_LCD_Printf(uint8_t rxtx, uint8_t cmd, int data);
+void Debug_HAND_Printf(uint8_t rxtx, uint8_t cmd, int data);
 void Debug_Tx_RF_All_Watt_Printf();
 void Debug_Tx_RF_All_Frq_Printf();
 void Debug_Tx_RF_MaxOntime_Printf();
 void Debug_Tx_GenStatus_Check_Printf();
 
-void Tx_Hand1_Msg(uint8_t add, uint16_t data);
-void Tx_LCD_Msg(uint8_t add, uint16_t data);
+void Tx_Hand1_Msg(uint8_t add, int data);
+void Tx_LCD_Msg(uint8_t add, int data);
 void Tx_LCD_Msg_NoDebug(uint8_t add, uint16_t data);
 
 void Tx_RF_Msg(uint8_t* buff, uint8_t len);
@@ -325,9 +326,9 @@ void Debug_Tx_RF_Watt_Printf(uint8_t ch, uint16_t watt);
 void Debug_Tx_RF_All_Zero_Watt_Printf();
 void Debug_Printf(char* str, uint8_t cr);
 
-void LCD_Rx_Parssing(uint8_t add, uint32_t data);
-void Hand_Rx_Parssing(uint8_t add, uint32_t data);
-void Debug_Rx_Parssing(uint8_t add, uint32_t data);
+void LCD_Rx_Parssing(uint8_t add, int data);
+void Hand_Rx_Parssing(uint8_t add, int data);
+void Debug_Rx_Parssing(uint8_t add, int data);
 
 
 /*  			extern start  			*/
