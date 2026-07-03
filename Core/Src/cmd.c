@@ -594,7 +594,7 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 		break;
 
 		case CMD_HP_RF_ALL_SAND:
-			Rf_TD_BHB001_Table_260212();
+			Rf_TD_BHB004_Table_260212();
 
 			for(int i =1 ;i <= 7;i++)
 			{

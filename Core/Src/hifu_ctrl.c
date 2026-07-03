@@ -867,7 +867,7 @@ void Rf_TD_BHB004_Table_260212()//260212
 		m_eep.rfWattBuff[65] = 158 ; //1.0w
 		m_eep.rfWattBuff[76] = 156 ; //1.0w
 #else//NEW BOARD
-		m_eep.rfWattBuff[1] = 0 ;
+		m_eep.rfWattBuff[0] = 0 ;
 		m_eep.rfWattBuff[1] = 66 ; // 10
 		m_eep.rfWattBuff[2] = 114; // 20
 		m_eep.rfWattBuff[3] = 150; // 30
@@ -1223,13 +1223,12 @@ void Rf_Init()
 	m_rf.pluseOn = 0;
 	m_rf.pluseLevel = 0;
 	m_rf.pluseTimeStamp = HAL_GetTick();
-	m_eep.remainingShotNum = 10000;
 	HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_LOW);
 	HAL_Delay(1500);
 	RF_Pwr_ON();
 
 
-	Rf_TD_BHB001_Table_260212();
+//	Rf_TD_BHB001_Table_260212();
 
 
 
