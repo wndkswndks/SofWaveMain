@@ -37,31 +37,16 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 }
 
 
-void SOL1_ON_ORG()
-{
-	CON_SOL2_ON_GPIO_Port_H();
-	Debug_Printf("SOL1_ON",1);
-	m_io.sol1On= 1;
-}
-void SOL1_OFF_ORG()
-{
-	CON_SOL2_ON_GPIO_Port_L();
-	Debug_Printf("SOL1_OFF",1);
-	m_io.sol1On= 0;
-}
-
 
 void SOL1_ON()
 {
 	CON_SOL1_ON_GPIO_Port_L();  //////반대
-	CON_SOL2_ON_GPIO_Port_H();
 	Debug_Printf("SOL1_ON",1);
 	m_io.sol1On= 1;
 }
 void SOL1_OFF()
 {
 	CON_SOL1_ON_GPIO_Port_H();	//////반대
-	CON_SOL2_ON_GPIO_Port_L();
 	Debug_Printf("SOL1_OFF",1);
 	m_io.sol1On= 0;
 }
@@ -398,12 +383,20 @@ void HP_Connect_Config()
 
 		if(IS_HP1_INSERT())
 		{
-			if(m_io.HP1_Insert != HP_INSERT)Debug_Printf("HP_INSERT",1);
+			if(m_io.HP1_Insert != HP_INSERT)
+			{
+				Debug_Printf("HP_INSERT",1);
+				Debug_Event(EVENT_7);
+			}
 			m_io.HP1_Insert = HP_INSERT;
 		}
 		else
 		{
-			if(m_io.HP1_Insert != HP_UN_INSERT)Debug_Printf("HP_UN_INSERT",1);
+			if(m_io.HP1_Insert != HP_UN_INSERT)
+			{
+				Debug_Printf("HP_UN_INSERT",1);
+				Debug_Event(EVENT_8);
+			}
 			m_io.HP1_Insert = HP_UN_INSERT;
 			m_eep.catridgeDetect = CATRIGE_CHK_UN_DETECT;
 		}
@@ -428,12 +421,12 @@ void HP_Connect_Config()
 
 	if((m_io.HP1_Insert == HP_INSERT) && (m_eep.catridgeDetect != CATRIGE_CHK_UN_DETECT))
 	{
-		m_io.sol1OnStatus = 1;//SOL1_ON();
+		m_io.sol1OnStatus = 1;
 		isCartDetectCnt = 0;
 	}
 	else
 	{
-		if(m_io.sol1OnStatus)Ready_OFF();
+		if(m_io.sol1OnStatus)Ready_OFF(EVENT_3);
 		m_io.sol1OnStatus = 0;
 	}
 
@@ -504,6 +497,7 @@ void Flow_Stop_Check()
 	uint8_t is_flowOkSolOn = (2<m_io.flowSensorFrq&&m_io.flowSensorFrq<20);
 	uint8_t is_flowOkSolOff = (10<m_io.flowSensorFrq&&m_io.flowSensorFrq<40);
 	static uint32_t timeStamp;
+	static uint8_t flowErrCnt1,flowErrCnt2, flowErrCnt3;
 
 	if(!m_rf.sysChkFlag) return;
 	if(HAL_GetTick()-timeStamp >= 1000)
@@ -511,34 +505,65 @@ void Flow_Stop_Check()
 
 		timeStamp = HAL_GetTick();
 
-		if(m_io.sol1On)
+		if(m_rf.treatStatus == STATUS_TRET ||m_rf.treatStatus == STATUS_PRECOOLING)
 		{
 			if(!is_flowOkSolOn)
 			{
-				SOL1_OFF();
-				m_err.flowLimitUnder = 1;
+				flowErrCnt1++;
+				if(flowErrCnt1>=3)
+				{
+					flowErrCnt1 = 0;
+					Ready_OFF(EVENT_4);
+					m_err.flowLimitUnder = 1;
+				}
 			}
-			else m_err.flowLimitUnder = 0;
+			else
+			{
+				m_err.flowLimitUnder = 0;
+				flowErrCnt1 = 0;
+			}
 		}
 		else
 		{
 			if(!is_flowOkSolOff)
 			{
-				WaterPump_Pwr_OFF();
-				Ciller_Pwr_OFF();
-				m_err.flowLimitUnder = 1;
+				flowErrCnt2++;
+				if(flowErrCnt2>=3)
+				{
+					flowErrCnt2 = 0;
+					WaterPump_Pwr_OFF();
+					Ciller_Pwr_OFF();
+					Debug_Event(EVENT_5);
+					m_err.flowLimitUnder = 2;
+				}
 			}
-			else m_err.flowLimitUnder = 0;
+			else
+			{
+				m_err.flowLimitUnder = 0;
+				flowErrCnt2 = 0;
+			}
 		}
 
 		if(!m_io.flowSensorFrqChk)
 		{
-			m_err.flowZero = 1;
-			m_io.flowSensorFrq = 0;
+			flowErrCnt3++;
+			if(flowErrCnt3>=3)
+			{
+				flowErrCnt3 = 0;
+				if(!m_err.flowZero)
+				{
+					m_err.flowZero = 1;
+					Ready_OFF(EVENT_6);
+					WaterPump_Pwr_OFF();
+					Ciller_Pwr_OFF();
+				}
+				m_io.flowSensorFrq = 0;
+			}
 		}
 		else
 		{
 			m_err.flowZero = 0;
+			flowErrCnt3 = 0;
 		}
 
 
@@ -682,7 +707,7 @@ void IO_Config()
 
 //	Level_Check();
 	HP_Connect_Config();
-//	Flow_Stop_Check();
+	Flow_Stop_Check();
 
 	Battery_Read();
 	RTC_Config();

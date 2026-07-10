@@ -261,6 +261,15 @@ typedef enum
 
 	IDX_RX_CMD = 0,
 	IDX_RX_DATA = 1,
+
+	EVENT_1 = 1,
+	EVENT_2 = 2,
+	EVENT_3 = 3,
+	EVENT_4 = 4,
+	EVENT_5 = 5,
+	EVENT_6 = 6,
+	EVENT_7 = 7,
+	EVENT_8 = 8,
 } UART_E;
 
 

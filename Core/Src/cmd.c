@@ -76,7 +76,11 @@ void Debug_Printf_Value(char* str, int data, uint8_t cr)
 #endif
 
 }
+void Debug_Event(uint8_t event)
+{
+	Debug_Printf_Value("EVENT", event, 1);
 
+}
 void Debug_HAND_Printf(uint8_t rxtx, uint8_t cmd, int data)
 {
 #ifdef DEBUG_PRINT
@@ -292,7 +296,7 @@ void Ready_ON()
 	Debug_Printf("READY_ON",1);
 }
 
-void Ready_OFF()
+void Ready_OFF(uint8_t event)
 {
 	m_rf.treatStatus = STATUS_STNBY;
 	Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_STNBY);
@@ -300,10 +304,23 @@ void Ready_OFF()
 	m_rf.readyFlag = READY_OFF;
 	SOL1_OFF();
 	RF_PWM_Force_Stop();
+	PELTIER_PWR_OFF();
+	Debug_Printf("READY_OFF",1);
+	Debug_Event(event);
 
 }
 
+void PreCooling_ON()
+{
+	m_rf.preCooltime = HAL_GetTick();
+	m_rf.treatStatus = STATUS_PRECOOLING;
+	PELTIER_PWR_ON();
+	Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_PRECOOLING);
+	Tx_Hand1_Msg(CMD_LCD_STATUS, STATUS_PRECOOLING);
+	if(m_io.sol1OnStatus) SOL1_ON();
+	Debug_Printf("PreCooling_ON",1);
 
+}
 
 void CMD_Is_All_Live(uint8_t who)
 {
@@ -594,7 +611,7 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 		break;
 
 		case CMD_HP_RF_ALL_SAND:
-			Rf_TD_BHB004_Table_260212();
+			Rf_TD_BHB002_Table_260212();
 
 			for(int i =1 ;i <= 7;i++)
 			{
@@ -702,7 +719,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 		if(add != CMD_LCD_STATUS && add != CMD_DEVICE_STATUS)
 		{
 
-			Ready_OFF();
+			Ready_OFF(EVENT_1);
 		}
 	}
 	switch (add)
@@ -1015,18 +1032,13 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 			{
 				if((m_eep.catridgeDetect != CATRIGE_CHK_UN_DETECT) && (m_io.HP1_Insert == HP_INSERT) && (m_eep.catridgeStatus == SING_UP_CODE))
 				{
-					m_rf.preCooltime = HAL_GetTick();
-					m_rf.treatStatus = STATUS_PRECOOLING;
-					PELTIER_PWR_ON();
-					Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_PRECOOLING);
-					Tx_Hand1_Msg(CMD_LCD_STATUS, STATUS_PRECOOLING);
-					if(m_io.sol1OnStatus) SOL1_ON();
+					PreCooling_ON();
 				}
 			}
 			else if(data == STATUS_STNBY)
 			{
-				Ready_OFF();
-				PELTIER_PWR_OFF();
+				Ready_OFF(EVENT_2);
+
 			}
 
 

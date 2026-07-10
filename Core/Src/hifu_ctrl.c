@@ -1318,7 +1318,7 @@ void Tx_RF_GenStatus_Check()
 	uint8_t len = 0;
 	uint8_t dataLen = 0;
 
-	len = RF_NUM_FIX + 1;
+	len = RF_NUM_FIX+1;
 	m_rf.txBuff[RF_INDEX_STX] = STX;
 	m_rf.txBuff[RF_INDEX_LEN] = len;
 	m_rf.txBuff[RF_INDEX_ADDR] = 'B';//���ʷ����� B, �ý��� b
@@ -1516,8 +1516,8 @@ void Tx_RF_Watt_ALL_Module( )
 	m_rf.txBuff[RF_INDEX_DATA+12] = (m_rf.rfwattBuff[RF_WATT_CH6]>>8)&0xff;
 	m_rf.txBuff[RF_INDEX_DATA+13] = (m_rf.rfwattBuff[RF_WATT_CH6])&0xff;
 
-	m_rf.txBuff[RF_INDEX_DATA+14] = (m_rf.rfwattBuff[RF_WATT_CH6]>>8)&0xff;
-	m_rf.txBuff[RF_INDEX_DATA+15] = (m_rf.rfwattBuff[RF_WATT_CH6])&0xff;
+	m_rf.txBuff[RF_INDEX_DATA+14] = 0;//(m_rf.rfwattBuff[RF_WATT_CH6]>>8)&0xff;
+	m_rf.txBuff[RF_INDEX_DATA+15] = 0;//(m_rf.rfwattBuff[RF_WATT_CH6])&0xff;
 
 
 	for(int i =0 ;i <= RF_INDEX_DATA+15 ;i++)
