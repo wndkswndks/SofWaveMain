@@ -144,7 +144,9 @@ void Eeprom_All_Read(void)
 void Eeprom_Byte_Write(uint8_t Idx, uint8_t data)
 {
 	if(Idx >= MAX_EEPROM_SIZE) return;
-	printf("Eeprom_Byte_Write Add[%u] Data[%u] \r\n",Idx, data);
+	Debug_Printf_Value("Eeprom_Byte_Write Add ",Idx,0);
+	Debug_Printf_Value("Data ",data,1);
+
 	m_eepMain.buff[Idx] = (uint8_t)data;
 	CAT24C16_WriteByte(&hi2c1, Idx, data);
 }
@@ -153,7 +155,8 @@ void Eeprom_Word_Write(uint8_t startIdx, uint16_t data)
 {
 	uint8_t lsb,msb;
 	if(startIdx >= MAX_EEPROM_SIZE-1) return;
-	printf("Eeprom_Word_Write Add[%u] Data[%u] \r\n",startIdx, data);
+	Debug_Printf_Value("Eeprom_Word_Write Add ",startIdx,0);
+	Debug_Printf_Value("Data ",data,1);
 
 	msb = (data>>8)&0xff;
 	lsb = (data)&0xff;

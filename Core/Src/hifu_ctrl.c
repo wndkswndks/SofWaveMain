@@ -1631,8 +1631,7 @@ void RF_Pwm_On()
 
 void RF_eg_Exp_On(uint32_t expTime)
 {
-	Debug_Printf("RF_eg_Exp_On ",0);
-	printf("%u \r\n",expTime);
+	Debug_Printf_Value("RF_eg_Exp_On ",expTime,1);
 	m_rf.egExpOn = 1;
 	m_rf.pluseEgTimeStamp = HAL_GetTick();
 	m_rf.pluseEnginerHigh = expTime;
@@ -1651,16 +1650,15 @@ void Exp_Total_Log()
 {
 	int timeGap;
 
-	printf(">>================================ \r\n");
+	Debug_Printf(">>================================",1 );
+	Debug_Printf_Value("Watt",m_rf.watt,1);
 
-	printf("%d W ",m_rf.watt);
 	if(m_rf.trigCnt>=2)
 	{
 		for(int i =0 ;i < m_rf.trigCnt-1;i++)
 		{
 			timeGap = m_rf.trigTemeStamp[i+1] -m_rf.trigTemeStamp[i];
-
-			printf("%d sec ",timeGap);
+			Debug_Printf_Value("Sec ",timeGap,1);
 
 
 		}
@@ -1677,11 +1675,10 @@ void Exp_Total_Log()
 	m_rf.getWattCnt = 0;
 #endif
 
-	printf("%d TotEng ",m_rf.totaEnergy);
-	printf("\r\n");
+	Debug_Printf_Value("TotEng",m_rf.totaEnergy,1);
 
 	Tx_RF_FeedBack_Check();
-	printf(">>================================ \r\n");
+	Debug_Printf(">>================================",1 );
 
 }
 
@@ -2000,13 +1997,13 @@ int AutoCal_10_Avg()// 오름차순으로 정리
 
 
 
-void AutoCal_Config()
+void AutoCal()
 {
 	uint8_t wattBuff[10] = {10, 20, 30, 40, 50, 60 , 70, 80 , 90, 100};
 	int avg = 0;
 	uint16_t add;
 
-	if(m_rf.autoCalFlag==0)return;
+	if(m_rf.autoCalFlag != AUTOCAL_MAIN)return;
 
 	memset(m_rf.FeedBackWBuff, 0, sizeof(m_rf.FeedBackWBuff));
 	m_rf.FeedBackCnt = 0;
@@ -2090,13 +2087,13 @@ void AutoCal_Config()
 	}
 
 }
-void AutoCal_Config_test()
+void AutoCal_test()
 {
   uint8_t wattBuff[10] = {10, 20, 30, 40, 50, 60 , 70, 80 , 90, 100};
   int avg = 0;
   uint16_t add;
 
-  if(m_rf.autoCalFlag==0)return;
+  if(m_rf.autoCalFlag != AUTOCAL_TEST)return;
 
   memset(m_rf.FeedBackWBuff, 0, sizeof(m_rf.FeedBackWBuff));
   m_rf.FeedBackCnt = 0;
@@ -2156,15 +2153,14 @@ void AutoCal_Config_test()
   m_rf.autoCalFlag = 0;
 
 }
-void AutoCal_Config_100ms()// 100ms  마다 읽는
+void AutoCal_100ms()// 100ms  마다 읽는
 {
   int wattLongBuff[60] ={0,};
-  int wattDaBuff[7] = {127, 126, 124, 136, 134, 120, 134};
   int avg = 0;
   uint16_t add;
   static uint16_t calCnt;
 
-  if(m_rf.autoCalFlag==0)return;
+  if(m_rf.autoCalFlag != AUTOCAL_100MS)return;
 
   memset(m_rf.FeedBackWBuff, 0, sizeof(m_rf.FeedBackWBuff));
   m_rf.FeedBackCnt = 0;
@@ -2219,34 +2215,17 @@ void AutoCal_Config_100ms()// 100ms  마다 읽는
 	}
 	avg = AutoCal_10_Avg();
 
-	calCnt++;
-	if(calCnt == 10)
-	{
-		m_rf.autoCalFlag = 0;
-		calCnt = 0;
-
-		Tx_RF_Watt_Zero_ALL_Module();
-#if 0
-	trandu++;
-	wattDa = wattDaBuff[trandu];
-	if(trandu==7)
-	{
-		m_rf.autoCalFlag = 0;
-	}
-#endif
-	}
-
 }
 
 
 
-void AutoCal_Config_1watt()
+void AutoCal_1watt()
 {
 	uint8_t wattBuff[10] = {10, 20, 30, 40, 50, 60 , 70, 80 , 90, 100};
 	int avg = 0;
 	uint16_t add;
 
-	if(m_rf.autoCalFlag==0)return;
+	if(m_rf.autoCalFlag != AUTOCAL_1WATT)return;
 
 	memset(m_rf.FeedBackWBuff, 0, sizeof(m_rf.FeedBackWBuff));
 	m_rf.FeedBackCnt = 0;
@@ -2302,12 +2281,12 @@ void AutoCal_Config_1watt()
 
 }
 
-void AutoCal_Config_test_Frq()
+void AutoCal_Frq()
 {
   int avg = 0;
   uint16_t add;
 
-  if(m_rf.autoCalFlag==0)return;
+  if(m_rf.autoCalFlag != AUTOCAL_FRQ)return;
 
   memset(m_rf.FeedBackWBuff, 0, sizeof(m_rf.FeedBackWBuff));
   m_rf.FeedBackCnt = 0;
@@ -2363,7 +2342,36 @@ void AutoCal_Config_test_Frq()
   }
 
 }
+void AutoCal_Config()
+{
+	switch (m_rf.autoCalFlag)
+	{
+		case AUTOCAL_MAIN:
+			AutoCal();
+		break;
 
+		case AUTOCAL_100MS:
+			AutoCal_100ms();
+		break;
+
+		case AUTOCAL_1WATT:
+			AutoCal_1watt();
+		break;
+
+		case AUTOCAL_FRQ:
+			AutoCal_Frq();
+		break;
+
+		case AUTOCAL_TEST:
+			AutoCal_test();
+		break;
+
+		default:
+		break;
+
+	}
+
+}
 
 uint8_t fBCh= 0;
 void RF_Borad_FeedBack_Test()
@@ -2381,7 +2389,7 @@ void RF_Borad_FeedBack_Test()
 			Tx_RF_Watt_Zero_ALL_Module();
 			Tx_RF_Watt_Module(fBCh, wattDa);
 			RF_eg_Exp_On(1000);
-			printf("wattDa = %d \r\n",wattDa);
+			Debug_Printf_Value("wattDa = ",wattDa,1);
 			timeStamp = HAL_GetTick();
 			m_rf.feedBackTest = 0;
 			step = STEP1;
@@ -2424,6 +2432,7 @@ void RF_Borad_FeedBack_Test()
 void RF_FeedBack_Cal(uint8_t* buff)
 {
 	uint16_t fbVal = 0;
+	if(m_debug.noview) return;
 	printf("RF_FeedBack_Cal \r\n");
 	for(int i =0 ;i < 8;i++)
 	{
@@ -2469,7 +2478,10 @@ void RF_Rx_Parssing(uint8_t rxID)
 			case GEN_STATUS_CHECK_R:
 				m_err.rfTimeout = 0;
 				m_err.rfComuErr = 0;
-				m_err.rfStatus= m_rf.rxBuffPassing[RF_INDEX_DATA]<<8 |m_rf.rxBuffPassing[RF_INDEX_DATA+1];// 아직 안함
+				m_err.rfStatus= m_rf.rxBuffPassing[RF_INDEX_ERR_STATUS];
+				m_err.rfStatusTemp = m_rf.rxBuffPassing[RF_INDEX_TEMP];
+				m_err.rfStatusErrNo = m_rf.rxBuffPassing[RF_INDEX_ERR_NO];
+
 				m_rf.liveChkCnt++;
 			break;
 

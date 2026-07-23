@@ -157,7 +157,8 @@ typedef struct
 	uint8_t rfComuErr;
 	uint8_t rfTimeout;
 	uint8_t rfStatus;
-	uint8_t rfStatusErr;
+	uint8_t rfStatusTemp;
+	uint8_t rfStatusErrNo;
 
 	uint8_t handComuErr;
 	uint8_t handTimeout;

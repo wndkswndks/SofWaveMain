@@ -37,6 +37,18 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 }
 
 
+void PELTIER_PWR_ON()
+{
+	PELTIER_PWR_H();
+	Debug_Printf("PELTIER_PWR_ON",1);
+	m_io.ptrPwrOn = 1;
+}
+void PELTIER_PWR_OFF()
+{
+	PELTIER_PWR_L();
+	Debug_Printf("PELTIER_PWR_OFF",1);
+	m_io.ptrPwrOn = 0;
+}
 
 void SOL1_ON()
 {
@@ -513,7 +525,7 @@ void Flow_Stop_Check()
 				if(flowErrCnt1>=3)
 				{
 					flowErrCnt1 = 0;
-					Ready_OFF(EVENT_4);
+					if(m_err.flowLimitUnder !=1)Ready_OFF(EVENT_4);
 					m_err.flowLimitUnder = 1;
 				}
 			}
@@ -531,9 +543,12 @@ void Flow_Stop_Check()
 				if(flowErrCnt2>=3)
 				{
 					flowErrCnt2 = 0;
-					WaterPump_Pwr_OFF();
-					Ciller_Pwr_OFF();
-					Debug_Event(EVENT_5);
+					if(m_err.flowLimitUnder !=2)
+					{
+						WaterPump_Pwr_OFF();
+						Ciller_Pwr_OFF();
+						Debug_Event(EVENT_5);
+					}
 					m_err.flowLimitUnder = 2;
 				}
 			}
@@ -552,10 +567,10 @@ void Flow_Stop_Check()
 				flowErrCnt3 = 0;
 				if(!m_err.flowZero)
 				{
-					m_err.flowZero = 1;
 					Ready_OFF(EVENT_6);
 					WaterPump_Pwr_OFF();
 					Ciller_Pwr_OFF();
+					m_err.flowZero = 1;
 				}
 				m_io.flowSensorFrq = 0;
 			}
@@ -700,9 +715,6 @@ void WDT_LED_Config()
 }
 void IO_Config()
 {
-	uint8_t is_pumpOn = (m_io.waterPumpPwrEn == 1);
-	uint8_t is_cillerOn = (m_io.ChillerPwrEn == 1);
-
 	if(m_rf.pluseOn) return;
 
 //	Level_Check();

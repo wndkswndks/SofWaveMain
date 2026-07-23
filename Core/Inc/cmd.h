@@ -142,6 +142,10 @@ typedef enum
 	CMD_MAIN_RESET = 201,
 	CMD_HP_RESET = 202,
 	CMD_HP_RF_ALL_SAND = 203,
+	CMD_AUTOCAL_TD_NO = 204,
+	CMD_AUTOCAL_DA = 205,
+	CMD_DEBUG_NO_VIEW = 206,
+	CMD_DEBUG_CART_AGING = 207,
 
 
 	CMD_TRANDU_FRQ_BASE	= 90,
@@ -270,6 +274,16 @@ typedef enum
 	EVENT_6 = 6,
 	EVENT_7 = 7,
 	EVENT_8 = 8,
+
+	CMD_HP1_COOL_CTRL = 1,
+	CMD_HP1_COOL_OFF = 2,
+
+	AUTOCAL_MAIN     = 1,
+	AUTOCAL_100MS    = 2,
+	AUTOCAL_1WATT    = 3,
+	AUTOCAL_FRQ      = 4,
+	AUTOCAL_TEST     = 5,
+
 } UART_E;
 
 
@@ -295,8 +309,10 @@ typedef struct
 	uint8_t minusFlag;
 
 } UART_T;
-
-
+typedef struct
+{
+	uint8_t noview;
+} DEBUG_CMD_T;
 
 /*  			stuct end  				*/
 
@@ -341,6 +357,7 @@ void Debug_Rx_Parssing(uint8_t add, int data);
 
 
 /*  			extern start  			*/
+extern DEBUG_CMD_T m_debug;
 
 
 

@@ -6,6 +6,7 @@ UART_T m_uart2;
 UART_T m_uart3;
 UART_T m_uart4;
 UART_T m_uart5;
+DEBUG_CMD_T m_debug;
 
 
 
@@ -14,6 +15,8 @@ uint8_t Rx_data2[1];
 uint8_t Rx_data3[1];
 uint8_t Rx_data4[1];
 uint8_t Rx_data5[1];
+extern int wattDa;
+extern int trandu;
 
 void Uart_Init()
 {
@@ -60,6 +63,7 @@ void Uart_Clear_Rx_Ring(UART_T* uart, uint8_t idx)
 void Debug_Printf(char* str, uint8_t cr)
 {
 #ifdef DEBUG_PRINT
+	if(m_debug.noview) return;
 
 	printf("%s",str);
 	if(cr)printf("\r\n");
@@ -69,7 +73,7 @@ void Debug_Printf(char* str, uint8_t cr)
 void Debug_Printf_Value(char* str, int data, uint8_t cr)
 {
 #ifdef DEBUG_PRINT
-
+	if(m_debug.noview) return;
 	printf("%s",str);
 	printf("%d",data);
 	if(cr)printf("\r\n");
@@ -83,6 +87,7 @@ void Debug_Event(uint8_t event)
 }
 void Debug_HAND_Printf(uint8_t rxtx, uint8_t cmd, int data)
 {
+	if(m_debug.noview) return;
 #ifdef DEBUG_PRINT
 
 	if(rxtx != DEBUG_RX && rxtx != DEBUG_TX) return;
@@ -96,6 +101,7 @@ void Debug_HAND_Printf(uint8_t rxtx, uint8_t cmd, int data)
 void Debug_LCD_Printf(uint8_t rxtx, uint8_t cmd, int data)
 {
 #ifdef DEBUG_PRINT
+	if(m_debug.noview) return;
 	if(rxtx != DEBUG_RX && rxtx != DEBUG_TX) return;
 	char rxtxStr[2][3] = {"Rx","Tx"};
 	printf("[%s_LCD] [%u,%d]\r\n",rxtxStr[rxtx], cmd, data);
@@ -107,6 +113,7 @@ void Debug_LCD_Printf(uint8_t rxtx, uint8_t cmd, int data)
 
 void Debug_Rx_RF_Printf(uint8_t* buff, uint8_t cnt)
 {
+	if(m_debug.noview) return;
 #if 1
 	printf("[RX_RF] ");
 	for(int i =0 ;i < cnt;i++)
@@ -122,7 +129,7 @@ void Debug_Rx_RF_Printf(uint8_t* buff, uint8_t cnt)
 void Debug_Tx_RF_Printf(uint8_t* buff,uint8_t len)
 {
 #if 1
-
+	if(m_debug.noview) return;
 	printf("Rf Tx :");
 	for(int i =0 ;i < len;i++)
 	{
@@ -137,6 +144,7 @@ void Debug_Tx_RF_Printf(uint8_t* buff,uint8_t len)
 void Debug_Tx_RF_Watt_Printf(uint8_t ch, uint16_t watt)
 {
 #if 1
+	if(m_debug.noview) return;
 	printf("[TX_RF] ");
 	printf("Ch[%u] Watt[%u] \r\n",ch, watt);
 
@@ -146,6 +154,7 @@ void Debug_Tx_RF_Watt_Printf(uint8_t ch, uint16_t watt)
 void Debug_Tx_RF_Frq_Printf(uint8_t ch, uint16_t frq)
 {
 #if 1
+	if(m_debug.noview) return;
 	printf("[TX_RF] ");
 	printf("Ch[%u] Frq[%u] \r\n",ch, frq);
 #endif
@@ -156,6 +165,7 @@ void Debug_Tx_RF_Frq_Printf(uint8_t ch, uint16_t frq)
 void Debug_Tx_RF_All_Watt_Printf()
 {
 #if 1
+	if(m_debug.noview) return;
 	float wattF = (float)m_rf.watt/10;
 	printf("[TX_RF] ");
 	printf("> %.1f Watt \r\n", wattF);
@@ -171,6 +181,7 @@ void Debug_Tx_RF_All_Watt_Printf()
 void Debug_Tx_RF_All_Zero_Watt_Printf()
 {
 #if 1
+	if(m_debug.noview) return;
 	printf("[TX_RF] ");
 	printf(">Watt Zero Da\r\n");
 	for(int i =0 ;i < 7;i++)
@@ -185,6 +196,7 @@ void Debug_Tx_RF_All_Zero_Watt_Printf()
 void Debug_Tx_RF_All_Frq_Printf()
 {
 #if 1
+	if(m_debug.noview) return;
 	printf("[TX_RF] ");
 	printf(">Frq\r\n");
 	for(int i =0 ;i < 7;i++)
@@ -199,6 +211,7 @@ void Debug_Tx_RF_All_Frq_Printf()
 void Debug_Tx_RF_MaxOntime_Printf()
 {
 #if 1
+	if(m_debug.noview) return;
 	printf("[TX_RF] ");
 	printf(">MaxOntime = %u\r\n", MAX_ONTIME);
 #endif
@@ -206,6 +219,7 @@ void Debug_Tx_RF_MaxOntime_Printf()
 void Debug_Tx_GenStatus_Check_Printf()
 {
 #if 1
+	if(m_debug.noview) return;
 	printf("[TX_RF] ");
 	printf("GenStatus_Check\r\n");
 #endif
@@ -213,11 +227,30 @@ void Debug_Tx_GenStatus_Check_Printf()
 void Debug_Tx_FeedBack_Check_Printf()
 {
 #if 1
+	if(m_debug.noview) return;
 	printf("[TX_RF] ");
 	printf("FeedBack_Check\r\n");
 #endif
 }
+void Debug_TempAll_View()
+{
+	static uint32_t timeStamp;
+	if(!m_debug.noview)return;
 
+	if(HAL_GetTick()-timeStamp >= 1000)
+	{
+
+		timeStamp = HAL_GetTick();
+		printf(">>\t%u\t%d\t%u\t%.1f\t%u\t%u\t%u\r\n",
+		m_rf.treatStatus,
+		m_hand1.temprature,
+		m_hand1.pwmDuty,
+		m_io.flowSensorFrq,
+		m_io.waterPumpPwrEn,
+		m_io.ChillerPwrEn,
+		m_io.sol1On);
+	}
+}
 void Tx_LCD_Msg(uint8_t add, int data)
 {
 	while(HAL_GetTick() -m_rf.lastLcdTxTime<20);
@@ -232,17 +265,6 @@ void Tx_LCD_Msg(uint8_t add, int data)
 
 }
 
-void Tx_LCD_Msg_NoDebug(uint8_t add, uint16_t data)
-{
-	while(HAL_GetTick() -m_rf.lastLcdTxTime<20);
-
-	char str[20]={0,};
-	sprintf(str,"[%d,%d]\r\n",add, data);
-	HAL_UART_Transmit(&huart5, (uint8_t *)str, strlen(str), 100);
-
-	m_rf.lastLcdTxTime = HAL_GetTick();
-
-}
 
 void Tx_Hand1_Msg(uint8_t add, int data)
 {
@@ -519,8 +541,16 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 
 		case CMD_AUTO_CAL_START:
 			m_rf.autoCalFlag = data;
-			if(data==1)
+			if(data)
 			{
+				switch (data)
+				{
+					case AUTOCAL_MAIN: Debug_Printf("Autocal main",1); break;
+					case AUTOCAL_100MS: Debug_Printf("Autocal 100ms",1); break;
+					case AUTOCAL_1WATT: Debug_Printf("Autocal 1watt",1); break;
+					case AUTOCAL_FRQ: Debug_Printf("Autocal Frq",1); break;
+					case AUTOCAL_TEST: Debug_Printf("Autocal Test",1); break;
+				}
 				TX_RF_Max_Ontime_Set();
 				Tx_RF_FRQ_ALL_Module();
 				Tx_RF_Watt_Zero_ALL_Module();
@@ -611,7 +641,7 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 		break;
 
 		case CMD_HP_RF_ALL_SAND:
-			Rf_TD_BHB002_Table_260212();
+			Rf_TD_BHB004_Table_260212();
 
 			for(int i =1 ;i <= 7;i++)
 			{
@@ -626,7 +656,23 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 		break;
 
 
+		case CMD_AUTOCAL_TD_NO:
+			trandu = data;
+			Debug_Printf_Value("trandu = ", data,1);
+		break;
 
+		case CMD_AUTOCAL_DA:
+			wattDa = data;
+			Debug_Printf_Value("wattDa = ", data,1);
+		break;
+
+		case CMD_DEBUG_NO_VIEW:
+			m_debug.noview = data;
+		break;
+
+		case CMD_DEBUG_CART_AGING:
+			Tx_Hand1_Msg(CMD_DEBUG_CART_AGING, data);
+		break;
 
 		case CMD_DEBUG_VIBE:
 			Tx_Hand1_Msg(CMD_DEBUG_VIBE, data);
@@ -683,7 +729,7 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 			if(data<=30)
 			{
 				Tx_LCD_Msg(CMD_AGING_BUTTON, data);
-				printf("Aging Button %d\r\n",data);
+				Debug_Printf_Value("Aging Button",data,1);
 			}
 			else
 			{
@@ -695,7 +741,7 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 
 		case CMD_AUTO_EXP:
 			testExpFlag  = 1;
-			printf("Auto Exp\r\n");
+			Debug_Printf("Auto Exp",1);
 		break;
 
 
@@ -1099,6 +1145,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 			{
 				TX_RF_Max_Ontime_Set();
 				Tx_RF_FRQ_ALL_Module();
+				Tx_RF_Watt_Zero_ALL_Module();
 				Debug_Printf("Autocal Start",1);
 				HAL_Delay(1000);
 			}
@@ -1178,7 +1225,17 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 		break;
 
 		case CMD_DEBUG_PELTIER:
-			Tx_Hand1_Msg(CMD_HP1_ADD, data);
+			if (data== CMD_HP1_COOL_CTRL)
+			{
+				Tx_Hand1_Msg(CMD_HP1_ADD, CMD_HP1_COOL_CTRL);
+				PELTIER_PWR_ON();
+			}
+			else if (data== CMD_HP1_COOL_OFF)
+			{
+				Tx_Hand1_Msg(CMD_HP1_ADD, CMD_HP1_COOL_OFF);
+				PELTIER_PWR_OFF();
+			}
+
 		break;
 
 
@@ -1510,7 +1567,7 @@ void Uart_Tx_Polling_Status()
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
 			txData = 4000 + m_err.rfTimeout;
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
-			txData = 5000 + m_err.rfStatus;
+			txData = 5000 + m_io.sol1On;
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
 			txData = 6000 + m_io.battery*10;
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
@@ -1521,6 +1578,18 @@ void Uart_Tx_Polling_Status()
 			txData = 9000 + m_io.HP1_Insert;
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
 			txData = 10000 +m_eep.catridgeDetect;
+			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
+			txData = 11000 +m_err.rfStatus;
+			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
+			txData = 12000 +m_err.rfStatusTemp;
+			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
+			txData = 13000 +m_err.rfStatusErrNo;
+			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
+			txData = 14000 +m_io.ptrPwrOn;
+			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
+			txData = 15000 +m_io.waterPumpPwrEn;
+			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
+			txData = 16000 +m_io.ChillerPwrEn;
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
 
 			timeStamp2 = HAL_GetTick();
@@ -1535,7 +1604,7 @@ void Uart_Tx_Polling_Status()
 		{
 			timeStamp = HAL_GetTick();
 			Tx_LCD_Msg(CMD_AGING_BUTTON, m_rf.agingUpDn);
-			printf("Aging Button %d\r\n",m_rf.agingUpDn);
+			Debug_Printf_Value("Aging Button",m_rf.agingUpDn,1);
 			m_rf.agingCnt--;
 		}
 	}
@@ -1549,6 +1618,7 @@ void UartRxDataProcess()
 	UartRx4DataProcess();//gen
 	UartRx5DataProcess();//lcd
 	Uart_Tx_Polling_Status();
+	Debug_TempAll_View();
 }
 
 

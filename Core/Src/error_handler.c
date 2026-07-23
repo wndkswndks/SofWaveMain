@@ -112,7 +112,7 @@ uint8_t Check_Common(uint8_t status, uint8_t cmd)
 			m_err.errDataBuff[cmd] = 0;
 			Set_Err_StatusBitFlag(cmd, 0);
 			m_err.errCheckBuff[cmd] = 0;
-			printf("[ERR %u] Clear \r\n",cmd);
+			Debug_Printf_Value("[ERR Clear] ",cmd,1);
 			Body_Led_Ctrl(BODY_LED_NOMAL);
 
 		}
@@ -134,7 +134,7 @@ uint8_t Check_Common(uint8_t status, uint8_t cmd)
 					m_eepMain.errCntBuff[cmd]++;
 					Eeprom_Word_Write(IDX_EEP_ERROR+cmd*2, m_eepMain.errCntBuff[cmd]);
 				}
-				printf("[ERR %u] Event\r\n",cmd);
+				Debug_Printf_Value("[ERR Event] ",cmd,1);
 			}
 		}
 	}

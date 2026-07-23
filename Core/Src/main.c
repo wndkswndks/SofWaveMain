@@ -125,7 +125,7 @@ int main(void)
 
 
 #if 1
-  IO_Config();
+  IO_Config();//
   UartRxDataProcess();
   Rf_Config();
   Error_Check_Config();

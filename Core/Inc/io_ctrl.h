@@ -114,8 +114,8 @@
 #define HP1_PELT_ON()         			HAL_GPIO_WritePin(HP1_PELT_OND11_GPIO_Port, HP1_PELT_OND11_Pin, GPIO_PIN_SET)
 #define HP1_PELT_OFF()        			HAL_GPIO_WritePin(HP1_PELT_OND11_GPIO_Port, HP1_PELT_OND11_Pin, GPIO_PIN_RESET)
 
-#define PELTIER_PWR_ON()      			HAL_GPIO_WritePin(PELTIER_PWR_ON_GPIO_Port, PELTIER_PWR_ON_Pin, GPIO_PIN_SET)
-#define PELTIER_PWR_OFF()      			HAL_GPIO_WritePin(PELTIER_PWR_ON_GPIO_Port, PELTIER_PWR_ON_Pin, GPIO_PIN_RESET)
+#define PELTIER_PWR_H()      			HAL_GPIO_WritePin(PELTIER_PWR_ON_GPIO_Port, PELTIER_PWR_ON_Pin, GPIO_PIN_SET)
+#define PELTIER_PWR_L()      			HAL_GPIO_WritePin(PELTIER_PWR_ON_GPIO_Port, PELTIER_PWR_ON_Pin, GPIO_PIN_RESET)
 
 
 //LED
@@ -215,6 +215,7 @@ typedef struct
 	float battery;
 	uint8_t rfPwrEn;
 	uint8_t sol1On;
+	uint8_t ptrPwrOn;
 	uint8_t sol1OnStatus;
 	uint8_t test1;
 	uint8_t test2;

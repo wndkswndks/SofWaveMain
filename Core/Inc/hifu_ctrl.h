@@ -74,6 +74,10 @@ typedef enum
 	RF_INDEX_CMD = 3,
 	RF_INDEX_DATA = 4,
 
+	RF_INDEX_ERR_STATUS = 4,
+	RF_INDEX_TEMP = 5,
+	RF_INDEX_ERR_NO = 6,
+
 	RF_INDEX_HEAD_FIX = 4,
 	RF_NUM_FIX = 6,
 
