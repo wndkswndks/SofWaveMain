@@ -321,15 +321,51 @@ void Ready_ON()
 void Ready_OFF(uint8_t event)
 {
 	m_rf.treatStatus = STATUS_STNBY;
+	RF_PWM_Force_Stop();
 	Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_STNBY);
 	Tx_Hand1_Msg(CMD_LCD_STATUS, STATUS_STNBY);
 	m_rf.readyFlag = READY_OFF;
 	SOL1_OFF();
-	RF_PWM_Force_Stop();
 	PELTIER_PWR_OFF();
 	Debug_Printf("READY_OFF",1);
 	Debug_Event(event);
 
+}
+
+uint8_t Ready_Enter_Chk()
+{
+	uint8_t bool1 = (m_eep.catridgeDetect == CATRIGE_CHK_OK);
+	uint8_t bool2 = (m_io.HP1_Insert == HP_INSERT);
+	uint8_t bool3 = (m_eep.catridgeStatus == SING_UP_CODE);
+	uint8_t bool4 = 1;
+	uint8_t boolEx1 = 0;
+	uint8_t boolEx2 = 0;
+	uint8_t boolEx3 = 0;
+
+	for(int i =0 ;i < 50;i++)
+	{
+		if(i==IDX_CATRIGE_RESHOT_LOW)continue;
+		if(i==IDX_CATRIGE_RESHOT_ERR)continue;
+		if(i==IDX_PRE_COOL_ERR)continue;
+		if(m_err.errDataBuff[i])
+		{
+			Tx_LCD_Msg(CMD_ERR, m_err.errDataBuff[i]);
+			HAL_Delay(1500);
+			bool4 = 0;
+		}
+
+	}
+	if(!bool1)
+	{
+		Tx_LCD_Msg(CMD_CATRIDGE_EVENT, m_eep.catridgeDetect);
+	}
+
+	if(bool1 && bool2 && bool3 && bool4)
+	{
+		return 1;
+	}
+
+	return 0;
 }
 
 void PreCooling_ON()
@@ -624,9 +660,25 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 			Tx_Hand1_Msg(CMD_TEMP_OFFSET, data);
 		break;
 
-		case CMD_ALRAM:
+		case CMD_DEBUG_ERR:
 			Tx_LCD_Msg(CMD_ERR, data);
 		break;
+		case CMD_DEBUG_ERR_CRL:
+			if (data)
+			{
+				m_rf.sysChkFlag = 1;
+			}
+			else
+			{
+				m_rf.sysChkFlag = 0;
+				for(int i =0 ;i < 50;i++)
+				{
+					m_err.errDataBuff[i] = 0;
+					m_err.errCheckBuff[i] = 0;
+				}
+			}
+		break;
+
 
 		case CMD_MAIN_RESET:
 			NVIC_SystemReset();
@@ -673,6 +725,19 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 		case CMD_DEBUG_CART_AGING:
 			Tx_Hand1_Msg(CMD_DEBUG_CART_AGING, data);
 		break;
+
+		case CMD_DEBUG_COOL_TIMEOUT:
+		if (data)
+		{
+			m_rf.preCooltimeOut = PRECOOL_TIMEOUT;
+		}
+		else
+		{
+			m_rf.preCooltimeOut = PRECOOL_FAST_TIMEOUT;
+		}
+
+		break;
+
 
 		case CMD_DEBUG_VIBE:
 			Tx_Hand1_Msg(CMD_DEBUG_VIBE, data);
@@ -1076,10 +1141,11 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 		case CMD_LCD_STATUS:
 			if(data == STATUS_PRECOOLING)
 			{
-				if((m_eep.catridgeDetect != CATRIGE_CHK_UN_DETECT) && (m_io.HP1_Insert == HP_INSERT) && (m_eep.catridgeStatus == SING_UP_CODE))
+				if(Ready_Enter_Chk())
 				{
 					PreCooling_ON();
 				}
+				else Ready_OFF(EVENT_9);
 			}
 			else if(data == STATUS_STNBY)
 			{
@@ -1354,7 +1420,7 @@ void Hand_Rx_Parssing(uint8_t add, int data)
 					break;
 
 					case CATRIGE_CHK_NEW:
-						Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_NEW);
+						if(m_rf.sysChkFlag)Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_NEW);
 						Debug_Printf("CATRIDGE Detect NeW",1);
 					break;
 
@@ -1395,7 +1461,15 @@ void Hand_Rx_Parssing(uint8_t add, int data)
 			break;
 
 			case CMD_TEMPERATURE:
-				m_hand1.temprature = data;
+				if(m_eep.catridgeDetect != CATRIGE_CHK_UN_DETECT)
+				{
+					m_hand1.temprature = data;
+				}
+				else
+				{
+					m_hand1.temprature = 0;
+				}
+
 			break;
 
 			case CMD_PWM_DUTY:

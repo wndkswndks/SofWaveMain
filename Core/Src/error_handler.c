@@ -110,9 +110,11 @@ uint8_t Check_Common(uint8_t status, uint8_t cmd)
 		if(m_err.errDataBuff[cmd])
 		{
 			m_err.errDataBuff[cmd] = 0;
-			Set_Err_StatusBitFlag(cmd, 0);
 			m_err.errCheckBuff[cmd] = 0;
 			Debug_Printf_Value("[ERR Clear] ",cmd,1);
+
+
+
 			Body_Led_Ctrl(BODY_LED_NOMAL);
 
 		}
@@ -128,12 +130,7 @@ uint8_t Check_Common(uint8_t status, uint8_t cmd)
 				m_err.errCntBuff[cmd] = 0;
 				m_err.errDataBuff[cmd] = cmd;
 //				Body_Led_Ctrl(BODY_LED_ERROR);
-				Set_Err_StatusBitFlag(cmd, 1);
-				if(m_eepMain.errCntBuff[cmd]<999)
-				{
-					m_eepMain.errCntBuff[cmd]++;
-					Eeprom_Word_Write(IDX_EEP_ERROR+cmd*2, m_eepMain.errCntBuff[cmd]);
-				}
+
 				Debug_Printf_Value("[ERR Event] ",cmd,1);
 			}
 		}
@@ -403,7 +400,7 @@ void Error_Check_HP()
 	if(m_hand1.commuChk)
 	{
 		m_err.handTimeout++;
-		if(Check_Max(m_err.handTimeout, COMU_MAX_CNT, IDX_HAND_COMU_ERR)){}
+		if(Check_Max(m_err.handTimeout, COMU_MAX_CNT, IDX_HAND_COMU_ERR)){m_hand1.temprature = 0;}
 		if(Check_Status(m_err.preCoolStatus, 0, IDX_PRE_COOL_ERR)){}
 
 	}

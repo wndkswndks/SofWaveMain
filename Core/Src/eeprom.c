@@ -95,12 +95,6 @@ void Eeprom_All_Read(void)
 			m_eepMain.buff[i+1] = 0;
 		}
 
-		for(int i =0 ;i < 50;i++)
-		{
-			m_eepMain.errCntBuff[i] = 0;
-			m_eepMain.buff[IDX_EEP_ERROR+i*2] = 0;
-			m_eepMain.buff[IDX_EEP_ERROR+i*2+1] = 0;
-		}
 		uint32_t seed = HAL_GetTick();
 		srand(seed);
 		int randValue;
@@ -121,10 +115,7 @@ void Eeprom_All_Read(void)
 	{
 
 
-		for(int i =0 ;i < 50;i++)
-		{
-			m_eepMain.errCntBuff[i] = (m_eepMain.buff[IDX_EEP_ERROR+i*2]<<8)|(m_eepMain.buff[IDX_EEP_ERROR+i*2+1]);
-		}
+
 
 		m_eepMain.remainingShotRandom =  m_eepMain.buff[IDX_REMIND_RANDOM];
 

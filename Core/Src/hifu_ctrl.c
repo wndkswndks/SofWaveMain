@@ -1283,6 +1283,8 @@ void LCD_Init()
 
 	Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_STNBY);
 
+	m_rf.preCooltimeOut = PRECOOL_TIMEOUT;
+
 }
 
 
@@ -1748,8 +1750,8 @@ void RF_PWM_Force_Stop()
 		m_rf.pluseLevel = PWM_H1_LEVEL;
 		m_rf.readyFlag = READY_OFF;
 		m_rf.expEndFlag = 0;
-		Tx_LCD_Msg(CMD_LCD_EXP, LCD_EXP_END);
-		Tx_Hand1_Msg(CMD_LCD_EXP, LCD_EXP_END);
+		Tx_LCD_Msg(CMD_FORCE_STOP, 0);
+		Tx_Hand1_Msg(CMD_FORCE_STOP, 0);
 		Body_Led_Ctrl(BODY_LED_NOMAL);
 	}
 
@@ -1848,7 +1850,7 @@ void LCD_Status_Tret()
 
 		}
 
-	if(HAL_GetTick()- m_rf.preCooltime> PRECOOL_TIMEOUT && m_rf.preCooltime)
+	if(HAL_GetTick()- m_rf.preCooltime> m_rf.preCooltimeOut && m_rf.preCooltime)
 	{
 		m_err.preCoolStatus = 1;
 #if 1

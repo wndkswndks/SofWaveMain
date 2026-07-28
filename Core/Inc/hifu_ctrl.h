@@ -282,6 +282,7 @@ typedef struct
 	uint32_t pluseEnginerHigh;
 	uint8_t treatStatus;
 	uint32_t preCooltime;
+	uint32_t preCooltimeOut;
 	uint8_t sysChkFlag;
 
 
