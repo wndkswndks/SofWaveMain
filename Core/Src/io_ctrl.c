@@ -594,9 +594,13 @@ void Flow_Stop_Check()
 void IO_Init()
 {
 
-    BUZZER_H();
-    HAL_Delay(500);//
-    BUZZER_L();
+	for(int i =0 ;i < 3;i++)
+	{
+	    BUZZER_H();
+	    HAL_Delay(200);//
+	    BUZZER_L();
+	    HAL_Delay(200);
+	}
 	AC_RLY_H();
 
 	HP1_PELT_ON();

@@ -549,17 +549,17 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 			Tx_LCD_Msg(CMD_TEST_FORCE_PAGE_CHANGE, data);
 		break;
 
-		case CMD_RF_ALL_SETTING:
+		case CMD_DEBUG_RF_ALL_SETTING:
 			Tx_RF_FRQ_ALL_Module();
 			Tx_RF_Watt_Zero_ALL_Module();
 			TX_RF_Max_Ontime_Set();
 		break;
 
-		case CMD_RF_WATT_MEATER_Z:
+		case CMD_DEBUG_RF_WATT_MEATER_Z:
 			AutoCal_Tx_Z_Msg();
 		break;
 
-		case CMD_RF_SINGLE_EXP:
+		case CMD_DEBUG_RF_SINGLE_EXP:
 			uint8_t tdu = data/1000;
 			uint16_t da = data%1000;
 			Tx_RF_Watt_Zero_ALL_Module();
@@ -571,7 +571,7 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 			m_hand1.commuChk = data;
 		break;
 
-		case CMD_RF_WATT_MEATER_IP:
+		case CMD_DEBUG_RF_WATT_MEATER_IP:
 			AutoCal_Tx_IP_Msg();
 		break;
 
@@ -630,8 +630,8 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 			Tx_Hand1_Msg(CMD_HP1_ADD, data);
 		break;
 
-		case CMD_WATT_FEEDBACK:
-			Debug_Printf("CMD_WATT_FEEDBACK START",1);
+		case CMD_DEBUG_WATT_FEEDBACK:
+			Debug_Printf("CMD_DEBUG_WATT_FEEDBACK START",1);
 			m_rf.feedBackTest = data;
 			uint8_t fbTd = data/1000;
 			uint16_t fbDa = data%1000;
@@ -647,7 +647,7 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 			Debug_Printf("CMD_IS_CATRIDGE",1);
 		break;
 
-		case CMD_BODY_LED_TEST:
+		case CMD_DEBUG_BODY_LED_TEST:
 			Body_Led_Ctrl(data);
 		break;
 
@@ -680,11 +680,11 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 		break;
 
 
-		case CMD_MAIN_RESET:
+		case CMD_DEBUG_MAIN_RESET:
 			NVIC_SystemReset();
 		break;
 
-		case CMD_HP_RESET:
+		case CMD_DEBUG_HP_RESET:
 
 				HP1_RST_CONTROL_H();
 				HAL_Delay(100);
@@ -692,7 +692,7 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 
 		break;
 
-		case CMD_HP_RF_ALL_SAND:
+		case CMD_DEBUG_HP_RF_ALL_SAND:
 			Rf_TD_BHB004_Table_260212();
 
 			for(int i =1 ;i <= 7;i++)
@@ -708,12 +708,12 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 		break;
 
 
-		case CMD_AUTOCAL_TD_NO:
+		case CMD_DEBUG_AUTOCAL_TD_NO:
 			trandu = data;
 			Debug_Printf_Value("trandu = ", data,1);
 		break;
 
-		case CMD_AUTOCAL_DA:
+		case CMD_DEBUG_AUTOCAL_DA:
 			wattDa = data;
 			Debug_Printf_Value("wattDa = ", data,1);
 		break;
@@ -743,41 +743,41 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 			Tx_Hand1_Msg(CMD_DEBUG_VIBE, data);
 		break;
 
-		case CMD_FRQ_CH0:
+		case CMD_DEBUG_FRQ_CH0:
 			m_rf.rfFrqBuff[RF_FRQ_CH0] = data;
 			Tx_RF_FRQ_Module(RF_FRQ_CH0, data);
 		break;
 
-		case CMD_FRQ_CH1:
+		case CMD_DEBUG_FRQ_CH1:
 			m_rf.rfFrqBuff[RF_FRQ_CH1] = data;
 			Tx_RF_FRQ_Module(RF_FRQ_CH1, data);
 		break;
 
-		case CMD_FRQ_CH2:
+		case CMD_DEBUG_FRQ_CH2:
 			m_rf.rfFrqBuff[RF_FRQ_CH2] = data;
 			Tx_RF_FRQ_Module(RF_FRQ_CH2, data);
 		break;
 
-		case CMD_FRQ_CH3:
+		case CMD_DEBUG_FRQ_CH3:
 			m_rf.rfFrqBuff[RF_FRQ_CH3] = data;
 			Tx_RF_FRQ_Module(RF_FRQ_CH3, data);
 		break;
 
-		case CMD_FRQ_CH4:
+		case CMD_DEBUG_FRQ_CH4:
 			m_rf.rfFrqBuff[RF_FRQ_CH4] = data;
 			Tx_RF_FRQ_Module(RF_FRQ_CH4, data);
 		break;
 
-		case CMD_FRQ_CH5:
+		case CMD_DEBUG_FRQ_CH5:
 			m_rf.rfFrqBuff[RF_FRQ_CH5] = data;
 			Tx_RF_FRQ_Module(RF_FRQ_CH5, data);
 		break;
 
-		case CMD_FRQ_CH6:
+		case CMD_DEBUG_FRQ_CH6:
 			m_rf.rfFrqBuff[RF_FRQ_CH6] = data;
 			Tx_RF_FRQ_Module(RF_FRQ_CH6, data);
 		break;
-		case CMD_TTTEST:
+		case CMD_DEBUG_SOL_TEST:
 			if (data)
 			{
 				SOL1_ON();
@@ -804,7 +804,7 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 
 		break;
 
-		case CMD_AUTO_EXP:
+		case CMD_DEBUG_AUTO_EXP:
 			testExpFlag  = 1;
 			Debug_Printf("Auto Exp",1);
 		break;
