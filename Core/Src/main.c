@@ -69,6 +69,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
+  SCB->VTOR = 0x08010000U;//
 
   /* USER CODE END 1 */
 
