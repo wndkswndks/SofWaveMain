@@ -403,6 +403,13 @@ void Error_Check_HP()
 		if(Check_Max(m_err.handTimeout, COMU_MAX_CNT, IDX_HAND_COMU_ERR)){m_hand1.temprature = 0;}
 		if(Check_Status(m_err.preCoolStatus, 0, IDX_PRE_COOL_ERR)){}
 
+		if(m_err.handTimeout == 5)
+		{
+			HP1_RST_CONTROL_H();
+			HAL_Delay(100);
+			HP1_RST_CONTROL_L();
+		}
+
 	}
 	if(Check_Max_Min(m_hand1.temprature, TEMP_OUT_MAX, TEMP_OUT_MIN,IDX_TEMP_OUT)){}
 	else if(Check_Min(m_hand1.temprature, TEMP_MIN, IDX_TEMP_LIMIT_UNDER)){}
