@@ -64,7 +64,10 @@ void MX_GPIO_Init(void)
                           |COOLING_LV4_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, HP1_RST_CONTROL_Pin|HP1_Boot_CONTROL_Pin|MP3_PREVIOUS_VOLMI_Pin|VBAT_ADC_EN_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, HP1_RST_CONTROL_Pin|MP3_PREVIOUS_VOLMI_Pin|VBAT_ADC_EN_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(HP1_Boot_CONTROL_GPIO_Port, HP1_Boot_CONTROL_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOD, HP1_PELT_ON_Pin|COOLING_LV2_Pin|COOLING_LV1_Pin|HP1_PELT_OND11_Pin
