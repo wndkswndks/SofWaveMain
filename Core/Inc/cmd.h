@@ -289,6 +289,11 @@ typedef enum
 	AUTOCAL_FRQ      = 4,
 	AUTOCAL_TEST     = 5,
 
+	RED_COLOR	=	1,
+	GREEN_COLOR	=	2,
+	BULE_COLOR	=	3,
+	YELLOW_COLOR = 	4,
+
 } UART_E;
 
 

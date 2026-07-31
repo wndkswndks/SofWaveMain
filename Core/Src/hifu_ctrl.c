@@ -2585,7 +2585,7 @@ void Exp_Config()
 				RF_Pwm_On();
 				Body_Led_Ctrl(BODY_LED_SHOT);
 				Vibe_Time_Cal();
-
+				HP_Reset(YELLOW_COLOR);
 				step = STEP1;
 			}
 		break;
@@ -2622,6 +2622,7 @@ void Exp_Config()
 
 				Exp_Total_Log();
 				Body_Led_Ctrl(BODY_LED_NOMAL);
+//				HP_Reset(GREEN_COLOR);
 				step = STEP0;
 			}
 		break;

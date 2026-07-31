@@ -470,6 +470,28 @@ void Data_Req_Set(uint8_t cmd, uint16_t rxData, uint16_t* data)
 	}
 
 }
+
+void HP_Reset(uint8_t color)
+{
+	Tx_Hand1_Msg(CMD_DEBUG_HP_RESET, color);
+	HAL_Delay(100);
+	HP1_RST_CONTROL_H();
+	HAL_Delay(100);
+	HP1_RST_CONTROL_L();
+
+}
+void HP_Reset_Config()
+{
+	static uint32_t timeStamp;
+
+	if(HAL_GetTick()-timeStamp >= 1500)
+	{
+
+		timeStamp = HAL_GetTick();
+		HP_Reset(YELLOW_COLOR);
+	}
+
+}
 void Check_CartAllData(uint8_t status)
 {
 	uint8_t eepErr = 0;
@@ -685,11 +707,7 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 		break;
 
 		case CMD_DEBUG_HP_RESET:
-
-				HP1_RST_CONTROL_H();
-				HAL_Delay(100);
-				HP1_RST_CONTROL_L();
-
+			HP_Reset(data);
 		break;
 
 		case CMD_DEBUG_HP_RF_ALL_SAND:
@@ -1150,6 +1168,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 			else if(data == STATUS_STNBY)
 			{
 				Ready_OFF(EVENT_2);
+				HP_Reset(BULE_COLOR);
 
 			}
 
@@ -1414,7 +1433,7 @@ void Hand_Rx_Parssing(uint8_t add, int data)
 				{
 					case CATRIGE_CHK_OK:
 
-						if(m_rf.sysChkFlag)Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_OK);
+//						if(m_rf.sysChkFlag)Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_OK);
 
 						Debug_Printf("CATRIDGE Detect",1);
 					break;
@@ -1440,7 +1459,7 @@ void Hand_Rx_Parssing(uint8_t add, int data)
 					break;
 
 					case CATRIGE_CHK_UN_DETECT:
-						Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_UN_DETECT);
+//						Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_UN_DETECT);
 						Debug_Printf("CATRIDGE Undetect",1);
 					break;
 				}
