@@ -594,7 +594,7 @@ void Flow_Stop_Check()
 void IO_Init()
 {
 
-	for(int i =0 ;i < 3;i++)
+	for(int i =0 ;i < 4;i++)
 	{
 	    BUZZER_H();
 	    HAL_Delay(200);//
