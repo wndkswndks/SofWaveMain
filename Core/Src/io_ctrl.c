@@ -296,86 +296,28 @@ uint32_t chilTerm = 0;
 
 void Chiller_Temperature_Read()
 {
-	static uint32_t timeStamp, timeStamp2;
-#if 0
-HAL_ADC_Start(&hadc2);
-HAL_ADC_PollForConversion(&hadc2, HAL_MAX_DELAY);
-uint32_t adc = (uint16_t)HAL_ADC_GetValue(&hadc2);
-HAL_ADC_Stop(&hadc2);
-adcQQ2 = adc;
-chillerTemp = Get_NTC_Temperature_j(adc);
-#endif
+	static uint32_t timeStamp;
+	uint32_t adc;
 
-
-if(HAL_GetTick()-timeStamp >= 1000)
-{
-	timeStamp = HAL_GetTick();
-	int Data = chillerTemp*10.0;
-	printf("[244,%d]\r\n",Data);
-}
-static uint8_t once = 1;
-
-if(once)
-{
-	if(chillerTemp > 14) return;
-	else once = 0;
-}
-
-if(HAL_GetTick()>120000)
-{
-	if(HAL_GetTick()-timeStamp2 >= chilTerm)
+	ADC1_Channel_Selection(ADC_CH_WATER_TEMP);
+	HAL_ADC_Start(&hadc1);
+	if(HAL_ADC_PollForConversion(&hadc1, 10) == HAL_OK)
 	{
-		timeStamp2 = HAL_GetTick();
-		if (chilFlag)
-		{
-			chilFlag = 0;
-			AC_RLY_H();
-			printf("[233,%d]\r\n",200);
-			chilTerm =170000;
-		}
-		else
-		{
-			chilFlag = 1;
-			AC_RLY_L();
-			printf("[233,%d]\r\n",20);
-			chilTerm =70000;
-		}
+		adc = (uint16_t)HAL_ADC_GetValue(&hadc1);
+	}
+	HAL_ADC_Stop(&hadc1);
+	adcQQ2 = adc;
+	chillerTemp = Get_NTC_Temperature_j(adc);
+
+	if(HAL_GetTick()-timeStamp >= 1000)
+	{
+		timeStamp = HAL_GetTick();
+		int Data = chillerTemp*10.0;
+		printf("[244,%d]\r\n",Data);
 	}
 
-}
-
-//	if(HAL_GetTick()-timeStamp >= 200)
-//	{
-//		timeStamp = HAL_GetTick();
-//		if (chillerTemp <= 14)
-//		{
-//			cntLow++;
-//			if(cntLow>=10 && flagHigh)
-//			{
-
-//				cntLow = 0;
-//				flagLow = 1;
-//				flagHigh = 0;
-//				AC_RLY_L();
-//				HAL_Delay(1000);
-//				AC_RLY_H();
-//			}
-//			cntHigh = 0;
-//		}
-//		else if (chillerTemp >= 17)
-//		{
-//			cntHigh++;
-//			if(cntHigh >= 10 && flagLow)
-//			{
-//				cntHigh = 0;
-//				flagHigh = 1;
-//				flagLow = 0;
-//			}
-//			cntLow = 0;
-//		}
 
 
-//	}
 }
 
 
@@ -727,7 +669,7 @@ void IO_Config()
 
 	Battery_Read();
 	RTC_Config();
-//	Chiller_Temperature_Read();
+	Chiller_Temperature_Read();
  	WDT_LED_Config();
 
 
