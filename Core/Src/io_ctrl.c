@@ -251,8 +251,10 @@ void Battery_Read(void)
 #define R25          10000.0f   // 25도일 때 저항 (10k)
 #define B_VALUE      3984.0f    // B25/85 값
 #define T25          298.15f    // 25도를 켈빈 온도로 변환 (273.15 + 25)
-#define R_PULLUP     24000.0f   // 사용자 지정 풀업 저항 (24k)
+//#define R_PULLUP     24000.0f   // 사용자 지정 풀업 저항 (24k)
+
 #define ADC_MAX      4095.0f    // STM32F103 12비트 ADC 최대값
+uint32_t R_PULLUP    = 10000;   // 사용자 지정 풀업 저항 (24k)
 
 /**
  * @brief ADC 값을 입력받아 섭씨 온도를 반환하는 함수
@@ -277,6 +279,7 @@ float Get_NTC_Temperature_j(uint32_t adc_value) {
 
     // 3. 켈빈 온도를 섭씨 온도로 변환
     float temperature_c = temperature - 273.15f;
+	temperature_c +=19;
 
     return temperature_c;
 }
