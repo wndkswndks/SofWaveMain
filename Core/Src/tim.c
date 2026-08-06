@@ -47,7 +47,7 @@ void MX_TIM1_Init(void)
   htim1.Init.Period = 9999;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
-  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_PWM_Init(&htim1) != HAL_OK)
   {
     Error_Handler();
@@ -145,5 +145,24 @@ void HAL_TIM_PWM_MspDeInit(TIM_HandleTypeDef* tim_pwmHandle)
 }
 
 /* USER CODE BEGIN 1 */
+/**
+  * @brief  칠러 압축기 속도 제어 (PWM 주파수 가변)
+  * @param  target_hz: 목표 주파수 (56Hz ~ 200Hz)
+  */
+void Set_Chiller_Frequency(uint16_t target_hz)
+{
+    // 1. 주파수 안전 범위 제한 (스펙 기준: 최저 56Hz, 최고 200Hz)
+    if (target_hz < 56) target_hz = 56;
+    if (target_hz > 200) target_hz = 200;
+
+    // 2. ARR 및 CCR 값 계산
+    // 기본 클럭이 1MHz (64MHz / (63+1))이므로, 1,000,000을 주파수로 나눕니다.
+    uint32_t arr_value = (1000000 / target_hz) - 1;
+    uint32_t ccr_value = (arr_value + 1) / 2; // 항상 50% Duty Cycle 유지
+
+    // 3. 타이머 레지스터 동적 업데이트 (Preload가 켜져 있어 다음 주기에 안전하게 반영됨)
+    __HAL_TIM_SET_AUTORELOAD(&htim1, arr_value);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, ccr_value);
+}
 
 /* USER CODE END 1 */

@@ -564,6 +564,7 @@ void IO_Init()
 	m_io.rtcEn = 1;
 	if(IS_HP1_INSERT())HP1_Pwr_ON();
 	Body_Led_Ctrl(BODY_LED_BOOT);
+	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
 
 }
 void RTC_Init(void)
