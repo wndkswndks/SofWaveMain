@@ -924,6 +924,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 			}
 			Tx_LCD_Msg(CMD_PULSE_DURATION, m_rf.pulseDuration);
 
+
 		break;
 
 		case CMD_POST_COOLING:
@@ -1449,7 +1450,7 @@ void Hand_Rx_Parssing(uint8_t add, int data)
 				{
 					case CATRIGE_CHK_OK:
 
-//						if(m_rf.sysChkFlag)Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_OK);
+						if(m_rf.sysChkFlag)Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_OK);
 
 						Debug_Printf("CATRIDGE Detect",1);
 					break;
@@ -1475,7 +1476,7 @@ void Hand_Rx_Parssing(uint8_t add, int data)
 					break;
 
 					case CATRIGE_CHK_UN_DETECT:
-//						Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_UN_DETECT);
+						Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_UN_DETECT);
 						Debug_Printf("CATRIDGE Undetect",1);
 					break;
 				}

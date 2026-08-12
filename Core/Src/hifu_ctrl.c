@@ -1729,7 +1729,7 @@ void RF_Pwm_Conter_Common(uint8_t pulseNum)
 				{
 					Pulse_Trig_TimeSave();
 
-					m_rf.pluseLevel = PWM_H1_LEVEL;
+					m_rf.pluseLevel = PWM_H_LEVEL;
 					m_rf.expEndFlag = 1;
 
 					m_rf.pluseOn = 0;
@@ -1747,7 +1747,7 @@ void RF_PWM_Force_Stop()
 		m_rf.pluseOn = 0;
 		HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_LOW);
 		Pulse_Trig_TimeSave();
-		m_rf.pluseLevel = PWM_H1_LEVEL;
+		m_rf.pluseLevel = PWM_H_LEVEL;
 		m_rf.readyFlag = READY_OFF;
 		m_rf.expEndFlag = 0;
 		Tx_LCD_Msg(CMD_FORCE_STOP, 0);
@@ -1841,6 +1841,8 @@ void LCD_Status_Tret()
 			TX_RF_Max_Ontime_Set();
 
 			Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_TRET);
+			int totalTime = m_rf.pulseDuration*100 + m_rf.postCooling*100 + m_rf.interval*1000;
+			Tx_Hand1_Msg(CMD_PULSE_DURATION, totalTime);
 			Tx_Hand1_Msg(CMD_LCD_STATUS, STATUS_TRET);
 
 			m_rf.treatStatus = STATUS_TRET;
