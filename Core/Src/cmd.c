@@ -232,6 +232,9 @@ void Debug_Tx_FeedBack_Check_Printf()
 	printf("FeedBack_Check\r\n");
 #endif
 }
+extern float chillerTemp;
+
+uint8_t kp,ki,kd;
 void Debug_TempAll_View()
 {
 	static uint32_t timeStamp;
@@ -241,14 +244,16 @@ void Debug_TempAll_View()
 	{
 
 		timeStamp = HAL_GetTick();
-		printf(">>\t%u\t%d\t%u\t%.1f\t%u\t%u\t%u\r\n",
+		printf(">>\t%u\t%d\t%u\t%.1f\t%u\t%u\t%u\t%.1f\r\n",
 		m_rf.treatStatus,
 		m_hand1.temprature,
 		m_hand1.pwmDuty,
 		m_io.flowSensorFrq,
-		m_io.waterPumpPwrEn,
-		m_io.ChillerPwrEn,
-		m_io.sol1On);
+		kp,
+		ki,
+		kd,
+		chillerTemp
+		);
 	}
 }
 void Tx_LCD_Msg(uint8_t add, int data)
@@ -543,8 +548,6 @@ void Check_CartAllData(uint8_t status)
 
 extern int wattDa;
 
-int testVValue;
-uint32_t testVValueU32;
 
 void Debug_Rx_Parssing(uint8_t add, int data)
 {
@@ -553,9 +556,8 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 	switch (add)
 	{
 		case CMD_TEST_DEBUG:
-			testVValue = data;
-			testVValueU32 =data;
-			Debug_Printf_Value("CMD_TEST_DEBUG", testVValue, 1);
+			Debug_Printf_Value("frq chiler", data, 1);
+			Set_Chiller_Frequency(data);
 		break;
 
 
@@ -807,6 +809,20 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 
 		break;
 
+		case CMD_DEBUG_PID_P:
+			kp = data;
+			Tx_Hand1_Msg(CMD_DEBUG_PID_P, data);
+		break;
+
+		case CMD_DEBUG_PID_I:
+			ki = data;
+			Tx_Hand1_Msg(CMD_DEBUG_PID_I, data);
+		break;
+
+		case CMD_DEBUG_PID_D:
+			kd = data;
+			Tx_Hand1_Msg(CMD_DEBUG_PID_D, data);
+		break;
 
 		case CMD_AGING_BUTTON:
 			if(data<=30)
@@ -1168,7 +1184,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 			else if(data == STATUS_STNBY)
 			{
 				Ready_OFF(EVENT_2);
-				HP_Reset(BULE_COLOR);
+//				HP_Reset(BULE_COLOR);
 
 			}
 

@@ -133,6 +133,7 @@ int main(void)
   UartRxDataProcess();
   Rf_Config();
   Error_Check_Config();
+
 #else
 
 #endif

@@ -316,7 +316,7 @@ void Chiller_Temperature_Read()
 	{
 		timeStamp = HAL_GetTick();
 		int Data = chillerTemp*10.0;
-		printf("[244,%d]\r\n",Data);
+//		printf("[244,%d]\r\n",Data);
 	}
 
 
