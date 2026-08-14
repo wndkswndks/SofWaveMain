@@ -1687,7 +1687,6 @@ void Exp_Total_Log()
 
 void RF_Pwm_Conter_Common(uint8_t pulseNum)
 {
-	static uint8_t pulseCnt;
 	if(m_rf.pluseOn)
 	{
 		switch (m_rf.pluseLevel)
@@ -1698,11 +1697,11 @@ void RF_Pwm_Conter_Common(uint8_t pulseNum)
 				{
 					Pulse_Trig_TimeSave();
 					m_rf.pluseTimeStamp = HAL_GetTick();
-					pulseCnt++;
-					if(pulseCnt == pulseNum)
+					m_rf.pulseCnt++;
+					if(m_rf.pulseCnt == pulseNum)
 					{
 						m_rf.pluseLevel = PWM_POST_LEVEL;
-						pulseCnt = 0;
+						m_rf.pulseCnt = 0;
 					}
 					else
 					{
@@ -1750,6 +1749,8 @@ void RF_PWM_Force_Stop()
 		m_rf.pluseLevel = PWM_H_LEVEL;
 		m_rf.readyFlag = READY_OFF;
 		m_rf.expEndFlag = 0;
+		m_rf.expStep = STEP0;
+		m_rf.pulseCnt = 0;
 		Tx_LCD_Msg(CMD_FORCE_STOP, 0);
 		Tx_Hand1_Msg(CMD_FORCE_STOP, 0);
 		Body_Led_Ctrl(BODY_LED_NOMAL);
@@ -1849,6 +1850,7 @@ void LCD_Status_Tret()
 
 			m_rf.preCooltime = 0;
 			m_err.preCoolStatus = 0;
+			m_rf.expStep = STEP0;
 
 		}
 
@@ -2565,16 +2567,15 @@ void Exp_Config()
 {
 	uint16_t totalEenerge;
 
-	static uint8_t step = STEP0;
 	if(m_rf.readyFlag != READY_ON)
 	{
 		if(testExpFlag)testExpFlag = 0;
-		step = STEP0;
+		m_rf.expStep = STEP0;
 		return;
 	}
 
 
-	switch (step)
+	switch (m_rf.expStep)
 	{
 		case STEP0:
 			if(testExpFlag || Exp_Shot_Chk())
@@ -2588,13 +2589,13 @@ void Exp_Config()
 				Body_Led_Ctrl(BODY_LED_SHOT);
 				Vibe_Time_Cal();
 //				HP_Reset(YELLOW_COLOR);
-				step = STEP1;
+				m_rf.expStep = STEP1;
 			}
 		break;
 
 		case STEP1:
 			RF_Pwm_Conter_Common(m_rf.PulseOption);
-			if(m_rf.expEndFlag) step = STEP2;
+			if(m_rf.expEndFlag) m_rf.expStep = STEP2;
 		break;
 
 		case STEP2:
@@ -2625,7 +2626,7 @@ void Exp_Config()
 				Exp_Total_Log();
 				Body_Led_Ctrl(BODY_LED_NOMAL);
 //				HP_Reset(GREEN_COLOR);
-				step = STEP0;
+				m_rf.expStep = STEP0;
 			}
 		break;
 

@@ -312,10 +312,17 @@ void Chiller_Temperature_Read()
 	adcQQ2 = adc;
 	chillerTemp = Get_NTC_Temperature_j(adc);
 
-	if(HAL_GetTick()-timeStamp >= 1000)
+
+
+	if(HAL_GetTick()-timeStamp >= 5000)
 	{
 		timeStamp = HAL_GetTick();
-		int Data = chillerTemp*10.0;
+		if(chillerTemp<-10.0)
+		{
+			Ciller_Pwr_OFF();
+			HAL_Delay(500);
+			Ciller_Pwr_ON();
+		}
 //		printf("[244,%d]\r\n",Data);
 	}
 

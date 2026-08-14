@@ -266,6 +266,7 @@ typedef struct
 
 	uint8_t expEndFlag;
 	uint8_t expStep;
+	uint8_t pulseCnt;
 
 	uint8_t pluseOn;
 	uint8_t pluseLevel;

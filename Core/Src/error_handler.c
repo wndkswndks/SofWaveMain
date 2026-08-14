@@ -482,7 +482,7 @@ void Error_Check_Config()
 	if(HAL_GetTick()-timeStamp >= 1000)
 	{
 		Error_Check_Main();
-//		Error_Check_HP();
+		Error_Check_HP();
 		Error_Check_RF();
 		Error_Led_View();
 
