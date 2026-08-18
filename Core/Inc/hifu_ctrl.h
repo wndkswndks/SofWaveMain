@@ -309,6 +309,9 @@ typedef struct
 	uint16_t remainingShotNegative;
 	uint8_t vibeLevel;
 	uint8_t switchHandFoot;
+
+	uint8_t stbyTimeStamp;
+	uint8_t readyHighPass;
 } RF_T;
 
 

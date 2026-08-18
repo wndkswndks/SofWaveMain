@@ -1833,8 +1833,9 @@ void LCD_Status_Tret()
 	if(m_rf.pluseOn) return;
 	if(m_rf.treatStatus == STATUS_PRECOOLING)
 	{
-		if(m_hand1.temprature <70)
+		if(m_hand1.temprature <80 ||m_rf.readyHighPass)
 		{
+			m_rf.readyHighPass = 0;
 			Ready_ON();
 
 			Tx_RF_FRQ_ALL_Module();

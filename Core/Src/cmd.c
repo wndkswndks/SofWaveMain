@@ -330,8 +330,8 @@ void Ready_OFF(uint8_t event)
 	Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_STNBY);
 	Tx_Hand1_Msg(CMD_LCD_STATUS, STATUS_STNBY);
 	m_rf.readyFlag = READY_OFF;
-	SOL1_OFF();
-	PELTIER_PWR_OFF();
+//	SOL1_OFF();
+//	PELTIER_PWR_OFF();
 	Debug_Printf("READY_OFF",1);
 	Debug_Event(event);
 
@@ -385,6 +385,16 @@ void PreCooling_ON()
 
 }
 
+void Peltier_Ctrl_Start()
+{
+	PELTIER_PWR_ON();
+	Tx_Hand1_Msg(CMD_LCD_STATUS, STATUS_PRECOOLING);
+	if(m_io.sol1OnStatus) SOL1_ON();
+	Debug_Printf("PreCooling_ON",1);
+
+}
+
+
 void CMD_Is_All_Live(uint8_t who)
 {
 	uint8_t rxLiveStatus = 0;
@@ -404,6 +414,10 @@ void CMD_Is_All_Live(uint8_t who)
 			{
 				m_hand1.liveOk = 1;
 				Tx_LCD_Msg(CMD_DO_ALL_LIVE, LIVE_HP);
+				if(m_io.ptrPwrOn && m_io.ChillerPwrEn && m_io.sol1OnStatus)
+				{
+					Peltier_Ctrl_Start();
+				}
 			}
 			else
 			{
@@ -1179,6 +1193,11 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 				if(Ready_Enter_Chk())
 				{
 					PreCooling_ON();
+					if(m_rf.stbyTimeStamp && HAL_GetTick() - m_rf.stbyTimeStamp <10000)
+					{
+						m_rf.stbyTimeStamp = 0;
+						m_rf.readyHighPass = 1;
+					}
 				}
 				else Ready_OFF(EVENT_9);
 			}
@@ -1186,6 +1205,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 			{
 				Ready_OFF(EVENT_2);
 //				HP_Reset(BULE_COLOR);
+				m_rf.stbyTimeStamp = HAL_GetTick();
 
 			}
 
@@ -1697,7 +1717,7 @@ void Uart_Tx_Polling_Status()
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
 			txData = 14000 +m_io.ptrPwrOn;
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
-			txData = 15000 +m_io.waterPumpPwrEn;
+			txData = 15000 +((int)chillerTemp+30);
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
 			txData = 16000 +m_io.ChillerPwrEn;
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
