@@ -414,7 +414,7 @@ void CMD_Is_All_Live(uint8_t who)
 			{
 				m_hand1.liveOk = 1;
 				Tx_LCD_Msg(CMD_DO_ALL_LIVE, LIVE_HP);
-				if(m_io.ptrPwrOn && m_io.ChillerPwrEn && m_io.sol1OnStatus)
+				if(m_io.waterPumpPwrEn && m_io.ChillerPwrEn && m_io.sol1OnStatus)
 				{
 					Peltier_Ctrl_Start();
 				}

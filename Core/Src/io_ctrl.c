@@ -459,7 +459,9 @@ void Flow_Stop_Check()
 {
 
 	uint8_t is_flowOkSolOn = (2<m_io.flowSensorFrq&&m_io.flowSensorFrq<20);
-	uint8_t is_flowOkSolOff = (10<m_io.flowSensorFrq&&m_io.flowSensorFrq<40);
+//	uint8_t is_flowOkSolOff = (10<m_io.flowSensorFrq&&m_io.flowSensorFrq<40);
+	uint8_t is_flowOkSolOff = (2<m_io.flowSensorFrq&&m_io.flowSensorFrq<20);
+
 	static uint32_t timeStamp;
 	static uint8_t flowErrCnt1,flowErrCnt2, flowErrCnt3;
 
