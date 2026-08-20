@@ -128,12 +128,13 @@ typedef enum
 	IDX_CATRIGE_RESHOT_ZERO =25,//
 	IDX_CATRIGE_DETECT =26,
 	IDX_CATRIGE_UN_DETECT =27,//
-	IDX_HP_EVENT_END =28,//~~~~~
+	IDX_CATRIGE_DISCONNT_RDY =28,//
+	IDX_HP_EVENT_END = 29,//~~~~~
   //------------------------------
-	IDX_RF_EVENT_START =29,
+	IDX_RF_EVENT_START = 30,
 	IDX_RF_COMU_ERR = IDX_RF_EVENT_START,
-	IDX_RF_STATUS_ERR =30,//
-	IDX_RF_EVENT_END =31,//~~~~~
+	IDX_RF_STATUS_ERR =31,//
+	IDX_RF_EVENT_END =32,//~~~~~
 
 //------------------------------
 

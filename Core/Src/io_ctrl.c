@@ -383,7 +383,7 @@ void HP_Connect_Config()
 	}
 
 
-	if((m_io.HP1_Insert == HP_INSERT) && (m_eep.catridgeDetect != CATRIGE_CHK_UN_DETECT))
+	if((m_io.HP1_Insert == HP_INSERT) && (m_eep.catridgeDetect != CATRIGE_CHK_UN_DETECT) && (m_eep.catridgeDetect != CATRIGE_CHK_UN_DETECT_RDY))
 	{
 		m_io.sol1OnStatus = 1;
 		isCartDetectCnt = 0;

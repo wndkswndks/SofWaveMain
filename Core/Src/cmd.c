@@ -1496,8 +1496,18 @@ void Hand_Rx_Parssing(uint8_t add, int data)
 					break;
 
 					case CATRIGE_CHK_UN_DETECT:
-						Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_UN_DETECT);
-						Debug_Printf("CATRIDGE Undetect",1);
+						if((m_rf.treatStatus == STATUS_PRECOOLING)||(m_rf.treatStatus == STATUS_TRET))
+						{
+							Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_UN_DETECT_RDY);
+							Debug_Printf("CATRIDGE Undetect Rdy",1);
+							m_eep.catridgeDetect = CATRIGE_CHK_UN_DETECT_RDY;
+						}
+						else
+						{
+							Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_UN_DETECT);
+							Debug_Printf("CATRIDGE Undetect",1);
+						}
+
 					break;
 				}
 
@@ -1517,7 +1527,7 @@ void Hand_Rx_Parssing(uint8_t add, int data)
 			break;
 
 			case CMD_TEMPERATURE:
-				if(m_eep.catridgeDetect != CATRIGE_CHK_UN_DETECT)
+				if((m_eep.catridgeDetect != CATRIGE_CHK_UN_DETECT) && (m_eep.catridgeDetect != CATRIGE_CHK_UN_DETECT_RDY))
 				{
 					m_hand1.temprature = data;
 				}
@@ -1558,6 +1568,10 @@ void Hand_Rx_Parssing(uint8_t add, int data)
 
 					case CATRIGE_CHK_UN_DETECT:
 						Debug_Printf("CATRIDGE Undetect",1);
+					break;
+
+					case CATRIGE_CHK_UN_DETECT_RDY:
+						Debug_Printf("CATRIDGE Undetect Rdy",1);
 					break;
 				}
 			break;
