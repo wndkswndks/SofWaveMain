@@ -540,6 +540,7 @@ void Check_CartAllData(uint8_t status)
 	}
 
 	HP_Cmd_Recall(CMD_REMIND_SHOT, m_eep.remainingShotNum, status);
+	HP_Cmd_Recall(CMD_REMIND_SHOT_MAX, m_eep.remainingShotNumMax, status);
 	HP_Cmd_Recall(CMD_CATRIDGE_STATUS, m_eep.catridgeStatus, status);
 
 
@@ -959,7 +960,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 			{
 				if(data == BUTTON_UP&& m_rf.interval<MAX_INTERVAL)
 					m_rf.interval++;
-				else if(data == BUTTON_DN&& m_rf.interval>0)
+				else if(data == BUTTON_DN&& m_rf.interval>1)
 					m_rf.interval--;
 			}
 
@@ -991,6 +992,10 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 
 		case CMD_REMIND_SHOT:
 			Data_Req_Set(CMD_REMIND_SHOT, data, &m_eep.remainingShotNum);
+		break;
+
+		case CMD_REMIND_SHOT_MAX:
+			Data_Req_Set(CMD_REMIND_SHOT_MAX, data, &m_eep.remainingShotNumMax);
 		break;
 
 		case CMD_CATRIDGE_STATUS:
@@ -1454,7 +1459,11 @@ void Hand_Rx_Parssing(uint8_t add, int data)
 			case CMD_REMIND_SHOT:
 				m_eep.remainingShotNum = data;
 				Tx_LCD_Msg(CMD_REMIND_SHOT, data);
+			break;
 
+			case CMD_REMIND_SHOT_MAX:
+				m_eep.remainingShotNumMax = data;
+				Tx_LCD_Msg(CMD_REMIND_SHOT_MAX, data);
 			break;
 
 			case CMD_CATRIDGE_STATUS:

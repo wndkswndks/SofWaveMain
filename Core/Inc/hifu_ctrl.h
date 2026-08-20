@@ -331,6 +331,7 @@ typedef struct
 	uint16_t rfFrqBuff[8];
 	uint16_t rfWattBuff[78];
 	uint16_t remainingShotNum;
+	uint16_t remainingShotNumMax;
 	uint16_t catridgeStatus;
 	uint16_t catridgeDetect;
 	uint8_t catridgeRxErrCnt;
