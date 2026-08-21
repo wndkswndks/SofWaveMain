@@ -1855,23 +1855,23 @@ void LCD_Status_Tret()
 
 		}
 
-	if(HAL_GetTick()- m_rf.preCooltime> m_rf.preCooltimeOut && m_rf.preCooltime)
-	{
-		m_err.preCoolStatus = 1;
+		if(HAL_GetTick()- m_rf.preCooltime> m_rf.preCooltimeOut && m_rf.preCooltime)
+		{
+			m_err.preCoolStatus = 1;
 #if 1
-		Ready_ON();
+			Ready_ON();
 
-		Tx_RF_FRQ_ALL_Module();
-		Tx_RF_Watt_ALL_Module();
-		TX_RF_Max_Ontime_Set();
+			Tx_RF_FRQ_ALL_Module();
+			Tx_RF_Watt_ALL_Module();
+			TX_RF_Max_Ontime_Set();
 
-		Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_TRET);
-		Tx_Hand1_Msg(CMD_LCD_STATUS, STATUS_TRET);
-		m_rf.treatStatus = STATUS_TRET;
+			Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_TRET);
+			Tx_Hand1_Msg(CMD_LCD_STATUS, STATUS_TRET);
+			m_rf.treatStatus = STATUS_TRET;
 
-		m_rf.preCooltime = 0;
+			m_rf.preCooltime = 0;
 #endif
-	}
+		}
 
 
 	}

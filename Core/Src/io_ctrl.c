@@ -108,9 +108,12 @@ void HP2_Pwr_OFF()
 
 void WaterPump_Pwr_ON()
 {
-	WATER_PUMP_PWR_EN_H();
-	Debug_Printf("PUMP ON",1);
-	m_io.waterPumpPwrEn = 1;
+	if(!m_io.waterPumpPwrEn)
+	{
+		WATER_PUMP_PWR_EN_H();
+		Debug_Printf("PUMP ON",1);
+		m_io.waterPumpPwrEn = 1;
+	}
 }
 
 void WaterPump_Pwr_OFF()
@@ -123,9 +126,12 @@ void WaterPump_Pwr_OFF()
 
 void Ciller_Pwr_ON()
 {
-	CILLER_PWR_ON_GPIO_Port_H();
-	Debug_Printf("Ciller ON",1);
-	m_io.ChillerPwrEn = 1;
+	if(!m_io.ChillerPwrEn)
+	{
+		CILLER_PWR_ON_GPIO_Port_H();
+		Debug_Printf("Ciller ON",1);
+		m_io.ChillerPwrEn = 1;
+	}
 }
 
 void Ciller_Pwr_OFF()
@@ -341,7 +347,7 @@ void HP_Connect_Config()
 	flowINt = m_io.flowSensorFrq*10.0;
 
 
-	if(HAL_GetTick()-timeStamp >= 1000)
+	if(HAL_GetTick()-timeStamp >= 500)
 	{
 		timeStamp = HAL_GetTick();
 
@@ -360,9 +366,10 @@ void HP_Connect_Config()
 			{
 				Debug_Printf("HP_UN_INSERT",1);
 				Debug_Event(EVENT_8);
+				m_eep.catridgeDetect = CATRIGE_CHK_UN_DETECT;
+//				Tx_LCD_Msg(CMD_CATRIDGE_EVENT, m_eep.catridgeDetect);
 			}
 			m_io.HP1_Insert = HP_UN_INSERT;
-			m_eep.catridgeDetect = CATRIGE_CHK_UN_DETECT;
 		}
 
 		if(!m_hand1.cartDetectFlag && isCartDetectCnt<3)
@@ -390,7 +397,12 @@ void HP_Connect_Config()
 	}
 	else
 	{
-		if(m_io.sol1OnStatus)Ready_OFF(EVENT_3);
+		if(m_io.sol1OnStatus)
+		{
+			Ready_OFF(EVENT_3);
+			SOL1_OFF();
+			PELTIER_PWR_OFF();
+		}
 		m_io.sol1OnStatus = 0;
 	}
 
@@ -455,12 +467,12 @@ uint8_t IO_ErrCnt_Chk(uint8_t BooL, uint8_t idx )
 }
 
 
+
 void Flow_Stop_Check()
 {
 
-	uint8_t is_flowOkSolOn = (2<m_io.flowSensorFrq&&m_io.flowSensorFrq<20);
-//	uint8_t is_flowOkSolOff = (10<m_io.flowSensorFrq&&m_io.flowSensorFrq<40);
-	uint8_t is_flowOkSolOff = (2<m_io.flowSensorFrq&&m_io.flowSensorFrq<20);
+	uint8_t is_flowOkSolOn = (2<m_io.flowSensorFrq&&m_io.flowSensorFrq<10);
+	uint8_t is_flowOkSolOff = (10<m_io.flowSensorFrq&&m_io.flowSensorFrq<40);
 
 	static uint32_t timeStamp;
 	static uint8_t flowErrCnt1,flowErrCnt2, flowErrCnt3;
@@ -471,7 +483,7 @@ void Flow_Stop_Check()
 
 		timeStamp = HAL_GetTick();
 
-		if(m_rf.treatStatus == STATUS_TRET ||m_rf.treatStatus == STATUS_PRECOOLING)
+		if(m_io.sol1OnStatus)
 		{
 			if(!is_flowOkSolOn)
 			{
@@ -479,7 +491,12 @@ void Flow_Stop_Check()
 				if(flowErrCnt1>=3)
 				{
 					flowErrCnt1 = 0;
-					if(m_err.flowLimitUnder !=1)Ready_OFF(EVENT_4);
+					if(m_err.flowLimitUnder !=1)
+					{
+						Ready_OFF(EVENT_4);
+						SOL1_OFF();
+						PELTIER_PWR_OFF();
+					}
 					m_err.flowLimitUnder = 1;
 				}
 			}
@@ -499,9 +516,11 @@ void Flow_Stop_Check()
 					flowErrCnt2 = 0;
 					if(m_err.flowLimitUnder !=2)
 					{
+						Ready_OFF(EVENT_4);
+						SOL1_OFF();
+						PELTIER_PWR_OFF();
 						WaterPump_Pwr_OFF();
 						Ciller_Pwr_OFF();
-						Debug_Event(EVENT_5);
 					}
 					m_err.flowLimitUnder = 2;
 				}
@@ -522,6 +541,8 @@ void Flow_Stop_Check()
 				if(!m_err.flowZero)
 				{
 					Ready_OFF(EVENT_6);
+					SOL1_OFF();
+					PELTIER_PWR_OFF();
 					WaterPump_Pwr_OFF();
 					Ciller_Pwr_OFF();
 					m_err.flowZero = 1;
@@ -542,7 +563,6 @@ void Flow_Stop_Check()
 	}
 
 }
-
 
 
 void IO_Init()

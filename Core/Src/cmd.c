@@ -387,10 +387,13 @@ void PreCooling_ON()
 
 void Peltier_Ctrl_Start()
 {
-	PELTIER_PWR_ON();
-	Tx_Hand1_Msg(CMD_LCD_STATUS, STATUS_PRECOOLING);
-	if(m_io.sol1OnStatus) SOL1_ON();
-	Debug_Printf("PreCooling_ON",1);
+	if(m_io.waterPumpPwrEn && m_io.ChillerPwrEn && m_io.sol1OnStatus)
+	{
+		PELTIER_PWR_ON();
+		Tx_Hand1_Msg(CMD_LCD_STATUS, STATUS_PRECOOLING);
+		SOL1_ON();
+		Debug_Printf("PreCooling_ON",1);
+	}
 
 }
 
@@ -414,10 +417,7 @@ void CMD_Is_All_Live(uint8_t who)
 			{
 				m_hand1.liveOk = 1;
 				Tx_LCD_Msg(CMD_DO_ALL_LIVE, LIVE_HP);
-				if(m_io.waterPumpPwrEn && m_io.ChillerPwrEn && m_io.sol1OnStatus)
-				{
-					Peltier_Ctrl_Start();
-				}
+				Peltier_Ctrl_Start();
 			}
 			else
 			{
@@ -878,7 +878,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 	{
 		if(add != CMD_LCD_STATUS && add != CMD_DEVICE_STATUS)
 		{
-
+			m_rf.stbyTimeStamp = HAL_GetTick();
 			Ready_OFF(EVENT_1);
 		}
 	}
@@ -1197,6 +1197,8 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 			{
 				if(Ready_Enter_Chk())
 				{
+					WaterPump_Pwr_ON();
+					Ciller_Pwr_ON();
 					PreCooling_ON();
 					if(m_rf.stbyTimeStamp && HAL_GetTick() - m_rf.stbyTimeStamp <10000)
 					{
@@ -1209,7 +1211,6 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 			else if(data == STATUS_STNBY)
 			{
 				Ready_OFF(EVENT_2);
-//				HP_Reset(BULE_COLOR);
 				m_rf.stbyTimeStamp = HAL_GetTick();
 
 			}
