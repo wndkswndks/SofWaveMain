@@ -311,7 +311,7 @@ typedef struct
 	uint8_t vibeLevel;
 	uint8_t switchHandFoot;
 
-	uint8_t stbyTimeStamp;
+	uint32_t stbyTimeStamp;
 	uint8_t readyHighPass;
 } RF_T;
 

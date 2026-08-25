@@ -2007,9 +2007,10 @@ int AutoCal_10_Avg()// 오름차순으로 정리
 void AutoCal()
 {
 	uint8_t wattBuff[10] = {10, 20, 30, 40, 50, 60 , 70, 80 , 90, 100};
-	int avg = 0;
+	int watt = 0;
+	static int preWatt = 0;
 	uint16_t add;
-
+	static uint8_t jump = 0;
 	if(m_rf.autoCalFlag != AUTOCAL_MAIN)return;
 
 	memset(m_rf.FeedBackWBuff, 0, sizeof(m_rf.FeedBackWBuff));
@@ -2030,21 +2031,18 @@ void AutoCal()
 
 	Tx_RF_Watt_Module(trandu, wattDa);
 
-	//for(int i =0 ;i < 5;i++)
-	for(int i =0 ;i < 1;i++)
-	{
-		AutoCal_Tx_IP_Msg();//아이들 0,2,4,6,8,
-		HAL_Delay(500);
 
-		RF_eg_Exp_On(2000);
-		HAL_Delay(1500);
+	AutoCal_Tx_IP_Msg();//아이들 0,2,4,6,8,
+	HAL_Delay(500);
 
-		AutoCal_Tx_IP_Msg();//엑티브 1,3,5,7,9
-		HAL_Delay(4000); // 휴식
+	RF_eg_Exp_On(2000);
+	HAL_Delay(1500);
 
-	}
+	AutoCal_Tx_IP_Msg();//엑티브 1,3,5,7,9
+	HAL_Delay(4000); // 휴식
 
-	printf("ACal %d %d -> ",trandu, wattDa);
+
+	printf("ACal\t%d\t%d",trandu, wattDa);
 
 
 	qsortBuff[0] = m_rf.FeedBackWBuff[1] +(-1*m_rf.FeedBackWBuff[0]);
@@ -2062,17 +2060,21 @@ void AutoCal()
 	qsortBuff[4] = m_rf.FeedBackWBuff[9] +(-1*m_rf.FeedBackWBuff[8]);
 	printf("%d ",qsortBuff[4]);
 
-	avg = AutoCal_Avg();
+	watt = AutoCal_Avg();
 #else
-	avg = qsortBuff[0];
+	watt = qsortBuff[0];
+
+	if((watt-preWatt >= 4) && !jump) watt = preWatt;
+	preWatt = watt;
+	jump = 0;
 #endif
 
-	if(avg >= wattBuff[m_rf.autoCalWattLevel])
+	if(watt >= wattBuff[m_rf.autoCalWattLevel])
 	{
 		add = (CMD_TRANDU_WATT_BASE + trandu*11 +m_rf.autoCalWattLevel+1);
 		Tx_LCD_Msg(add, wattDa-1);
 		wattDa += 16;
-
+		jump = 1;
 		m_rf.autoCalWattLevel++;
 		if(m_rf.autoCalWattLevel == 10)
 		{

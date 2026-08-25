@@ -483,7 +483,7 @@ void Flow_Stop_Check()
 
 		timeStamp = HAL_GetTick();
 
-		if(m_io.sol1OnStatus)
+		if(m_io.sol1On)
 		{
 			if(!is_flowOkSolOn)
 			{
@@ -516,7 +516,7 @@ void Flow_Stop_Check()
 					flowErrCnt2 = 0;
 					if(m_err.flowLimitUnder !=2)
 					{
-						Ready_OFF(EVENT_4);
+						Ready_OFF(EVENT_10);
 						SOL1_OFF();
 						PELTIER_PWR_OFF();
 						WaterPump_Pwr_OFF();

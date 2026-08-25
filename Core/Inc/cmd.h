@@ -283,6 +283,7 @@ typedef enum
 	EVENT_7 = 7,
 	EVENT_8 = 8,
 	EVENT_9 = 9,
+	EVENT_10 = 10,
 
 	CMD_HP1_COOL_CTRL = 1,
 	CMD_HP1_COOL_OFF = 2,
