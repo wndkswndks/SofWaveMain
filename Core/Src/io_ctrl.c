@@ -467,6 +467,11 @@ uint8_t IO_ErrCnt_Chk(uint8_t BooL, uint8_t idx )
 }
 
 
+uint8_t Flow_Nomal_Check()
+{
+	static uint8_t flowErrCnt1;
+
+}
 
 void Flow_Stop_Check()
 {
@@ -698,7 +703,7 @@ void IO_Config()
 
 //	Level_Check();
 	HP_Connect_Config();
-	Flow_Stop_Check();
+//	Flow_Stop_Check();
 
 	Battery_Read();
 	RTC_Config();
