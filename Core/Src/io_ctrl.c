@@ -573,12 +573,12 @@ void Flow_Stop_Check()
 void IO_Init()
 {
 
-	for(int i =0 ;i < 4;i++)
+	for(int i =0 ;i < 2;i++)
 	{
 	    BUZZER_H();
-	    HAL_Delay(200);//
+	    HAL_Delay(50);//
 	    BUZZER_L();
-	    HAL_Delay(200);
+	    HAL_Delay(50);
 	}
 	AC_RLY_H();
 
@@ -600,6 +600,16 @@ void IO_Init()
 	Body_Led_Ctrl(BODY_LED_BOOT);
 	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
 
+	if(IS_HP1_FOOT_INSERT())
+	{
+		m_io.footInsert = 1;
+		m_rf.switchHandFoot = SWITCH_FOOT;
+	}
+	else
+	{
+		m_io.footInsert = 0;
+		m_rf.switchHandFoot = SWITCH_HAND_FOOT_NO;
+	}
 }
 void RTC_Init(void)
 {
@@ -655,38 +665,78 @@ void Body_Led_Ctrl(uint8_t mode)
 {
 	switch (mode)
 	{
-		case BODY_LED_NOMAL:
-			HANDLE_LED_RED_OFF();//1 boot
-			HANDLE_LED_GREED_OFF();//2 err
-			HANDLE_LED_BLUE_OFF();//3 shot
+		case BODY_LED_STANDBY:
+			BODY_LED_1_OFF();
+			BODY_LED_2_OFF();
+			BODY_LED_3_OFF();
 			Debug_Printf("LED_NOMAL", 1);
 		break;
 
 		case BODY_LED_BOOT:
-			HANDLE_LED_RED_ON();//1 boot
-			HANDLE_LED_GREED_OFF();//2 err
-			HANDLE_LED_BLUE_OFF();//3 shot
+			BODY_LED_1_ON();
+			BODY_LED_2_OFF();
+			BODY_LED_3_OFF();
 			Debug_Printf("LED_BOOT", 1);
 		break;
 
 		case BODY_LED_ERROR:
-			HANDLE_LED_RED_OFF();//1 boot
-			HANDLE_LED_GREED_ON();//2 err
-			HANDLE_LED_BLUE_OFF();//3 shot
+			BODY_LED_1_OFF();
+			BODY_LED_2_ON();
+			BODY_LED_3_OFF();
 			m_err.errLedViewTime = 5;
 			Debug_Printf("LED_ERROR", 1);
 		break;
 
+
+		case BODY_LED_READY:
+			BODY_LED_1_ON();
+			BODY_LED_2_ON();
+			BODY_LED_3_OFF();
+			Debug_Printf("LED_NOMAL", 1);
+		break;
+
 		case BODY_LED_SHOT:
-			HANDLE_LED_RED_OFF();//1 boot
-			HANDLE_LED_GREED_OFF();//2 err
-			HANDLE_LED_BLUE_ON();//3 shot
+			BODY_LED_1_OFF();
+			BODY_LED_2_OFF();
+			BODY_LED_3_ON();
 			Debug_Printf("LED_SHOT", 1);
 		break;
+
 	}
 
 }
 
+void Foot_Insert_Chk()
+{
+	static uint32_t timeStamp;
+
+	if(HAL_GetTick()-timeStamp >= 100)
+	{
+
+		if(IS_HP1_FOOT_INSERT())
+		{
+			if(!m_io.footInsert)
+			{
+				Tx_LCD_Msg(CMD_ERR, IDX_FOOT_DISCONNECT);
+				m_rf.switchHandFoot = SWITCH_FOOT;
+				Tx_LCD_Msg(CMD_HAND_FOOT, m_rf.switchHandFoot);
+			}
+			m_io.footInsert = 1;
+		}
+		else
+		{
+			if(m_io.footInsert)
+			{
+				Tx_LCD_Msg(CMD_ERR, IDX_FOOT_CONNECT);
+				m_rf.switchHandFoot = SWITCH_HAND_FOOT_NO;
+				Tx_LCD_Msg(CMD_HAND_FOOT, m_rf.switchHandFoot);
+			}
+			m_io.footInsert = 0;
+		}
+		timeStamp = HAL_GetTick();
+	}
+
+}
 void WDT_LED_Config()
 {
 	static uint32_t timeStamp;
@@ -709,6 +759,7 @@ void IO_Config()
 	RTC_Config();
 	Chiller_Temperature_Read();
  	WDT_LED_Config();
+ 	Foot_Insert_Chk();
 
 
  }

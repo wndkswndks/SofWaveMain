@@ -22,6 +22,7 @@
 #define IS_HP1_SHOT_PUSH()         (HAL_GPIO_ReadPin(HP1_SHOT_PUSH_GPIO_Port, HP1_SHOT_PUSH_Pin) == 0)
 #define IS_HP1_INSERT()            (HAL_GPIO_ReadPin(HP1_INSERT_GPIO_Port, HP1_INSERT_Pin) == 0)
 #define IS_HP1_FOOT_PUSH()         (HAL_GPIO_ReadPin(FOOT_SW_IN_GPIO_Port, FOOT_SW_IN_Pin) == 0)
+#define IS_HP1_FOOT_INSERT()       (HAL_GPIO_ReadPin(FOOT_INSERT_GPIO_Port, FOOT_INSERT_Pin) == 0)
 
 #define IS_HP2_SHOT_PUSH()         (HAL_GPIO_ReadPin(HP2_SHOT_PUSH_GPIO_Port, HP2_SHOT_PUSH_Pin) == 0)
 #define IS_HP2_INSERT()            (HAL_GPIO_ReadPin(HP2_INSERT_GPIO_Port, HP2_INSERT_Pin) != 0)
@@ -119,14 +120,14 @@
 
 
 //LED
-#define HANDLE_LED_BLUE_ON()			      HAL_GPIO_WritePin(HANDLE_LED_BLUE_GPIO_Port, HANDLE_LED_BLUE_Pin, GPIO_PIN_SET)
-#define HANDLE_LED_BLUE_OFF()       		  HAL_GPIO_WritePin(HANDLE_LED_BLUE_GPIO_Port, HANDLE_LED_BLUE_Pin, GPIO_PIN_RESET)
+#define BODY_LED_3_ON()			      HAL_GPIO_WritePin(HANDLE_LED_BLUE_GPIO_Port, HANDLE_LED_BLUE_Pin, GPIO_PIN_SET)
+#define BODY_LED_3_OFF()       		  HAL_GPIO_WritePin(HANDLE_LED_BLUE_GPIO_Port, HANDLE_LED_BLUE_Pin, GPIO_PIN_RESET)
 
-#define HANDLE_LED_GREED_ON()     			  HAL_GPIO_WritePin(HANDLE_LED_GREED_GPIO_Port, HANDLE_LED_GREED_Pin, GPIO_PIN_SET)
-#define HANDLE_LED_GREED_OFF()      		  HAL_GPIO_WritePin(HANDLE_LED_GREED_GPIO_Port, HANDLE_LED_GREED_Pin, GPIO_PIN_RESET)
+#define BODY_LED_2_ON()     		  HAL_GPIO_WritePin(HANDLE_LED_GREED_GPIO_Port, HANDLE_LED_GREED_Pin, GPIO_PIN_SET)
+#define BODY_LED_2_OFF()      		  HAL_GPIO_WritePin(HANDLE_LED_GREED_GPIO_Port, HANDLE_LED_GREED_Pin, GPIO_PIN_RESET)
 
-#define HANDLE_LED_RED_ON()  			      HAL_GPIO_WritePin(HANDLE_LED_RED_GPIO_Port, HANDLE_LED_RED_Pin, GPIO_PIN_SET)
-#define HANDLE_LED_RED_OFF()        		  HAL_GPIO_WritePin(HANDLE_LED_RED_GPIO_Port, HANDLE_LED_RED_Pin, GPIO_PIN_RESET)
+#define BODY_LED_1_ON()  			  HAL_GPIO_WritePin(HANDLE_LED_RED_GPIO_Port, HANDLE_LED_RED_Pin, GPIO_PIN_SET)
+#define BODY_LED_1_OFF()              HAL_GPIO_WritePin(HANDLE_LED_RED_GPIO_Port, HANDLE_LED_RED_Pin, GPIO_PIN_RESET)
 
 #define LED_DR2_ON()              			  HAL_GPIO_WritePin(LED_DR2_GPIO_Port, LED_DR2_Pin, GPIO_PIN_SET)
 #define LED_DR2_OFF()               		  HAL_GPIO_WritePin(LED_DR2_GPIO_Port, LED_DR2_Pin, GPIO_PIN_RESET)
@@ -187,10 +188,11 @@ typedef enum
 	HP_INSERT = 1,
 	HP_YET_INSERT = 2,
 
-	BODY_LED_NOMAL = 0,
+	BODY_LED_STANDBY = 0,
 	BODY_LED_BOOT = 1,
 	BODY_LED_ERROR = 2,
-	BODY_LED_SHOT = 3,
+	BODY_LED_READY = 3,
+	BODY_LED_SHOT = 4,
 
 	ADC_CH_RTC_BATTERY = 0,
 	ADC_CH_PELTIER = 1,
@@ -237,6 +239,7 @@ typedef struct
 	uint8_t min;
 	uint8_t sec;
 	uint8_t rtcEn;
+	uint8_t footInsert;
 }IO_T;
 
 /*  			enum end  				*/

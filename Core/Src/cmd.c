@@ -258,7 +258,7 @@ void Debug_TempAll_View()
 }
 void Tx_LCD_Msg(uint8_t add, int data)
 {
-	while(HAL_GetTick() -m_rf.lastLcdTxTime<20);
+	while(HAL_GetTick() -m_rf.lastLcdTxTime<10);
 
 	Debug_LCD_Printf(DEBUG_TX, add, data);
 
@@ -274,7 +274,7 @@ void Tx_LCD_Msg(uint8_t add, int data)
 void Tx_Hand1_Msg(uint8_t add, int data)
 {
 	char str[20];
-	while(HAL_GetTick() -m_hand1.lastHPTxTime<20);
+	while(HAL_GetTick() -m_hand1.lastHPTxTime<10);
 
 	sprintf(str,"[%d,%d]\r\n",add, data);
 
@@ -330,8 +330,6 @@ void Ready_OFF(uint8_t event)
 	Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_STNBY);
 	Tx_Hand1_Msg(CMD_LCD_STATUS, STATUS_STNBY);
 	m_rf.readyFlag = READY_OFF;
-//	SOL1_OFF();
-//	PELTIER_PWR_OFF();
 	Debug_Printf("READY_OFF",1);
 	Debug_Event(event);
 
@@ -360,10 +358,11 @@ uint8_t Ready_Enter_Chk()
 		}
 
 	}
-	if(!bool1)
-	{
-		Tx_LCD_Msg(CMD_CATRIDGE_EVENT, m_eep.catridgeDetect);
-	}
+	if(!bool1) Tx_LCD_Msg(CMD_CATRIDGE_EVENT, m_eep.catridgeDetect);
+
+//	if(!bool2) //
+//	if(!bool3) //
+
 
 	if(bool1 && bool2 && bool3 && bool4)
 	{
@@ -480,6 +479,7 @@ void Data_Req_Set(uint8_t cmd, uint16_t rxData, uint16_t* data)
 	if (rxData== REQ_DATA)
 	{
 		Tx_LCD_Msg(cmd, *data);
+
 	}
 	else
 	{
@@ -514,7 +514,7 @@ void HP_Reset_Config()
 void Check_CartAllData(uint8_t status)
 {
 	uint8_t eepErr = 0;
-
+#if 1
 	HP_Cmd_Recall(CMD_CART_ID, m_eep.catridgeId, status);
 	HP_Cmd_Recall(CMD_MANUFAC_YY, m_eep.manufacYY, status);
 	HP_Cmd_Recall(CMD_MANUFAC_MM, m_eep.manufacMM, status);
@@ -542,6 +542,7 @@ void Check_CartAllData(uint8_t status)
 	HP_Cmd_Recall(CMD_REMIND_SHOT, m_eep.remainingShotNum, status);
 	HP_Cmd_Recall(CMD_REMIND_SHOT_MAX, m_eep.remainingShotNumMax, status);
 	HP_Cmd_Recall(CMD_CATRIDGE_STATUS, m_eep.catridgeStatus, status);
+#endif
 
 
 	if(m_eep.catridgeRxErrCnt <= 10)
@@ -571,8 +572,9 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 	switch (add)
 	{
 		case CMD_TEST_DEBUG:
-			Debug_Printf_Value("frq chiler", data, 1);
-			Set_Chiller_Frequency(data);
+			Debug_Printf_Value("CMD_GET_ALL_CART_END : ", data, 1);
+			Tx_LCD_Msg(CMD_GET_ALL_CART_END, data);
+
 		break;
 
 
@@ -899,7 +901,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 			}
 			else if(data == BUTTON_DN)
 			{
-				if(m_rf.energy>0)
+				if(m_rf.energy>MIN_ENERGY)
 				{
 					float wattF = ((float)(m_rf.energy-1) /(float)m_rf.pulseDuration);
 					uint8_t wattRange = (0.1 <= wattF && wattF <= 1.0);
@@ -921,19 +923,19 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 					uint8_t wattRange = (0.1 <= wattF && wattF <= 1.0);
 					if(wattRange)
 					{
-						m_rf.pulseDuration++;
+						m_rf.pulseDuration += 5;
 					}
 				}
 			}
 			else if(data == BUTTON_DN)
 			{
-				if(m_rf.pulseDuration>0)
+				if(m_rf.pulseDuration>MIN_PULSE_DURATION)
 				{
 					float wattF = ((float)(m_rf.energy) /(float)(m_rf.pulseDuration-1));
 					uint8_t wattRange = (0.1 <= wattF && wattF <= 1.0);
 					if(wattRange)
 					{
-						m_rf.pulseDuration--;
+						m_rf.pulseDuration -= 5;
 					}
 				}
 			}
@@ -945,9 +947,9 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 		case CMD_POST_COOLING:
 
 			if(data == BUTTON_UP&& m_rf.postCooling<MAX_POST_COOLING)
-				m_rf.postCooling++;
-			else if(data == BUTTON_DN&& m_rf.postCooling>0)
-				m_rf.postCooling--;
+				m_rf.postCooling += 5;
+			else if(data == BUTTON_DN&& m_rf.postCooling>MIN_POST_COOLING)
+				m_rf.postCooling -= 5;
 			Tx_LCD_Msg(CMD_POST_COOLING, m_rf.postCooling);
 		break;
 
@@ -958,10 +960,26 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 			}
 			else
 			{
-				if(data == BUTTON_UP&& m_rf.interval<MAX_INTERVAL)
-					m_rf.interval++;
-				else if(data == BUTTON_DN&& m_rf.interval>1)
-					m_rf.interval--;
+				if(data == BUTTON_UP&& m_rf.interval<MAX_INTERVAL) //0, 0.5, 1.0, 2.0, 3.0
+				{
+					switch (m_rf.interval)
+					{
+						case 0:	  m_rf.interval = 5;	break;
+						case 5:	  m_rf.interval = 10;	break;
+						case 10:  m_rf.interval = 20;	break;
+						case 20:  m_rf.interval = 30;	break;
+					}
+				}
+				else if(data == BUTTON_DN&& m_rf.interval > MIN_INTERVAL) //0, 0.5, 1.0, 2.0, 3.0
+				{
+					switch (m_rf.interval)
+					{
+						case 5:	  m_rf.interval = 0;	break;
+						case 10:  m_rf.interval = 5;	break;
+						case 20:  m_rf.interval = 10;	break;
+						case 30:  m_rf.interval = 20;	break;
+					}
+				}
 			}
 
 
@@ -1002,6 +1020,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 			if (data== REQ_DATA)
 			{
 				Tx_LCD_Msg(CMD_CATRIDGE_STATUS, m_eep.catridgeStatus);
+
 			}
 
 			//ï¿½Ö¾ï¿½ï¿½ï¿½ï¿?
@@ -1188,7 +1207,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 		case CMD_SYS_CHK:
 			m_rf.sysChkFlag = 1;
 			m_err.txEn = 1;
-			Body_Led_Ctrl(BODY_LED_NOMAL);
+			Body_Led_Ctrl(BODY_LED_STANDBY);
 			Tx_Hand1_Msg(CMD_SYS_CHK, 1);
 		break;
 
@@ -1204,6 +1223,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 					{
 						m_rf.stbyTimeStamp = 0;
 						m_rf.readyHighPass = 1;
+						HAL_Delay(500);
 					}
 				}
 				else Ready_OFF(EVENT_9);
@@ -1256,11 +1276,13 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 
 		case CMD_GET_ALL_CART:
 			Tx_Hand1_Msg(CMD_GET_ALL_CART, 1);
+			m_eep.cartDataMoving = 1;
 		break;
 
 		case CMD_GET_ALL_CART_END:
 			Debug_Printf("lcd all cart Recive",1);
 			Tx_Hand1_Msg(CMD_GET_ALL_CART_END, 0);
+			m_eep.cartDataMoving = 0;
 
 
 
@@ -1304,7 +1326,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 			}
 			else if(m_rf.PulseOption == 2)
 			{
-				m_rf.interval = 1;
+				m_rf.interval = 5;
 				Tx_LCD_Msg(CMD_INTERVAL, m_rf.interval);
 			}
 
@@ -1312,23 +1334,45 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 		break;
 
 		case CMD_VIBE_LEVEL:
-			m_rf.vibeLevel++;
-			m_rf.vibeLevel %= 3;
-			Tx_LCD_Msg(CMD_VIBE_LEVEL, m_rf.vibeLevel);
+			if (m_rf.vibeOn)
+			{
+				if(m_rf.vibeLevel ==1) m_rf.vibeLevel = 2;
+				else m_rf.vibeLevel = 1;
+				Tx_LCD_Msg(CMD_VIBE_LEVEL, m_rf.vibeLevel);
+				Tx_Hand1_Msg(CMD_VIBE_LEVEL, m_rf.vibeLevel);
+			}
+			else
+			{
+				Tx_LCD_Msg(CMD_ERR, IDX_CATRIGE_VIBE_DISABLE);//¿¡·¯ÄÚµå ¹ÌÁ¤
+			}
+		break;
 
+		case CMD_VIBE_ON:
+			m_rf.vibeOn = data;
+			m_rf.vibeLevel = data;
 			Tx_Hand1_Msg(CMD_VIBE_LEVEL, m_rf.vibeLevel);
+
 		break;
 
 		case CMD_HAND_FOOT:
-			if (m_rf.switchHandFoot == SWITCH_HAND)
+
+			if(!m_io.footInsert)
 			{
+				break;
+			}
+			else if (m_rf.switchHandFoot == SWITCH_HAND)
+			{
+
 				m_rf.switchHandFoot = SWITCH_FOOT;
+				Tx_LCD_Msg(CMD_HAND_FOOT, m_rf.switchHandFoot);
+
 			}
 			else if (m_rf.switchHandFoot == SWITCH_FOOT)
 			{
 				m_rf.switchHandFoot = SWITCH_HAND;
+				Tx_LCD_Msg(CMD_HAND_FOOT, m_rf.switchHandFoot);
+
 			}
-			Tx_LCD_Msg(CMD_HAND_FOOT, m_rf.switchHandFoot);
 
 		break;
 
@@ -1524,10 +1568,6 @@ void Hand_Rx_Parssing(uint8_t add, int data)
 
 
 				//ï¿½Ö¾ï¿½ï¿½ï¿½ï¿?
-			break;
-
-			case CMD_CART_ALLOW:
-
 			break;
 
 

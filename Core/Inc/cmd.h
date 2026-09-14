@@ -36,6 +36,8 @@ typedef enum
 	CMD_PELTIER_DUTY =9,
 	CMD_REMIND_SHOT_MAX = 10,
 
+	CMD_VIBE_ON = 11,
+	CMD_FOOT_INSERT = 12,
 
 	CMD_WATT_CH0	= 17,
 	CMD_WATT_CH1,
@@ -284,6 +286,7 @@ typedef enum
 	EVENT_8 = 8,
 	EVENT_9 = 9,
 	EVENT_10 = 10,
+	EVENT_11 = 11,
 
 	CMD_HP1_COOL_CTRL = 1,
 	CMD_HP1_COOL_OFF = 2,

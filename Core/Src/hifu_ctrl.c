@@ -1253,10 +1253,9 @@ void LCD_Init()
 	m_rf.pulseDuration = 50;
 	m_rf.postCooling = 5;
 	m_rf.PulseOption = 2;
-	m_rf.interval = 1;
+	m_rf.interval = 10;
 	m_rf.currentShot = 0;
 	m_rf.totaEnergy = 0;
-	m_rf.switchHandFoot = SWITCH_HAND;
 #else
 	m_rf.energy = 10;
 	m_rf.pulseDuration = 50;
@@ -1284,6 +1283,8 @@ void LCD_Init()
 	Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_STNBY);
 
 	m_rf.preCooltimeOut = PRECOOL_TIMEOUT;
+	m_rf.vibeOn = 1;
+	m_rf.vibeLevel = 1;
 
 }
 
@@ -1713,7 +1714,7 @@ void RF_Pwm_Conter_Common(uint8_t pulseNum)
 
 			case PWM_L_LEVEL:
 				if(m_rf.interval != 0)HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_LOW);
-				if(HAL_GetTick() - m_rf.pluseTimeStamp >= m_rf.interval*TIME_1000MS)
+				if(HAL_GetTick() - m_rf.pluseTimeStamp >= m_rf.interval*TIME_100MS)
 				{
 					Pulse_Trig_TimeSave();
 					m_rf.pluseTimeStamp = HAL_GetTick();
@@ -1753,7 +1754,7 @@ void RF_PWM_Force_Stop()
 		m_rf.pulseCnt = 0;
 		Tx_LCD_Msg(CMD_FORCE_STOP, 0);
 		Tx_Hand1_Msg(CMD_FORCE_STOP, 0);
-		Body_Led_Ctrl(BODY_LED_NOMAL);
+		Body_Led_Ctrl(BODY_LED_STANDBY);
 	}
 
 }
@@ -1781,7 +1782,7 @@ void Vibe_Time_Cal()
 	}
 	else
 	{
-		tempF = (m_rf.pulseDuration + (m_rf.PulseOption-1)*m_rf.interval*10);// 2/3 = 0.66
+		tempF = (m_rf.pulseDuration + (m_rf.PulseOption-1)*m_rf.interval);// 2/3 = 0.66
 		tempF -=  ((float)m_rf.pulseDuration/m_rf.PulseOption);
 	}
 
@@ -1791,45 +1792,12 @@ void Vibe_Time_Cal()
 
 }
 
-int ChilerTemp_CycleBuff[20];
-int ChilerTempCnt;
-
-void ChilerTemp_Cycle()
-{
-	if(HAL_GetTick()<20000)return;
-	static uint8_t step = STEP0;
-	switch (step)
-	{
-		case STEP0:
-			if(m_hand1.temprature<= 100)
-			{
-				step = STEP1;
-			}
-		break;
-
-		case STEP1:
-			static uint32_t timeStamp;
-			static uint8_t once = 1;
-			if(HAL_GetTick()-timeStamp >= 1000*150 ||once)
-			{
-				once = 0;
-				ChilerTemp_CycleBuff[ChilerTempCnt] = m_hand1.temprature;
-				ChilerTempCnt++;
-				ChilerTempCnt %= 20;
-				AC_RLY_L();
-				HAL_Delay(1000);
-				AC_RLY_H();
-				Debug_Printf("off chil",1);
-				timeStamp = HAL_GetTick();
-			}
-			if(m_hand1.temprature<= 75)
-		break;
-
-	}
-
-}
 void LCD_Status_Tret()
 {
+	static uint32_t timeStamp;
+	int totalTime;
+
+
 	if(m_rf.pluseOn) return;
 	if(m_rf.treatStatus == STATUS_PRECOOLING)
 	{
@@ -1843,9 +1811,10 @@ void LCD_Status_Tret()
 			TX_RF_Max_Ontime_Set();
 
 			Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_TRET);
-			int totalTime = m_rf.pulseDuration*100 + m_rf.postCooling*100 + m_rf.interval*1000;
+			totalTime = m_rf.pulseDuration*TIME_100MS + m_rf.postCooling*TIME_100MS + m_rf.interval*TIME_100MS;
 			Tx_Hand1_Msg(CMD_PULSE_DURATION, totalTime);
 			Tx_Hand1_Msg(CMD_LCD_STATUS, STATUS_TRET);
+			Body_Led_Ctrl(BODY_LED_READY);
 
 			m_rf.treatStatus = STATUS_TRET;
 
@@ -1855,7 +1824,7 @@ void LCD_Status_Tret()
 
 		}
 
-		if(HAL_GetTick()- m_rf.preCooltime> m_rf.preCooltimeOut && m_rf.preCooltime)
+		if(m_rf.preCooltime && HAL_GetTick()- m_rf.preCooltime> m_rf.preCooltimeOut)
 		{
 			m_err.preCoolStatus = 1;
 #if 1
@@ -1866,7 +1835,10 @@ void LCD_Status_Tret()
 			TX_RF_Max_Ontime_Set();
 
 			Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_TRET);
+			totalTime = m_rf.pulseDuration*TIME_100MS + m_rf.postCooling*TIME_100MS + m_rf.interval*TIME_100MS;
+			Tx_Hand1_Msg(CMD_PULSE_DURATION, totalTime);
 			Tx_Hand1_Msg(CMD_LCD_STATUS, STATUS_TRET);
+			Body_Led_Ctrl(BODY_LED_READY);
 			m_rf.treatStatus = STATUS_TRET;
 
 			m_rf.preCooltime = 0;
@@ -2043,10 +2015,8 @@ void AutoCal()
 
 
 	printf("ACal\t%d\t%d",trandu, wattDa);
-
-
 	qsortBuff[0] = m_rf.FeedBackWBuff[1] +(-1*m_rf.FeedBackWBuff[0]);
-	printf("%d \r\n",qsortBuff[0]);
+	printf("\t%d \r\n",qsortBuff[0]);
 #if 0
 	qsortBuff[1] = m_rf.FeedBackWBuff[3] +(-1*m_rf.FeedBackWBuff[2]);
 	printf("%d ",qsortBuff[1]);
@@ -2064,9 +2034,9 @@ void AutoCal()
 #else
 	watt = qsortBuff[0];
 
-	if((watt-preWatt >= 4) && !jump) watt = preWatt;
-	preWatt = watt;
-	jump = 0;
+//	if((watt-preWatt >= 4) && !jump) watt = preWatt;
+//	preWatt = watt;
+//	jump = 0;
 #endif
 
 	if(watt >= wattBuff[m_rf.autoCalWattLevel])
@@ -2539,7 +2509,7 @@ void Rf_Test()
 
 uint8_t Exp_Shot_Chk()
 {
-	if(m_rf.switchHandFoot == SWITCH_HAND)
+	if((m_rf.switchHandFoot == SWITCH_HAND)||(m_rf.switchHandFoot == SWITCH_HAND_FOOT_NO))
 	{
 		if (IS_HP1_SHOT_PUSH())
 		{
@@ -2599,6 +2569,7 @@ void Exp_Config()
 		case STEP1:
 			RF_Pwm_Conter_Common(m_rf.PulseOption);
 			if(m_rf.expEndFlag) m_rf.expStep = STEP2;
+			if(Exp_Shot_Chk())Ready_OFF(EVENT_11);
 		break;
 
 		case STEP2:
@@ -2627,7 +2598,7 @@ void Exp_Config()
 				Tx_Hand1_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
 
 				Exp_Total_Log();
-				Body_Led_Ctrl(BODY_LED_NOMAL);
+				Body_Led_Ctrl(BODY_LED_READY);
 //				HP_Reset(GREEN_COLOR);
 				m_rf.expStep = STEP0;
 			}

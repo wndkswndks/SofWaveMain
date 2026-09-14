@@ -219,9 +219,13 @@ typedef enum
 	TIME_1000MS = 1000,
 
 	MAX_ENERGY = 50,
-	MAX_PULSE_DURATION = 50,
+	MIN_ENERGY = 20,
+	MAX_PULSE_DURATION = 70,
+	MIN_PULSE_DURATION = 40,
 	MAX_POST_COOLING = 30,
-	MAX_INTERVAL = 3,
+	MIN_POST_COOLING = 0,
+	MAX_INTERVAL = 30,
+	MIN_INTERVAL = 0,
 	MAX_WATT_IDX = 11,
 
 	READY_ON = 1,
@@ -242,8 +246,9 @@ typedef enum
 	PULSE_DISABLE = 0,
 	PULSE_ENABLE = 1,
 
-	SWITCH_HAND = 0,
-	SWITCH_FOOT = 1,
+	SWITCH_HAND_FOOT_NO = 0,
+	SWITCH_HAND = 1,
+	SWITCH_FOOT = 2,
 
 } LCD_NUM_E;
 
@@ -309,6 +314,7 @@ typedef struct
 	uint8_t feedBackTest;
 	uint16_t remainingShotNegative;
 	uint8_t vibeLevel;
+	uint8_t vibeOn;
 	uint8_t switchHandFoot;
 
 	uint32_t stbyTimeStamp;
@@ -335,7 +341,7 @@ typedef struct
 	uint16_t catridgeStatus;
 	uint16_t catridgeDetect;
 	uint8_t catridgeRxErrCnt;
-	uint8_t cartAllow;
+	uint8_t cartDataMoving;
 } EEPROM_T;
 
 

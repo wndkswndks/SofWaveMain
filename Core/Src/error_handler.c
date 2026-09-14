@@ -115,7 +115,7 @@ uint8_t Check_Common(uint8_t status, uint8_t cmd)
 
 
 
-			Body_Led_Ctrl(BODY_LED_NOMAL);
+			Body_Led_Ctrl(BODY_LED_STANDBY);
 
 		}
 		m_err.errCntBuff[cmd] = 0;
@@ -129,7 +129,7 @@ uint8_t Check_Common(uint8_t status, uint8_t cmd)
 			{
 				m_err.errCntBuff[cmd] = 0;
 				m_err.errDataBuff[cmd] = cmd;
-//				Body_Led_Ctrl(BODY_LED_ERROR);
+				Body_Led_Ctrl(BODY_LED_ERROR);
 
 				Debug_Printf_Value("[ERR Event] ",cmd,1);
 			}
@@ -243,7 +243,7 @@ void Error_Led_View()
 		m_err.errLedViewTime--;
 		if(!m_err.errLedViewTime)
 		{
-			Body_Led_Ctrl(BODY_LED_NOMAL);
+			Body_Led_Ctrl(BODY_LED_STANDBY);
 		}
 
 	}
@@ -478,6 +478,7 @@ void Error_Check_Config()
 {
 	static uint32_t timeStamp;
 	if(!m_rf.sysChkFlag) return;
+	if(m_eep.cartDataMoving) return;
 //	if(m_rf.pluseOn) return;
 	if(HAL_GetTick()-timeStamp >= 1000)
 	{
