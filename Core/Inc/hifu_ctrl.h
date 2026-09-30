@@ -176,8 +176,10 @@ typedef enum
 	CATRIGE_CHK_I2C_WRITE_ERR = 3,
 	CATRIGE_CHK_REMIND_ZERO_ERR = 4,
 	CATRIGE_CHK_UN_DETECT = 5,
-	CATRIGE_CHK_UN_DETECT_RDY = 6,
 
+	IDX_RF_AREA_ALL  = 0,
+	IDX_RF_AREA_3  = 1,
+	IDX_RF_AREA_4  = 2,
 
 
 } RF_E;
@@ -250,6 +252,7 @@ typedef enum
 	SWITCH_HAND = 1,
 	SWITCH_FOOT = 2,
 
+	NO_TOUCH_SEC = 600,
 } LCD_NUM_E;
 
 
@@ -265,10 +268,8 @@ typedef struct
 	uint8_t txBuff[30];
 	uint8_t rxBuff[30];
 	uint8_t rxCnt;
-	uint8_t rxBuffPassing[30];
+
 	uint32_t lastTimeStamp;
-	uint8_t rxCallBackCmd;
-	uint8_t rxCallBackData[20];
 
 	uint8_t expEndFlag;
 	uint8_t expStep;
@@ -292,6 +293,7 @@ typedef struct
 	uint32_t preCooltime;
 	uint32_t preCooltimeOut;
 	uint8_t sysChkFlag;
+	uint16_t readyStayCnt;
 
 
 	uint32_t rfFrqBuff[8];
@@ -312,13 +314,18 @@ typedef struct
 	uint32_t trigTemeStamp[30];
 	uint8_t trigCnt;
 	uint8_t feedBackTest;
-	uint16_t remainingShotNegative;
 	uint8_t vibeLevel;
 	uint8_t vibeOn;
 	uint8_t switchHandFoot;
 
 	uint32_t stbyTimeStamp;
 	uint8_t readyHighPass;
+	uint8_t shotChkStep;
+
+	uint8_t rfAreaMode;
+	uint8_t rfAreaAllEn;
+	uint8_t rfArea3En;
+	uint8_t rfArea4En;
 } RF_T;
 
 
@@ -340,6 +347,7 @@ typedef struct
 	uint16_t remainingShotNumMax;
 	uint16_t catridgeStatus;
 	uint16_t catridgeDetect;
+	uint16_t powerSpecs;
 	uint8_t catridgeRxErrCnt;
 	uint8_t cartDataMoving;
 } EEPROM_T;
@@ -390,8 +398,8 @@ void RF_eg_Exp_On(uint32_t expTime);
 void Tx_RF_FRQ_Module(uint8_t ch, uint16_t frequency);
 void CARTRIGE_REQ_DATA(uint8_t idx);
 void Err_Init();
-void Get_Err_StatusBitFlag();
 void RF_PWM_Force_Stop();
+void RF_PWM_Force_Force_Stop();
 
 
 /*  			function end  			*/

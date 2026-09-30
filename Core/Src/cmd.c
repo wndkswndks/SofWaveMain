@@ -232,7 +232,6 @@ void Debug_Tx_FeedBack_Check_Printf()
 	printf("FeedBack_Check\r\n");
 #endif
 }
-extern float chillerTemp;
 
 uint8_t kp,ki,kd;
 void Debug_TempAll_View()
@@ -252,7 +251,7 @@ void Debug_TempAll_View()
 		kp,
 		ki,
 		kd,
-		chillerTemp
+		m_io.chillerTemp
 		);
 	}
 }
@@ -330,6 +329,7 @@ void Ready_OFF(uint8_t event)
 	Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_STNBY);
 	Tx_Hand1_Msg(CMD_LCD_STATUS, STATUS_STNBY);
 	m_rf.readyFlag = READY_OFF;
+	Body_Led_Ctrl(BODY_LED_STANDBY);
 	Debug_Printf("READY_OFF",1);
 	Debug_Event(event);
 
@@ -347,7 +347,8 @@ uint8_t Ready_Enter_Chk()
 
 	for(int i =0 ;i < 50;i++)
 	{
-		if(i==IDX_CATRIGE_RESHOT_LOW)continue;
+		if(i==IDX_CATRIGE_RESHOT_LOW_1000)continue;
+		if(i==IDX_CATRIGE_RESHOT_LOW_500)continue;
 		if(i==IDX_CATRIGE_RESHOT_ERR)continue;
 		if(i==IDX_PRE_COOL_ERR)continue;
 		if(m_err.errDataBuff[i])
@@ -541,13 +542,13 @@ void Check_CartAllData(uint8_t status)
 
 	HP_Cmd_Recall(CMD_REMIND_SHOT, m_eep.remainingShotNum, status);
 	HP_Cmd_Recall(CMD_REMIND_SHOT_MAX, m_eep.remainingShotNumMax, status);
+	HP_Cmd_Recall(CMD_POWER_SPECS, m_eep.powerSpecs, status);
 	HP_Cmd_Recall(CMD_CATRIDGE_STATUS, m_eep.catridgeStatus, status);
 #endif
 
 
 	if(m_eep.catridgeRxErrCnt <= 10)
 	{
-		LCD_Init();
 		Tx_LCD_Msg(CMD_GET_ALL_CART_END, status);
 		Debug_Printf("CartAllOk",1);
 		Debug_Printf_Value("catridgeRxErrCnt", m_eep.catridgeRxErrCnt, 1);
@@ -564,7 +565,9 @@ void Check_CartAllData(uint8_t status)
 
 extern int wattDa;
 
-
+uint8_t dRed = 255;
+uint8_t dGreen = 70;
+uint8_t dBlue = 140;
 void Debug_Rx_Parssing(uint8_t add, int data)
 {
 
@@ -576,8 +579,6 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 			Tx_LCD_Msg(CMD_GET_ALL_CART_END, data);
 
 		break;
-
-
 
 		case CMD_TEST_PULSE:
 			m_rf.PulseOption++;
@@ -636,8 +637,9 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 			else Debug_Printf("Autocal End",1);
 
 		break;
+
 		case CMD_DO_ALL_LIVE:
-			Tx_Hand1_Msg(CMD_DO_ALL_LIVE, 0);
+			CMD_Is_All_Live(data);
 		break;
 
 
@@ -860,6 +862,52 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 			Debug_Printf("Auto Exp",1);
 		break;
 
+		case CMD_COLOR_RED:
+			if (data)
+			{
+				if(dRed<255)dRed += 5;
+			}
+			else
+			{
+				if(dRed>0)dRed -= 5;
+			}
+			Debug_Printf_Value("Red",dRed,1);
+			Debug_Printf_Value("Green",dGreen,1);
+			Debug_Printf_Value("Blue",dBlue,1);
+			Tx_Hand1_Msg(CMD_COLOR_RED, data);
+		break;
+
+		case CMD_COLOR_GREEN:
+			if (data)
+			{
+				if(dGreen<255)dGreen += 5;
+			}
+			else
+			{
+				if(dGreen>0)dGreen -= 5;
+			}
+			Debug_Printf_Value("Red",dRed,1);
+			Debug_Printf_Value("Green",dGreen,1);
+			Debug_Printf_Value("Blue",dBlue,1);
+			Tx_Hand1_Msg(CMD_COLOR_GREEN, data);
+		break;
+
+		case CMD_COLOR_BLUE:
+			if (data)
+			{
+				if(dBlue<255)dBlue += 5;
+			}
+			else
+			{
+				if(dBlue>0)dBlue -= 5;
+			}
+			Debug_Printf_Value("Red",dRed,1);
+			Debug_Printf_Value("Green",dGreen,1);
+			Debug_Printf_Value("Blue",dBlue,1);
+			Tx_Hand1_Msg(CMD_COLOR_BLUE, data);
+		break;
+
+
 
 	}
 
@@ -870,8 +918,6 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 
 void LCD_Rx_Parssing(uint8_t add, int data)
 {
-
-
 
 	if(add==0)return;
 	Debug_LCD_Printf(DEBUG_RX, add, data);
@@ -892,7 +938,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 				if(m_rf.energy<MAX_ENERGY)
 				{
 					float wattF = ((float)(m_rf.energy+1) /(float)m_rf.pulseDuration);
-					uint8_t wattRange = (0.1 <= wattF && wattF <= 1.0);
+					uint8_t wattRange = (wattF <= 1.0);
 					if(wattRange)
 					{
 						m_rf.energy++;
@@ -904,7 +950,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 				if(m_rf.energy>MIN_ENERGY)
 				{
 					float wattF = ((float)(m_rf.energy-1) /(float)m_rf.pulseDuration);
-					uint8_t wattRange = (0.1 <= wattF && wattF <= 1.0);
+					uint8_t wattRange = (0.1 <= wattF);
 					if(wattRange)
 					{
 						m_rf.energy--;
@@ -919,8 +965,8 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 			{
 				if(m_rf.pulseDuration<MAX_PULSE_DURATION)
 				{
-					float wattF = ((float)(m_rf.energy) /(float)(m_rf.pulseDuration+1));
-					uint8_t wattRange = (0.1 <= wattF && wattF <= 1.0);
+					float wattF = ((float)(m_rf.energy) /(float)(m_rf.pulseDuration+5));
+					uint8_t wattRange = (0.1 <= wattF);
 					if(wattRange)
 					{
 						m_rf.pulseDuration += 5;
@@ -931,8 +977,8 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 			{
 				if(m_rf.pulseDuration>MIN_PULSE_DURATION)
 				{
-					float wattF = ((float)(m_rf.energy) /(float)(m_rf.pulseDuration-1));
-					uint8_t wattRange = (0.1 <= wattF && wattF <= 1.0);
+					float wattF = ((float)(m_rf.energy) /(float)(m_rf.pulseDuration-5));
+					uint8_t wattRange = (wattF <= 1.0);
 					if(wattRange)
 					{
 						m_rf.pulseDuration -= 5;
@@ -960,7 +1006,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 			}
 			else
 			{
-				if(data == BUTTON_UP&& m_rf.interval<MAX_INTERVAL) //0, 0.5, 1.0, 2.0, 3.0
+				if(data == BUTTON_UP) //0, 0.5, 1.0, 2.0, 3.0
 				{
 					switch (m_rf.interval)
 					{
@@ -968,25 +1014,19 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 						case 5:	  m_rf.interval = 10;	break;
 						case 10:  m_rf.interval = 20;	break;
 						case 20:  m_rf.interval = 30;	break;
+						case 30:  m_rf.interval = 5;	break;
 					}
 				}
 				else if(data == BUTTON_DN&& m_rf.interval > MIN_INTERVAL) //0, 0.5, 1.0, 2.0, 3.0
 				{
 					switch (m_rf.interval)
 					{
-						case 5:	  m_rf.interval = 0;	break;
+						case 5:	  m_rf.interval = 30;	break;
 						case 10:  m_rf.interval = 5;	break;
 						case 20:  m_rf.interval = 10;	break;
 						case 30:  m_rf.interval = 20;	break;
 					}
 				}
-			}
-
-
-			if(m_rf.interval==0)
-			{
-				m_rf.PulseOption = 1;
-				Tx_LCD_Msg(CMD_TEST_PULSE, m_rf.PulseOption);
 			}
 
 			Tx_LCD_Msg(CMD_INTERVAL, m_rf.interval);
@@ -1015,6 +1055,11 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 		case CMD_REMIND_SHOT_MAX:
 			Data_Req_Set(CMD_REMIND_SHOT_MAX, data, &m_eep.remainingShotNumMax);
 		break;
+
+		case CMD_POWER_SPECS:
+			Data_Req_Set(CMD_POWER_SPECS, data, &m_eep.powerSpecs);
+		break;
+
 
 		case CMD_CATRIDGE_STATUS:
 			if (data== REQ_DATA)
@@ -1209,6 +1254,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 			m_err.txEn = 1;
 			Body_Led_Ctrl(BODY_LED_STANDBY);
 			Tx_Hand1_Msg(CMD_SYS_CHK, 1);
+			LCD_Init();
 		break;
 
 		case CMD_LCD_STATUS:
@@ -1251,6 +1297,9 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 			Tx_LCD_Msg(CMD_RTC_HOUR, m_io.hour);
 			Tx_LCD_Msg(CMD_RTC_MIN, m_io.min);
 			Tx_LCD_Msg(CMD_RTC_SEC, m_io.sec);
+			Tx_LCD_Msg(CMD_RF_AREA_ALL_EN, m_rf.rfAreaAllEn);
+			Tx_LCD_Msg(CMD_RF_AREA_3_EN, m_rf.rfArea3En);
+			Tx_LCD_Msg(CMD_RF_AREA_4_EN, m_rf.rfArea4En);
 		break;
 
 		case CMD_DEVICE_STATUS:
@@ -1258,15 +1307,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 		break;
 
 		case CMD_ERR_EVENT:
-			uint16_t txErrData;//1000~50999 충분
-			if (data)
-			{
-				for(int i =1 ;i < 42;i++)
-				{
-					txErrData = i*1000 + m_eepMain.errCntBuff[i];
-					Tx_LCD_Msg(CMD_ERR_EVENT, txErrData);
-				}
-			}
+
 		break;
 
 		case CMD_DO_ALL_LIVE:
@@ -1343,7 +1384,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 			}
 			else
 			{
-				Tx_LCD_Msg(CMD_ERR, IDX_CATRIGE_VIBE_DISABLE);//에러코드 미정
+				Tx_LCD_Msg(CMD_ALRAM, IDX_CATRIGE_VIBE_DISABLE);
 			}
 		break;
 
@@ -1408,6 +1449,99 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 				PELTIER_PWR_OFF();
 			}
 
+		break;
+
+		case CMD_DEBUG_ERR_CRL:
+			if (data)
+			{
+				m_rf.sysChkFlag = 1;
+			}
+			else
+			{
+				m_rf.sysChkFlag = 0;
+				for(int i =0 ;i < 50;i++)
+				{
+					m_err.errDataBuff[i] = 0;
+					m_err.errCheckBuff[i] = 0;
+				}
+			}
+		break;
+
+		case CMD_RF_AREA_ALL_EN:
+			if (data) Tx_LCD_Msg(CMD_RF_AREA_ALL_EN, 1);
+			else
+			{
+				if (m_rf.rfAreaMode == IDX_RF_AREA_ALL)
+				{
+					if(m_rf.rfArea3En) m_rf.rfAreaMode = IDX_RF_AREA_3;
+					else if(m_rf.rfArea4En) m_rf.rfAreaMode = IDX_RF_AREA_4;
+					else break;
+
+
+					Tx_LCD_Msg(CMD_RF_AREA_SEL, m_rf.rfAreaMode);
+					Eeprom_Byte_Write(IDX_RF_AREA_MODE_START, m_rf.rfAreaMode);
+				}
+				Tx_LCD_Msg(CMD_RF_AREA_ALL_EN, 0);
+			}
+			m_rf.rfAreaAllEn = data;
+			Eeprom_Byte_Write(IDX_RF_AREA_ALL_START, data);
+		break;
+		case CMD_RF_AREA_3_EN:
+			if (data) Tx_LCD_Msg(CMD_RF_AREA_3_EN, 1);
+			else
+			{
+				if (m_rf.rfAreaMode == IDX_RF_AREA_3)
+				{
+					if(m_rf.rfArea4En) m_rf.rfAreaMode = IDX_RF_AREA_4;
+					else if(m_rf.rfAreaAllEn) m_rf.rfAreaMode = IDX_RF_AREA_ALL;
+					else break;
+					Tx_LCD_Msg(CMD_RF_AREA_SEL, m_rf.rfAreaMode);
+					Eeprom_Byte_Write(IDX_RF_AREA_MODE_START, m_rf.rfAreaMode);
+				}
+				Tx_LCD_Msg(CMD_RF_AREA_3_EN, 0);
+			}
+			m_rf.rfArea3En = data;
+			Eeprom_Byte_Write(IDX_RF_AREA_3_START, data);
+		break;
+		case CMD_RF_AREA_4_EN:
+			if (data) Tx_LCD_Msg(CMD_RF_AREA_4_EN, 1);
+			else
+			{
+				if (m_rf.rfAreaMode == IDX_RF_AREA_4)
+				{
+					if(m_rf.rfAreaAllEn) m_rf.rfAreaMode = IDX_RF_AREA_ALL;
+					else if(m_rf.rfArea3En) m_rf.rfAreaMode = IDX_RF_AREA_3;
+					else break;
+					Tx_LCD_Msg(CMD_RF_AREA_SEL, m_rf.rfAreaMode);
+					Eeprom_Byte_Write(IDX_RF_AREA_MODE_START, m_rf.rfAreaMode);
+				}
+				Tx_LCD_Msg(CMD_RF_AREA_4_EN, 0);
+			}
+			m_rf.rfArea4En = data;
+			Eeprom_Byte_Write(IDX_RF_AREA_4_START, data);
+		break;
+
+		case CMD_RF_AREA_SEL:
+			switch (data)
+			{
+				case IDX_RF_AREA_ALL:
+					if(m_rf.rfArea3En) m_rf.rfAreaMode = IDX_RF_AREA_3;
+					else if(m_rf.rfArea4En) m_rf.rfAreaMode = IDX_RF_AREA_4;
+					else m_rf.rfAreaMode = IDX_RF_AREA_ALL;
+				break;
+				case IDX_RF_AREA_3:
+					if(m_rf.rfArea4En) m_rf.rfAreaMode = IDX_RF_AREA_4;
+					else if(m_rf.rfAreaAllEn) m_rf.rfAreaMode = IDX_RF_AREA_ALL;
+					else m_rf.rfAreaMode = IDX_RF_AREA_3;
+				break;
+				case IDX_RF_AREA_4:
+					if(m_rf.rfAreaAllEn) m_rf.rfAreaMode = IDX_RF_AREA_ALL;
+					else if(m_rf.rfArea3En) m_rf.rfAreaMode = IDX_RF_AREA_3;
+					else m_rf.rfAreaMode = IDX_RF_AREA_4;
+				break;
+			}
+			Tx_LCD_Msg(CMD_RF_AREA_SEL, m_rf.rfAreaMode);
+			Eeprom_Byte_Write(IDX_RF_AREA_MODE_START, m_rf.rfAreaMode);
 		break;
 
 
@@ -1511,6 +1645,11 @@ void Hand_Rx_Parssing(uint8_t add, int data)
 				Tx_LCD_Msg(CMD_REMIND_SHOT_MAX, data);
 			break;
 
+			case CMD_POWER_SPECS:
+				m_eep.powerSpecs = data;
+				Tx_LCD_Msg(CMD_POWER_SPECS, data);
+			break;
+
 			case CMD_CATRIDGE_STATUS:
 				m_eep.catridgeStatus = data;
 				Tx_LCD_Msg(CMD_CATRIDGE_STATUS, data);
@@ -1550,18 +1689,8 @@ void Hand_Rx_Parssing(uint8_t add, int data)
 					break;
 
 					case CATRIGE_CHK_UN_DETECT:
-						if((m_rf.treatStatus == STATUS_PRECOOLING)||(m_rf.treatStatus == STATUS_TRET))
-						{
-							Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_UN_DETECT_RDY);
-							Debug_Printf("CATRIDGE Undetect Rdy",1);
-							m_eep.catridgeDetect = CATRIGE_CHK_UN_DETECT_RDY;
-						}
-						else
-						{
-							Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_UN_DETECT);
-							Debug_Printf("CATRIDGE Undetect",1);
-						}
-
+						Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_UN_DETECT);
+						Debug_Printf("CATRIDGE Undetect",1);
 					break;
 				}
 
@@ -1577,7 +1706,7 @@ void Hand_Rx_Parssing(uint8_t add, int data)
 			break;
 
 			case CMD_TEMPERATURE:
-				if((m_eep.catridgeDetect != CATRIGE_CHK_UN_DETECT) && (m_eep.catridgeDetect != CATRIGE_CHK_UN_DETECT_RDY))
+				if(m_eep.catridgeDetect != CATRIGE_CHK_UN_DETECT)
 				{
 					m_hand1.temprature = data;
 				}
@@ -1620,9 +1749,6 @@ void Hand_Rx_Parssing(uint8_t add, int data)
 						Debug_Printf("CATRIDGE Undetect",1);
 					break;
 
-					case CATRIGE_CHK_UN_DETECT_RDY:
-						Debug_Printf("CATRIDGE Undetect Rdy",1);
-					break;
 				}
 			break;
 
@@ -1757,9 +1883,9 @@ void Uart_Tx_Polling_Status()
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
 			txData = 2000 + m_hand1.pwmDuty;
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
-			txData = 3000 + m_err.handTimeout;
+			txData = 3000 + (m_err.handTimeout%1000);
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
-			txData = 4000 + m_err.rfTimeout;
+			txData = 4000 + (m_err.rfTimeout%1000);
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
 			txData = 5000 + m_io.sol1On;
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
@@ -1781,7 +1907,7 @@ void Uart_Tx_Polling_Status()
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
 			txData = 14000 +m_io.ptrPwrOn;
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
-			txData = 15000 +((int)chillerTemp+30);
+			txData = 15000 +((int)m_io.chillerTemp+30);
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
 			txData = 16000 +m_io.ChillerPwrEn;
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);

@@ -108,8 +108,7 @@ int main(void)
   IO_Init();
   Hand_Init();
   LCD_Init();
-  Test_Init();
-  RTC_Init();
+
 
   Err_Init();
 

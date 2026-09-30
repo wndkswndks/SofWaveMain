@@ -197,6 +197,9 @@ typedef enum
 	ADC_CH_RTC_BATTERY = 0,
 	ADC_CH_PELTIER = 1,
 	ADC_CH_WATER_TEMP = 2,
+
+	POWER_AC_OTHER = 0,
+	POWER_AC_KOREA = 1,
 } IO_E;
 
 
@@ -240,6 +243,8 @@ typedef struct
 	uint8_t sec;
 	uint8_t rtcEn;
 	uint8_t footInsert;
+	float chillerTemp;
+	uint8_t powerSpecs;
 }IO_T;
 
 /*  			enum end  				*/
@@ -264,6 +269,7 @@ void IO_Config();
 void RTC_Init(void);
 void Body_Led_Ctrl(uint8_t mode);
 void Chiller_Temperature_Read();
+void Flow_Stop_Check();
 
 
 /*  			function end  			*/

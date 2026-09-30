@@ -22,6 +22,7 @@ typedef enum
 	TEMP_OUT_MAX   = 290,
 	TEMP_OUT_MIN = -100,
 
+	CHILLER_TEMP_MAX = 40,
 
 	COMU_MAX_CNT = 10,
 	FLOW_ZERO = 0,
@@ -33,10 +34,10 @@ typedef enum
 	BATTRY_NOMAL_MAX = 38,
 	BATTRY_NOMAL_MIN = 13,
 
-	CATRIDGE_REMAIN_LOW_30 = 3000,
-	CATRIDGE_REMAIN_LOW_20 = 2000,
-	CATRIDGE_REMAIN_LOW_5 = 500,
-	CATRIDGE_REMAIN_LOW_3 = 300,
+
+
+	CATRIDGE_REMAIN_LOW_1000 = 1000,
+	CATRIDGE_REMAIN_LOW_500 = 500,
 
 	CATRIDGE_REMAIN_MIN = 1,
 	CATRIDGE_REMAIN_MAX = 10001,
@@ -98,58 +99,64 @@ typedef enum
 
 typedef enum
 {
-	IDX_MAIN_EVENT_START = 1,
-	IDX_TEMP_OUT = IDX_MAIN_EVENT_START,
-	IDX_TEMP_LIMIT_UNDER =2,//
-	IDX_TEMP_LOW =3,//
-	IDX_FLOW_LIMIT_UNDER =4,//
-	IDX_LEVEL_LOW =5,//
-	IDX_AUTO_CAL_COMU_ERR =6,//
-	IDX_BATTRY_LIMIT_OVER =7,//
-	IDX_BATTRY_LIMIT_UNDER =8,//
-	IDX_BATTRY_LIMIT_LOW =9,//
-	IDX_RTC_ERR =10,
-	IDX_FOOT_CONNECT =11,
-	IDX_FOOT_DISCONNECT =12,
-	IDX_FOOT_DISABLE =13,
-	IDX_MAIN_EVENT_END =14,//~~~~~
-  //------------------------------
-	IDX_HP_EVENT_START = 15,//
-	IDX_PRE_COOL_ERR = IDX_HP_EVENT_START,//
-	IDX_HAND_COMU_ERR = 16,//
-	IDX_CATRIGE_I2C_ERR  = 17,//
-	IDX_CATRIGE_NEW_DETECT = 18,//
-	IDX_CATRIGE_ID_ERR = 19,//
-	IDX_CATRIGE_MANU_ERR = 20,//
-	IDX_CATRIGE_MANU_OVER_ERR = 21,//
-	IDX_CATRIGE_ISUE_ERR = 22,//
-	IDX_CATRIGE_ISUE_OVER_ERR = 23,//
-	IDX_CATRIGE_WATT_ERR = 24,//
-	IDX_CATRIGE_FRQ_ERR = 25,//
-	IDX_CATRIGE_RESHOT_ERR = 26,//
-	IDX_CATRIGE_RESHOT_LOW = 27,//
-	IDX_CATRIGE_RESHOT_ZERO = 28,//
-	IDX_CATRIGE_DETECT = 29,
-	IDX_CATRIGE_UN_DETECT = 30,//
-	IDX_CATRIGE_DISCONNT_RDY = 31,//
-	IDX_CATRIGE_VIBE_DISABLE = 32,//
-	IDX_HP_EVENT_END = 33,//~~~~~
-  //------------------------------
-	IDX_RF_EVENT_START = 34,
-	IDX_RF_COMU_ERR = IDX_RF_EVENT_START,
-	IDX_RF_STATUS_ERR = 35,//
-	IDX_RF_EVENT_END = 36,//~~~~~
-//------------------------------
+    IDX_MAIN_EVENT_START = 1,
+    IDX_TEMP_OUT = IDX_MAIN_EVENT_START,
+    IDX_TEMP_LIMIT_UNDER = 2,
+    IDX_TEMP_LOW = 3,
+    IDX_FLOW_LIMIT_UNDER = 4,
+    IDX_LEVEL_LOW = 5,
+    IDX_AUTO_CAL_COMU_ERR = 6,
+    IDX_BATTRY_LIMIT_OVER = 7,
+    IDX_BATTRY_LIMIT_UNDER = 8,
+    IDX_BATTRY_LIMIT_LOW = 9,
+    IDX_RTC_ERR = 10,
+    IDX_FOOT_CONNECT = 11,
+    IDX_FOOT_DISCONNECT = 12,
+    IDX_FOOT_DISABLE = 13,
+    IDX_CHILER_TEMP_OVER = 14,
+    IDX_AREA_RESET = 15,
+    IDX_GOTO_IDEL = 16,
+    IDX_POWER_SPECS = 17,
+    IDX_MAIN_EVENT_END = 18, //~~~~~
 
-  IDX_LCD_COMU_ERR,
-  IDX_LCD_TIMEOUT,
-  IDX_IS_CURRNTSHOT_RESET,
-  IDX_IS_TOTALJULE_RESET,
-  IDX_CATRIGE_NEW,
-  IDX_ERROR_MAX,
+    //------------------------------
+    IDX_HP_EVENT_START = 20,
+    IDX_PRE_COOL_ERR = IDX_HP_EVENT_START,
+    IDX_HAND_COMU_ERR = 21,
+    IDX_CATRIGE_I2C_ERR = 22,
+    IDX_CATRIGE_NEW_DETECT = 23,
+    IDX_CATRIGE_ID_ERR = 24,
+    IDX_CATRIGE_MANU_ERR = 25,
+    IDX_CATRIGE_MANU_OVER_ERR = 26,
+    IDX_CATRIGE_ISUE_ERR = 27,
+    IDX_CATRIGE_ISUE_OVER_ERR = 28,
+    IDX_CATRIGE_WATT_ERR = 29,
+    IDX_CATRIGE_FRQ_ERR = 30,
+    IDX_CATRIGE_RESHOT_ERR = 31,
+    IDX_CATRIGE_RESHOT_LOW_1000 = 32,
+    IDX_CATRIGE_RESHOT_LOW_500 = 33,
+    IDX_CATRIGE_RESHOT_ZERO = 34,
+    IDX_CATRIGE_DETECT = 35,
+    IDX_CATRIGE_UN_DETECT = 36,
+    IDX_CATRIGE_VIBE_DISABLE = 37,
+    IDX_HP_EVENT_END = 38, //~~~~~
 
+    //------------------------------
+    IDX_RF_EVENT_START = 44,
+    IDX_RF_COMU_ERR = IDX_RF_EVENT_START,
+    IDX_RF_STATUS_ERR = 45,
+    IDX_RF_EVENT_END = 46, //~~~~~
+
+    //------------------------------
+    IDX_LCD_COMU_ERR,          //
+    IDX_LCD_TIMEOUT,           //
+    IDX_IS_CURRNTSHOT_RESET,   //
+    IDX_IS_TOTALJULE_RESET,    //
+    IDX_CATRIGE_NEW,           //
+    IDX_ERROR_MAX,             //
 
 } ERROR_IDX_E;
+
 
 /*  			enum end  				*/
 
@@ -159,17 +166,17 @@ typedef enum
 typedef struct
 {
 	uint8_t rfComuErr;
-	uint8_t rfTimeout;
+	int rfTimeout;
 	uint8_t rfStatus;
 	uint8_t rfStatusTemp;
 	uint8_t rfStatusErrNo;
 
 	uint8_t handComuErr;
-	uint8_t handTimeout;
+	int handTimeout;
 
 	uint8_t flowLimitUnder;
 	uint8_t flowZero;
-
+	uint8_t powerSpecs;
 	uint8_t autoCalComuErr;
 	uint8_t autoCalStatus;
 	uint8_t preCoolStatus;

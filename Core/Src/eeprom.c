@@ -88,20 +88,19 @@ void Eeprom_All_Read(void)
 	if(m_eepMain.buff[IDX_HP1_IS_FLASH_FIRST] != FLASHA_FIRST_FLAG)
 	{
 		m_eepMain.flashFirst = FLASHA_FIRST_FLAG;
+		m_rf.rfAreaAllEn = 1;
+		m_rf.rfArea3En = 1;
+		m_rf.rfArea4En = 1;
+		m_rf.rfAreaMode = 0;
 
 		m_eepMain.buff[IDX_HP1_IS_FLASH_FIRST] = m_eepMain.flashFirst;
-		for(int i =0 ;i < 10;i++)
-		{
-			m_eepMain.buff[i+1] = 0;
-		}
+		m_eepMain.buff[IDX_RF_AREA_ALL_START] = m_rf.rfAreaAllEn;
+		m_eepMain.buff[IDX_RF_AREA_3_START] = m_rf.rfArea3En;
+		m_eepMain.buff[IDX_RF_AREA_4_START] = m_rf.rfArea4En;
+		m_eepMain.buff[IDX_RF_AREA_MODE_START] = m_rf.rfAreaMode;
 
-		uint32_t seed = HAL_GetTick();
-		srand(seed);
-		int randValue;
-		randValue = rand();
-		randValue %= 255;
-		m_eepMain.buff[IDX_REMIND_RANDOM] = randValue;
-		m_eepMain.remainingShotRandom = randValue;
+
+
 		for (uint16_t i = 0; i < 200; ++i)
 	    {
 	        if (CAT24C16_WriteByte(&hi2c1, i, m_eepMain.buff[i]) != HAL_OK)
@@ -113,18 +112,10 @@ void Eeprom_All_Read(void)
 	}
 	else
 	{
-
-
-
-
-		m_eepMain.remainingShotRandom =  m_eepMain.buff[IDX_REMIND_RANDOM];
-
-		m_err.errStatus[0] = m_eepMain.buff[IDX_EEP_ERROR_STATUS_1];
-		m_err.errStatus[1] = m_eepMain.buff[IDX_EEP_ERROR_STATUS_2];
-		m_err.errStatus[2] = m_eepMain.buff[IDX_EEP_ERROR_STATUS_3];
-		m_err.errStatus[3] = m_eepMain.buff[IDX_EEP_ERROR_STATUS_4];
-
-
+		m_rf.rfAreaAllEn = m_eepMain.buff[IDX_RF_AREA_ALL_START];
+		m_rf.rfArea3En = m_eepMain.buff[IDX_RF_AREA_3_START];
+		m_rf.rfArea4En = m_eepMain.buff[IDX_RF_AREA_4_START];
+		m_rf.rfAreaMode = m_eepMain.buff[IDX_RF_AREA_MODE_START];
 	}
 
 

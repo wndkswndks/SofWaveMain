@@ -1093,12 +1093,12 @@ void Rf_TD_BHA001_Table_260306()
 
 }
 
-void Rf_TD_BLS002_Table_Auto_frQ()// ÁÖÆÄ¼ö ¹Ù²ã°¡¸é¼­ °¡Àå Ãâ·ÂÀÌ ³ôÀº ÁÖÆÄ¼ö
+void Rf_TD_BLS002_Table_Auto_frQ()// ï¿½ï¿½ï¿½Ä¼ï¿½ ï¿½Ù²ã°¡ï¿½é¼­ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿?ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ä¼ï¿½
 {
 
 /*
 
-1¿ÍÆ®¿¡ ÇØ´çÇÏ´Â°ª
+1ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ø´ï¿½ï¿½Ï´Â°ï¿½
 
 ACal 0 102 -> 100 99 101 101 100 avg : 100
 ACal 1 104 -> 100 101 100 100 99 avg : 100
@@ -1108,7 +1108,7 @@ ACal 4 104 -> 101 101 102 101 101 avg : 101
 ACal 5 104 -> 102 104 100 100 101 avg : 101
 ACal 6 104 -> 98 96 96 97 121 avg : 102
 
-¿ì¼± 1.0w¸¸ Ã£À½ ³ª¸ÓÁö´Â ¸ô¶ó
+ï¿½ì¼± 1.0wï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 
 */
@@ -1222,7 +1222,6 @@ void Rf_Init()
 //	HP1_Pwr_ON();
 	m_rf.pluseOn = 0;
 	m_rf.pluseLevel = 0;
-	m_rf.pluseTimeStamp = HAL_GetTick();
 	HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_LOW);
 	HAL_Delay(1500);
 	RF_Pwr_ON();
@@ -1247,8 +1246,6 @@ void Hand_Init()//
 
 void LCD_Init()
 {
-	HAL_Delay(500);
-#if 1
 	m_rf.energy = 32;
 	m_rf.pulseDuration = 50;
 	m_rf.postCooling = 5;
@@ -1256,18 +1253,6 @@ void LCD_Init()
 	m_rf.interval = 10;
 	m_rf.currentShot = 0;
 	m_rf.totaEnergy = 0;
-#else
-	m_rf.energy = 10;
-	m_rf.pulseDuration = 50;
-	m_rf.postCooling = 0;
-	m_rf.PulseOption = 1;
-	m_rf.interval = 0;
-	m_rf.currentShot = 0;
-	m_rf.totaEnergy = 0;
-	m_rf.switchHandFoot = SWITCH_HAND;
-
-#endif
-
 
 	Tx_LCD_Msg(CMD_ENERGY, m_rf.energy);
 	Tx_LCD_Msg(CMD_PULSE_DURATION, m_rf.pulseDuration);
@@ -1279,8 +1264,9 @@ void LCD_Init()
 	Tx_LCD_Msg(CMD_TOTAL_JOULE, m_rf.totaEnergy);
 	Tx_LCD_Msg(CMD_HAND_FOOT, m_rf.switchHandFoot);
 	Tx_LCD_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
-
 	Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_STNBY);
+	Tx_LCD_Msg(CMD_RF_AREA_SEL, m_rf.rfAreaMode);
+
 
 	m_rf.preCooltimeOut = PRECOOL_TIMEOUT;
 	m_rf.vibeOn = 1;
@@ -1302,6 +1288,22 @@ void RF_Watt_All_Calculate()
 	for(int i =0 ;i < 7; i++)
 	{
 		m_rf.rfwattBuff[i] = m_eep.rfWattBuff[idx+(i*11)];
+	}
+	switch (m_rf.rfAreaMode)
+	{
+
+		case IDX_RF_AREA_3:
+			m_rf.rfwattBuff[3] = 0;
+			m_rf.rfwattBuff[4] = 0;
+			m_rf.rfwattBuff[5] = 0;
+			m_rf.rfwattBuff[6] = 0;
+		break;
+
+		case IDX_RF_AREA_4:
+			m_rf.rfwattBuff[4] = 0;
+			m_rf.rfwattBuff[5] = 0;
+			m_rf.rfwattBuff[6] = 0;
+		break;
 	}
 }
 
@@ -1519,8 +1521,8 @@ void Tx_RF_Watt_ALL_Module( )
 	m_rf.txBuff[RF_INDEX_DATA+12] = (m_rf.rfwattBuff[RF_WATT_CH6]>>8)&0xff;
 	m_rf.txBuff[RF_INDEX_DATA+13] = (m_rf.rfwattBuff[RF_WATT_CH6])&0xff;
 
-	m_rf.txBuff[RF_INDEX_DATA+14] = 0;//(m_rf.rfwattBuff[RF_WATT_CH6]>>8)&0xff;
-	m_rf.txBuff[RF_INDEX_DATA+15] = 0;//(m_rf.rfwattBuff[RF_WATT_CH6])&0xff;
+	m_rf.txBuff[RF_INDEX_DATA+14] = 0;
+	m_rf.txBuff[RF_INDEX_DATA+15] = 0;
 
 
 	for(int i =0 ;i <= RF_INDEX_DATA+15 ;i++)
@@ -1756,8 +1758,30 @@ void RF_PWM_Force_Stop()
 		Tx_Hand1_Msg(CMD_FORCE_STOP, 0);
 		Body_Led_Ctrl(BODY_LED_STANDBY);
 	}
-
 }
+void RF_PWM_Force_Force_Stop()
+{
+	m_rf.pluseOn = 0;
+	m_rf.treatStatus = STATUS_STNBY;
+	HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_LOW);
+	Pulse_Trig_TimeSave();
+	m_rf.pluseLevel = PWM_H_LEVEL;
+	m_rf.readyFlag = READY_OFF;
+	m_rf.expEndFlag = 0;
+	m_rf.expStep = STEP0;
+	m_rf.pulseCnt = 0;
+	Tx_LCD_Msg(CMD_FORCE_STOP, 0);
+	Tx_Hand1_Msg(CMD_FORCE_STOP, 0);
+	Body_Led_Ctrl(BODY_LED_STANDBY);
+
+	Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_STNBY);
+	Tx_Hand1_Msg(CMD_LCD_STATUS, STATUS_STNBY);
+	m_rf.readyFlag = READY_OFF;
+	Body_Led_Ctrl(BODY_LED_STANDBY);
+	Debug_Printf("READY_OFF",1);
+	Debug_Event(EVENT_11);
+}
+
 void RF_Eg_Exp_Conter()
 {
 	if(m_rf.egExpOn)
@@ -1792,7 +1816,7 @@ void Vibe_Time_Cal()
 
 }
 
-void LCD_Status_Tret()
+void LCD_Goto_Tret()
 {
 	static uint32_t timeStamp;
 	int totalTime;
@@ -1844,11 +1868,28 @@ void LCD_Status_Tret()
 			m_rf.preCooltime = 0;
 #endif
 		}
-
-
 	}
 
 
+	if(HAL_GetTick()-timeStamp >= 1000)
+	{
+		if(m_rf.treatStatus == STATUS_TRET)
+		{
+			m_rf.readyStayCnt++;
+			if(m_rf.readyStayCnt >= NO_TOUCH_SEC)
+			{
+				m_rf.readyStayCnt = 0;
+				Ready_OFF(EVENT_12);
+				Tx_LCD_Msg(CMD_ALRAM, IDX_GOTO_IDEL);
+			}
+		}
+		else
+		{
+			m_rf.readyStayCnt = 0;
+		}
+
+		timeStamp = HAL_GetTick();
+	}
 }
 
 void CARTRIGE_REQ_DATA(uint8_t idx)
@@ -1911,18 +1952,18 @@ void CARTRIGE_REQ_DATA(uint8_t idx)
 
 	}
 }
-int compare_32(const void *a, const void *b)    // ¿À¸§Â÷¼ø ºñ±³ ÇÔ¼ö (uint32_t ±âÁØ)
+int compare_32(const void *a, const void *b)    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ô¼ï¿½ (uint32_t ï¿½ï¿½ï¿½ï¿½)
 {
     int num1 = *(int *)a;
     int num2 = *(int *)b;
 
-    if (num1 < num2)    // a°¡ bº¸´Ù ÀÛÀ» ¶§´Â
-        return -1;      // -1 ¹ÝÈ¯
+    if (num1 < num2)    // aï¿½ï¿½ bï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        return -1;      // -1 ï¿½ï¿½È¯
 
-    if (num1 > num2)    // a°¡ bº¸´Ù Å¬ ¶§´Â
-        return 1;       // 1 ¹ÝÈ¯
+    if (num1 > num2)    // aï¿½ï¿½ bï¿½ï¿½ï¿½ï¿½ Å¬ ï¿½ï¿½ï¿½ï¿½
+        return 1;       // 1 ï¿½ï¿½È¯
 
-    return 0;    // a¿Í b°¡ °°À» ¶§´Â 0 ¹ÝÈ¯
+    return 0;    // aï¿½ï¿½ bï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 0 ï¿½ï¿½È¯
 }
 
 
@@ -1933,7 +1974,7 @@ int frqQ = 10500;
 int qsortBuff[5] = {0,};
 int qsort10Buff[10] = {0,};
 
-int AutoCal_Avg()// ¿À¸§Â÷¼øÀ¸·Î Á¤¸®
+int AutoCal_Avg()// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 {
 	int sum =0, avgInt;
 	float avg = 0;
@@ -1954,7 +1995,7 @@ int AutoCal_Avg()// ¿À¸§Â÷¼øÀ¸·Î Á¤¸®
 
 }
 
-int AutoCal_10_Avg()// ¿À¸§Â÷¼øÀ¸·Î Á¤¸®
+int AutoCal_10_Avg()// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 {
 	int sum =0;
 	float avg = 0;
@@ -2004,14 +2045,14 @@ void AutoCal()
 	Tx_RF_Watt_Module(trandu, wattDa);
 
 
-	AutoCal_Tx_IP_Msg();//¾ÆÀÌµé 0,2,4,6,8,
+	AutoCal_Tx_IP_Msg();//ï¿½ï¿½ï¿½Ìµï¿½ 0,2,4,6,8,
 	HAL_Delay(500);
 
 	RF_eg_Exp_On(2000);
 	HAL_Delay(1500);
 
-	AutoCal_Tx_IP_Msg();//¿¢Æ¼ºê 1,3,5,7,9
-	HAL_Delay(4000); // ÈÞ½Ä
+	AutoCal_Tx_IP_Msg();//ï¿½ï¿½Æ¼ï¿½ï¿½ 1,3,5,7,9
+	HAL_Delay(4000); // ï¿½Þ½ï¿½
 
 
 	printf("ACal\t%d\t%d",trandu, wattDa);
@@ -2089,20 +2130,20 @@ void AutoCal_test()
 
   for(int i =0 ;i < 5;i++)
   {
-    AutoCal_Tx_IP_Msg();//¾ÆÀÌµé 0,2,4,6,8,
+    AutoCal_Tx_IP_Msg();//ï¿½ï¿½ï¿½Ìµï¿½ 0,2,4,6,8,
     HAL_Delay(500);
 
     RF_eg_Exp_On(2000);
     HAL_Delay(1000);
 
-    AutoCal_Tx_IP_Msg();//¿¢Æ¼ºê 1,3,5,7,9
-    HAL_Delay(4000); // ÈÞ½Ä
+    AutoCal_Tx_IP_Msg();//ï¿½ï¿½Æ¼ï¿½ï¿½ 1,3,5,7,9
+    HAL_Delay(4000); // ï¿½Þ½ï¿½
 
   }
 
   printf("ACal %d %d -> \r\n",trandu, wattDa);
 
-  if(m_rf.FeedBackCnt<5)// 10°³Áß¿¡ 5°³ ¹Ì¸¸ÀÏ¶§ Åë½ÅºÒ·®
+  if(m_rf.FeedBackCnt<5)// 10ï¿½ï¿½ï¿½ß¿ï¿½ 5ï¿½ï¿½ ï¿½Ì¸ï¿½ï¿½Ï¶ï¿½ ï¿½ï¿½ÅºÒ·ï¿?
   {
     m_err.autoCalStatus = 1;
     Debug_Printf("AutoCal Commu Err",1);
@@ -2132,7 +2173,7 @@ void AutoCal_test()
   m_rf.autoCalFlag = 0;
 
 }
-void AutoCal_100ms()// 100ms  ¸¶´Ù ÀÐ´Â
+void AutoCal_100ms()// 100ms  ï¿½ï¿½ï¿½ï¿½ ï¿½Ð´ï¿½
 {
   int wattLongBuff[60] ={0,};
   int avg = 0;
@@ -2154,29 +2195,29 @@ void AutoCal_100ms()// 100ms  ¸¶´Ù ÀÐ´Â
 
   Tx_RF_Watt_Module(trandu, wattDa);
 
-  AutoCal_Tx_IP_Msg();//¾ÆÀÌµé 0,2,4,6,8,
+  AutoCal_Tx_IP_Msg();//ï¿½ï¿½ï¿½Ìµï¿½ 0,2,4,6,8,
   HAL_Delay(500);
 
   for(int i =0 ;i < 10;i++)
   {
-    AutoCal_Tx_IP_Msg();//¿¢Æ¼ºê 1,3,5,7,9
+    AutoCal_Tx_IP_Msg();//ï¿½ï¿½Æ¼ï¿½ï¿½ 1,3,5,7,9
 	HAL_Delay(100);
 
   }
   RF_eg_Exp_On(4000);
   for(int i =0 ;i < 40;i++)
   {
-    AutoCal_Tx_IP_Msg();//¿¢Æ¼ºê 1,3,5,7,9
+    AutoCal_Tx_IP_Msg();//ï¿½ï¿½Æ¼ï¿½ï¿½ 1,3,5,7,9
 	HAL_Delay(100);
   }
 
   for(int i =0 ;i < 10;i++)
   {
-    AutoCal_Tx_IP_Msg();//¿¢Æ¼ºê 1,3,5,7,9
+    AutoCal_Tx_IP_Msg();//ï¿½ï¿½Æ¼ï¿½ï¿½ 1,3,5,7,9
 	HAL_Delay(100);
 
   }
-  HAL_Delay(4000); // ÈÞ½Ä
+  HAL_Delay(4000); // ï¿½Þ½ï¿½
 
   printf("ACal %d %d -> \r\n",trandu, wattDa);
 
@@ -2220,14 +2261,14 @@ void AutoCal_1watt()
 
 	for(int i =0 ;i < 1;i++)
 	{
-		AutoCal_Tx_IP_Msg();//¾ÆÀÌµé 0,2,4,6,8,
+		AutoCal_Tx_IP_Msg();//ï¿½ï¿½ï¿½Ìµï¿½ 0,2,4,6,8,
 		HAL_Delay(500);
 
 		RF_eg_Exp_On(2000);
 		HAL_Delay(1500);
 
-		AutoCal_Tx_IP_Msg();//¿¢Æ¼ºê 1,3,5,7,9
-		HAL_Delay(4000); // ÈÞ½Ä
+		AutoCal_Tx_IP_Msg();//ï¿½ï¿½Æ¼ï¿½ï¿½ 1,3,5,7,9
+		HAL_Delay(4000); // ï¿½Þ½ï¿½
 
 	}
 
@@ -2278,14 +2319,14 @@ void AutoCal_Frq()
 
   for(int i =0 ;i < 1;i++)
   {
-    AutoCal_Tx_IP_Msg();//¾ÆÀÌµé 0,2,4,6,8,
+    AutoCal_Tx_IP_Msg();//ï¿½ï¿½ï¿½Ìµï¿½ 0,2,4,6,8,
     HAL_Delay(500);
 
     RF_eg_Exp_On(2000);
     HAL_Delay(1500);
 
-    AutoCal_Tx_IP_Msg();//¿¢Æ¼ºê 1,3,5,7,9
-    HAL_Delay(4000); // ÈÞ½Ä
+    AutoCal_Tx_IP_Msg();//ï¿½ï¿½Æ¼ï¿½ï¿½ 1,3,5,7,9
+    HAL_Delay(4000); // ï¿½Þ½ï¿½
 
   }
 
@@ -2422,6 +2463,8 @@ void RF_FeedBack_Cal(uint8_t* buff)
 void RF_Rx_Parssing(uint8_t rxID)
 {
 	uint32_t timeStamp;
+	uint8_t rxCallBackCmd;
+	uint8_t rxBuffPassing[30];
 
 
 
@@ -2445,21 +2488,21 @@ void RF_Rx_Parssing(uint8_t rxID)
 	{
 		m_rf.lastTimeStamp = 0;
 
-		memcpy(m_rf.rxBuffPassing, m_rf.rxBuff, 30);
+		memcpy(rxBuffPassing, m_rf.rxBuff, 30);
 		memset(m_rf.rxBuff, 0, 30);
 
-		Debug_Rx_RF_Printf(m_rf.rxBuffPassing, m_rf.rxCnt);
+		Debug_Rx_RF_Printf(rxBuffPassing, m_rf.rxCnt);
 
 		m_rf.rxCnt = 0;
-		m_rf.rxCallBackCmd = m_rf.rxBuffPassing[RF_INDEX_CMD];
-		switch (m_rf.rxCallBackCmd)
+		rxCallBackCmd = rxBuffPassing[RF_INDEX_CMD];
+		switch (rxCallBackCmd)
 		{
 			case GEN_STATUS_CHECK_R:
 				m_err.rfTimeout = 0;
 				m_err.rfComuErr = 0;
-				m_err.rfStatus= m_rf.rxBuffPassing[RF_INDEX_ERR_STATUS];
-				m_err.rfStatusTemp = m_rf.rxBuffPassing[RF_INDEX_TEMP];
-				m_err.rfStatusErrNo = m_rf.rxBuffPassing[RF_INDEX_ERR_NO];
+				m_err.rfStatus= rxBuffPassing[RF_INDEX_ERR_STATUS];
+				m_err.rfStatusTemp = rxBuffPassing[RF_INDEX_TEMP];
+				m_err.rfStatusErrNo = rxBuffPassing[RF_INDEX_ERR_NO];
 
 				m_rf.liveChkCnt++;
 			break;
@@ -2481,7 +2524,7 @@ void RF_Rx_Parssing(uint8_t rxID)
 
 			case GEN_RF_VOLTAGE_REQ_R:
 				Debug_Printf("[RX_RF] GEN_RF_VOLTAGE_REQ_R",1);
-				RF_FeedBack_Cal(m_rf.rxBuffPassing);
+				RF_FeedBack_Cal(rxBuffPassing);
 			break;
 
 			case ALL_CH_FREQ_SET_R:
@@ -2504,8 +2547,6 @@ void Rf_Test()
 {
 
 }
-
-
 
 uint8_t Exp_Shot_Chk()
 {
@@ -2536,9 +2577,48 @@ uint8_t Exp_Shot_Chk()
 
 }
 
+void Exp_Shot_Chk_Stop()
+{
+	static uint32_t timeStamp, timeStamp2;
+	if(HAL_GetTick()-timeStamp >= 100)
+	{
+		timeStamp = HAL_GetTick();
+		switch (m_rf.shotChkStep)
+		{
+			case STEP0:
+				timeStamp2 = HAL_GetTick();
+				m_rf.shotChkStep = STEP1;
+			break;
+
+			case STEP1:
+				if(HAL_GetTick()-timeStamp2 >= 1000) m_rf.shotChkStep = STEP2;
+			break;
+
+			case STEP2:
+				if(!Exp_Shot_Chk()) m_rf.shotChkStep = STEP3;
+			break;
+
+			case STEP3:
+				if(!Exp_Shot_Chk()) m_rf.shotChkStep = STEP4;
+			break;
+
+			case STEP4:
+				if(Exp_Shot_Chk())
+				{
+					m_rf.shotChkStep = STEP0;
+					RF_PWM_Force_Force_Stop();
+				}
+			break;
+		}
+	}
+}
+
+
+
 void Exp_Config()
 {
 	uint16_t totalEenerge;
+
 
 	if(m_rf.readyFlag != READY_ON)
 	{
@@ -2561,15 +2641,18 @@ void Exp_Config()
 				RF_Pwm_On();
 				Body_Led_Ctrl(BODY_LED_SHOT);
 				Vibe_Time_Cal();
-//				HP_Reset(YELLOW_COLOR);
 				m_rf.expStep = STEP1;
+				m_rf.shotChkStep = STEP0;
+				m_rf.readyStayCnt = 0;
 			}
 		break;
 
 		case STEP1:
 			RF_Pwm_Conter_Common(m_rf.PulseOption);
 			if(m_rf.expEndFlag) m_rf.expStep = STEP2;
-			if(Exp_Shot_Chk())Ready_OFF(EVENT_11);
+
+			Exp_Shot_Chk_Stop();
+
 		break;
 
 		case STEP2:
@@ -2583,14 +2666,7 @@ void Exp_Config()
 
 				m_rf.currentShot++;
 				Tx_LCD_Msg(CMD_CURRENT_SHOT, m_rf.currentShot);
-				if(m_eep.remainingShotNum > 0)
-				{
-					m_eep.remainingShotNum--;
-				}
-				else
-				{
-					m_rf.remainingShotNegative++;
-				}
+				if(m_eep.remainingShotNum > 0) m_eep.remainingShotNum--;
 
 				Tx_LCD_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
 				Tx_LCD_Msg(CMD_LCD_EXP, LCD_EXP_END);
@@ -2613,7 +2689,7 @@ void Rf_Config()
 
 
 #if 1
-	LCD_Status_Tret();
+	LCD_Goto_Tret();
 	Exp_Config();
 	AutoCal_Config();
 //	ChilerTemp_Cycle();

@@ -32,7 +32,8 @@ void Err_Init()
 		  case IDX_CATRIGE_WATT_ERR:
 		  case IDX_CATRIGE_FRQ_ERR:
 		  case IDX_CATRIGE_RESHOT_ERR:
-		  case IDX_CATRIGE_RESHOT_LOW:
+		  case IDX_CATRIGE_RESHOT_LOW_1000:
+		  case IDX_CATRIGE_RESHOT_LOW_500:
 		  case IDX_CATRIGE_RESHOT_ZERO:
 			   m_err.errStandBuff[i] = 5;
 		  break;
@@ -48,59 +49,8 @@ void Err_Init()
 
 
 
-void Set_Err_StatusBitFlag(uint8_t cmd, uint8_t status)
-{
-	if(status)
-	{
-		if(cmd<=15) m_err.errStatus[0] |= 1<<cmd;
-		else if(cmd<=31) m_err.errStatus[1] |= 1<<(cmd-16);
-		else if(cmd<=47) m_err.errStatus[2] |= 1<<(cmd-32);
-		else m_err.errStatus[3] |= 1<<(cmd-48);
-	}
-	else
-	{
-		if(cmd<=15) m_err.errStatus[0] &= ~(1<<cmd);
-		else if(cmd<=31) m_err.errStatus[1] &= ~(1<<(cmd-16));
-		else if(cmd<=47) m_err.errStatus[2] &= ~(1<<(cmd-32));
-		else m_err.errStatus[3] |= ~(1<<(cmd-48));
-	}
 
 
-	Eeprom_Word_Write(IDX_EEP_ERROR_STATUS_1, m_err.errStatus[0]);
-	Eeprom_Word_Write(IDX_EEP_ERROR_STATUS_2, m_err.errStatus[1]);
-	Eeprom_Word_Write(IDX_EEP_ERROR_STATUS_3, m_err.errStatus[2]);
-	Eeprom_Word_Write(IDX_EEP_ERROR_STATUS_4, m_err.errStatus[3]);
-
-}
-
-
-
-
-void Get_Err_StatusBitFlag()
-{
-
-	for(int i =0 ;i <= 15;i++)
-	{
-		if((m_err.errStatus[0]>>i)&0x01) m_err.errDataBuff[i] = i;
-		else m_err.errDataBuff[i] = 0;
-
-	}
-	for(int i =0 ;i <= 15;i++)
-	{
-		if((m_err.errStatus[1]>>i)&0x01) m_err.errDataBuff[i+16] = i+16;
-		else m_err.errDataBuff[i+16] = 0;
-	}
-	for(int i =0 ;i <= 15;i++)
-	{
-		if((m_err.errStatus[2]>>i)&0x01) m_err.errDataBuff[i+32] = i+32;
-		else m_err.errDataBuff[i+32] = 0;
-	}
-	for(int i =0 ;i <= 1;i++)
-	{
-		if((m_err.errStatus[3]>>i)&0x01) m_err.errDataBuff[i+48] = i+48;
-		else m_err.errDataBuff[i+48] = 0;
-	}
-}
 
 uint8_t Check_Common(uint8_t status, uint8_t cmd)
 {
@@ -266,7 +216,7 @@ void Error_Buff_Main_Tx()
 			if(!m_err.errCheckBuff[i])
 			{
 				Tx_LCD_Msg(CMD_ERR, m_err.errDataBuff[i]);
-				HAL_Delay(1500);
+				HAL_Delay(1000);
 				m_err.errCheckBuff[i] = m_err.errDataBuff[i];
 			}
 
@@ -289,7 +239,7 @@ void Error_Buff_HP_Tx()
 			if(!m_err.errCheckBuff[i])
 			{
 				Tx_LCD_Msg(CMD_ERR, m_err.errDataBuff[i]);
-				HAL_Delay(1500);
+				HAL_Delay(1000);
 				m_err.errCheckBuff[i] = m_err.errDataBuff[i];
 			}
 		}
@@ -311,7 +261,7 @@ void Error_Buff_Rf_Tx()
 			if(!m_err.errCheckBuff[i])
 			{
 				Tx_LCD_Msg(CMD_ERR, m_err.errDataBuff[i]);
-				HAL_Delay(1500);
+				HAL_Delay(1000);
 				m_err.errCheckBuff[i] = m_err.errDataBuff[i];
 			}
 		}
@@ -348,7 +298,7 @@ m_err.errDataBuff[IDX_CATRIGE_ISUE_OVER_ERR]
 m_err.errDataBuff[IDX_CATRIGE_WATT_ERR]
 m_err.errDataBuff[IDX_CATRIGE_FRQ_ERR]
 m_err.errDataBuff[IDX_CATRIGE_RESHOT_ERR]
-m_err.errDataBuff[IDX_CATRIGE_RESHOT_LOW]
+m_err.errDataBuff[IDX_CATRIGE_RESHOT_LOW_1000]
 m_err.errDataBuff[IDX_CATRIGE_RESHOT_ZERO]
 m_err.errDataBuff[IDX_CATRIGE_DETECT]
 m_err.errDataBuff[IDX_CATRIGE_UN_DETEC]
@@ -370,8 +320,12 @@ void Error_Check_Main()
 	Check_Status(m_io.level1Status, 0, IDX_LEVEL_LOW);
 	Check_Status(m_err.flowLimitUnder, 0, IDX_FLOW_LIMIT_UNDER);
 	Check_Status(m_err.flowZero, 0, IDX_FLOW_LIMIT_UNDER);
+	Check_Status(m_err.powerSpecs, 0, IDX_POWER_SPECS);
 
 
+
+
+	Check_Max(m_io.chillerTemp, CHILLER_TEMP_MAX, IDX_CHILER_TEMP_OVER);
 
 //	if(Check_Max(m_io.battery*10.0, BATTRY_LIMIT_MAX, IDX_BATTRY_LIMIT_OVER)){}
 //	else if(Check_Min(m_io.battery*10.0, BATTRY_LIMIT_MIN, IDX_BATTRY_LIMIT_UNDER)){}
@@ -429,7 +383,6 @@ void Error_Check_HP()
 
 		}
 
-		Check_Max(m_eep.remainingShotNum, CATRIDGE_REMAIN_MAX, IDX_CATRIGE_RESHOT_ERR);
 		Check_Max(m_eep.catridgeId, CATRIDGE_ID_MAX, IDX_CATRIGE_ID_ERR);
 		Check_Day(m_eep.manufacYY, m_eep.manufacMM, m_eep.manufacDD, IDX_CATRIGE_MANU_ERR);
 		Check_Day(m_eep.issuedYY, m_eep.issuedMM, m_eep.issuedDD, IDX_CATRIGE_ISUE_ERR);
@@ -439,14 +392,12 @@ void Error_Check_HP()
 		Check_Max(m_io.day, m_eep.manufacDay + DAY_MAX, IDX_CATRIGE_MANU_OVER_ERR);
 		Check_Max(m_io.day, m_eep.issuedDay + DAY_MAX, IDX_CATRIGE_ISUE_OVER_ERR);
 
-		if(!m_rf.remainingShotNegative)
-		{
-			Check_Min(m_eep.remainingShotNum, CATRIDGE_REMAIN_LOW_3, IDX_CATRIGE_RESHOT_LOW);
-		}
-		else
-		{
-			Check_Max(m_rf.remainingShotNegative, m_eepMain.remainingShotRandom, IDX_CATRIGE_RESHOT_ZERO);
-		}
+
+		Check_Max(m_eep.remainingShotNum, CATRIDGE_REMAIN_MAX, IDX_CATRIGE_RESHOT_ERR);
+
+		if(Check_Min(m_eep.remainingShotNum, CATRIDGE_REMAIN_LOW_500, IDX_CATRIGE_RESHOT_LOW_500)){}
+		else if(Check_Min(m_eep.remainingShotNum, CATRIDGE_REMAIN_LOW_1000, IDX_CATRIGE_RESHOT_LOW_1000)){}
+
 	}
 
 #endif
@@ -464,7 +415,7 @@ void Error_Check_RF()
 		Tx_RF_GenStatus_Check();
 		Check_Max(m_err.rfTimeout, COMU_MAX_CNT, IDX_RF_COMU_ERR);//E02
 	}
-//	Check_Status(m_err.rfStatus, 0, IDX_RF_STATUS_ERR);//E14
+	Check_Status(m_err.rfStatus, 1, IDX_RF_STATUS_ERR);//E14
 #if 0
 #endif
 

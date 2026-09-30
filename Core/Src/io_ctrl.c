@@ -52,13 +52,13 @@ void PELTIER_PWR_OFF()
 
 void SOL1_ON()
 {
-	CON_SOL1_ON_GPIO_Port_L();  //////¹Ý´ë
+	CON_SOL1_ON_GPIO_Port_L();  //////ï¿½Ý´ï¿½
 	Debug_Printf("SOL1_ON",1);
 	m_io.sol1On= 1;
 }
 void SOL1_OFF()
 {
-	CON_SOL1_ON_GPIO_Port_H();	//////¹Ý´ë
+	CON_SOL1_ON_GPIO_Port_H();	//////ï¿½Ý´ï¿½
 	Debug_Printf("SOL1_OFF",1);
 	m_io.sol1On= 0;
 }
@@ -252,45 +252,45 @@ void Battery_Read(void)
 }
 
 //==========================================================================================================
-//Á¦¹Ì³ªÀÌ
-// µ¥ÀÌÅÍ½ÃÆ® ¹× È¸·Î ±â¹Ý »ó¼ö ¼³Á¤
-#define R25          10000.0f   // 25µµÀÏ ¶§ ÀúÇ× (10k)
-#define B_VALUE      3984.0f    // B25/85 °ª
-#define T25          298.15f    // 25µµ¸¦ ÄÌºó ¿Âµµ·Î º¯È¯ (273.15 + 25)
-//#define R_PULLUP     24000.0f   // »ç¿ëÀÚ ÁöÁ¤ Ç®¾÷ ÀúÇ× (24k)
+//ï¿½ï¿½ï¿½Ì³ï¿½ï¿½ï¿½
+// ï¿½ï¿½ï¿½ï¿½ï¿½Í½ï¿½Æ® ï¿½ï¿½ È¸ï¿½ï¿½ ï¿½ï¿½ï¿?ï¿½ï¿½ï¿?ï¿½ï¿½ï¿½ï¿½
+#define R25          10000.0f   // 25ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (10k)
+#define B_VALUE      3984.0f    // B25/85 ï¿½ï¿½
+#define T25          298.15f    // 25ï¿½ï¿½ï¿½ï¿½ ï¿½Ìºï¿½ ï¿½Âµï¿½ï¿½ï¿½ ï¿½ï¿½È¯ (273.15 + 25)
+//#define R_PULLUP     24000.0f   // ï¿½ï¿½ï¿½ï¿½ï¿?ï¿½ï¿½ï¿½ï¿½ Ç®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (24k)
 
-#define ADC_MAX      4095.0f    // STM32F103 12ºñÆ® ADC ÃÖ´ë°ª
-uint32_t R_PULLUP    = 10000;   // »ç¿ëÀÚ ÁöÁ¤ Ç®¾÷ ÀúÇ× (24k)
+#define ADC_MAX      4095.0f    // STM32F103 12ï¿½ï¿½Æ® ADC ï¿½Ö´ë°ª
+uint32_t R_PULLUP    = 10000;   // ï¿½ï¿½ï¿½ï¿½ï¿?ï¿½ï¿½ï¿½ï¿½ Ç®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (24k)
 
 /**
- * @brief ADC °ªÀ» ÀÔ·Â¹Þ¾Æ ¼·¾¾ ¿Âµµ¸¦ ¹ÝÈ¯ÇÏ´Â ÇÔ¼ö
- * @param adc_value ADC_INÀ¸·Î ÀÐ¾îµéÀÎ RAW °ª
- * @return float °è»êµÈ ¼·¾¾ ¿Âµµ (¡ÆC)
+ * @brief ADC ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·Â¹Þ¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Âµï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½
+ * @param adc_value ADC_INï¿½ï¿½ï¿½ï¿½ ï¿½Ð¾ï¿½ï¿½ï¿½ï¿?RAW ï¿½ï¿½
+ * @return float ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Âµï¿½ (ï¿½ï¿½C)
  */
 float Get_NTC_Temperature_j(uint32_t adc_value) {
-    if (adc_value == 0) return -99.0f; // Open circuit or GND short error Ã³¸®
+    if (adc_value == 0) return -99.0f; // Open circuit or GND short error Ã³ï¿½ï¿½
 
-    // 1. ADC °ªÀ» ÀÌ¿ëÇÏ¿© ÇöÀç NTC ÀúÇ×°ª °è»ê
-    // Ç®´Ù¿î ±¸¼º: R_ntc = R_pullup * (V_out / (V_cc - V_out))
-    // Àü¾Ð ºñ·Ê½Ä¿¡ ÀÇÇØ V_cc »ý·« °¡´É: R_ntc = R_pullup * (adc / (4095 - adc))
+    // 1. ADC ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¿ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ NTC ï¿½ï¿½ï¿½×°ï¿½ ï¿½ï¿½ï¿?
+    // Ç®ï¿½Ù¿ï¿½ ï¿½ï¿½ï¿½ï¿½: R_ntc = R_pullup * (V_out / (V_cc - V_out))
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ê½Ä¿ï¿?ï¿½ï¿½ï¿½ï¿½ V_cc ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½: R_ntc = R_pullup * (adc / (4095 - adc))
     float r_ntc = R_PULLUP * ((float)adc_value / (ADC_MAX - (float)adc_value));
 
-    // 2. B-parameter ½ÄÀ» ÀÌ¿ëÇÑ ¿Âµµ(Kelvin) °è»ê
+    // 2. B-parameter ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¿ï¿½ï¿½ï¿½ ï¿½Âµï¿½(Kelvin) ï¿½ï¿½ï¿?
     float temperature;
     temperature = r_ntc / R25;              // R/R0
     temperature = log(temperature);         // ln(R/R0)
     temperature /= B_VALUE;                 // 1/B * ln(R/R0)
     temperature += (1.0f / T25);            // + (1/T0)
-    temperature = 1.0f / temperature;       // ÄÌºó ¿Âµµ ¿Ï¼º
+    temperature = 1.0f / temperature;       // ï¿½Ìºï¿½ ï¿½Âµï¿½ ï¿½Ï¼ï¿½
 
-    // 3. ÄÌºó ¿Âµµ¸¦ ¼·¾¾ ¿Âµµ·Î º¯È¯
+    // 3. ï¿½Ìºï¿½ ï¿½Âµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Âµï¿½ï¿½ï¿½ ï¿½ï¿½È¯
     float temperature_c = temperature - 273.15f;
 	temperature_c +=19;
 
     return temperature_c;
 }
 
-/* ¸ÞÀÎ ·çÇÁ »ç¿ë ¿¹½Ã */
+/* ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿?ï¿½ï¿½ï¿½ï¿½ */
 // uint32_t adc_raw = HAL_ADC_GetValue(&hadc1);
 // float current_temp = Get_NTC_Temperature(adc_raw);
 
@@ -299,7 +299,6 @@ float Get_NTC_Temperature_j(uint32_t adc_value) {
 
 //==========================================================================================================
 
-float chillerTemp;
 uint8_t chilFlag = 0;
 uint32_t chilTerm = 0;
 
@@ -316,14 +315,14 @@ void Chiller_Temperature_Read()
 	}
 	HAL_ADC_Stop(&hadc1);
 	adcQQ2 = adc;
-	chillerTemp = Get_NTC_Temperature_j(adc);
+	m_io.chillerTemp = Get_NTC_Temperature_j(adc);
 
 
 
 	if(HAL_GetTick()-timeStamp >= 5000)
 	{
 		timeStamp = HAL_GetTick();
-		if(chillerTemp<-10.0)
+		if(m_io.chillerTemp<-10.0)
 		{
 			Ciller_Pwr_OFF();
 			HAL_Delay(500);
@@ -390,10 +389,11 @@ void HP_Connect_Config()
 	}
 
 
-	if((m_io.HP1_Insert == HP_INSERT) && (m_eep.catridgeDetect != CATRIGE_CHK_UN_DETECT) && (m_eep.catridgeDetect != CATRIGE_CHK_UN_DETECT_RDY))
+	if((m_io.HP1_Insert == HP_INSERT) && (m_eep.catridgeDetect != CATRIGE_CHK_UN_DETECT))
 	{
 		m_io.sol1OnStatus = 1;
 		isCartDetectCnt = 0;
+		Flow_Stop_Check();
 	}
 	else
 	{
@@ -435,7 +435,7 @@ void Level_Check()
 		//error
 		if(!m_io.levelStatusErr)
 		{
-			Ciller_Pwr_OFF();//³ªÁß¿¡ ÇÃ·Î¿ì °ª Á¤»óµé¾î¿Í¾ßÁö ÄÑÁö°Ô ÇÏ±â
+			Ciller_Pwr_OFF();//ï¿½ï¿½ï¿½ß¿ï¿½ ï¿½Ã·Î¿ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¾ï¿½ï¿½ï¿?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï±ï¿½
 			WaterPump_Pwr_OFF();
 			m_io.levelStatusErr = 1;
 		}
@@ -476,95 +476,71 @@ uint8_t Flow_Nomal_Check()
 void Flow_Stop_Check()
 {
 
-	uint8_t is_flowOkSolOn = (2<m_io.flowSensorFrq&&m_io.flowSensorFrq<10);
+	uint8_t is_flowOkSolOn = (1<m_io.flowSensorFrq&&m_io.flowSensorFrq<10);
 	uint8_t is_flowOkSolOff = (10<m_io.flowSensorFrq&&m_io.flowSensorFrq<40);
 
 	static uint32_t timeStamp;
-	static uint8_t flowErrCnt1,flowErrCnt2, flowErrCnt3;
+	static uint8_t flowErrCnt1,flowErrCnt2;
 
 	if(!m_rf.sysChkFlag) return;
 	if(HAL_GetTick()-timeStamp >= 1000)
 	{
-
 		timeStamp = HAL_GetTick();
 
-		if(m_io.sol1On)
+		switch (m_io.sol1On)
 		{
-			if(!is_flowOkSolOn)
-			{
-				flowErrCnt1++;
-				if(flowErrCnt1>=3)
+			case 1:
+				if((!is_flowOkSolOn)||(!m_io.flowSensorFrqChk))
 				{
+					flowErrCnt1++;
+					if(flowErrCnt1>=3)
+					{
+						flowErrCnt1 = 0;
+						if(m_err.flowLimitUnder !=1)
+						{
+							Ready_OFF(EVENT_4);
+							PELTIER_PWR_OFF();
+							SOL1_OFF();
+						}
+						m_err.flowLimitUnder = 1;
+					}
+				}
+				else
+				{
+					m_err.flowLimitUnder = 0;
 					flowErrCnt1 = 0;
-					if(m_err.flowLimitUnder !=1)
-					{
-						Ready_OFF(EVENT_4);
-						SOL1_OFF();
-						PELTIER_PWR_OFF();
-					}
-					m_err.flowLimitUnder = 1;
 				}
-			}
-			else
-			{
-				m_err.flowLimitUnder = 0;
-				flowErrCnt1 = 0;
-			}
-		}
-		else
-		{
-			if(!is_flowOkSolOff)
-			{
-				flowErrCnt2++;
-				if(flowErrCnt2>=3)
+			break;
+
+			case 0:
+				if((!is_flowOkSolOff)||(!m_io.flowSensorFrqChk))
 				{
+					flowErrCnt2++;
+					if(flowErrCnt2>=3)
+					{
+						flowErrCnt2 = 0;
+						if(m_err.flowLimitUnder !=2)
+						{
+							Ready_OFF(EVENT_10);
+							PELTIER_PWR_OFF();
+							WaterPump_Pwr_OFF();
+							Ciller_Pwr_OFF();
+							SOL1_OFF();
+						}
+						m_err.flowLimitUnder = 2;
+					}
+				}
+				else
+				{
+					m_err.flowLimitUnder = 0;
 					flowErrCnt2 = 0;
-					if(m_err.flowLimitUnder !=2)
-					{
-						Ready_OFF(EVENT_10);
-						SOL1_OFF();
-						PELTIER_PWR_OFF();
-						WaterPump_Pwr_OFF();
-						Ciller_Pwr_OFF();
-					}
-					m_err.flowLimitUnder = 2;
 				}
-			}
-			else
-			{
-				m_err.flowLimitUnder = 0;
-				flowErrCnt2 = 0;
-			}
-		}
+			break;
 
-		if(!m_io.flowSensorFrqChk)
-		{
-			flowErrCnt3++;
-			if(flowErrCnt3>=3)
-			{
-				flowErrCnt3 = 0;
-				if(!m_err.flowZero)
-				{
-					Ready_OFF(EVENT_6);
-					SOL1_OFF();
-					PELTIER_PWR_OFF();
-					WaterPump_Pwr_OFF();
-					Ciller_Pwr_OFF();
-					m_err.flowZero = 1;
-				}
-				m_io.flowSensorFrq = 0;
-			}
-		}
-		else
-		{
-			m_err.flowZero = 0;
-			flowErrCnt3 = 0;
-		}
 
+		}
 
 		m_io.flowSensorFrqChk = 0;
-
-
 	}
 
 }
@@ -573,6 +549,7 @@ void Flow_Stop_Check()
 void IO_Init()
 {
 
+	AC_RLY_H();
 	for(int i =0 ;i < 2;i++)
 	{
 	    BUZZER_H();
@@ -580,7 +557,9 @@ void IO_Init()
 	    BUZZER_L();
 	    HAL_Delay(50);
 	}
-	AC_RLY_H();
+
+	if(IS_AC_INPUT_STATE()) m_io.powerSpecs = POWER_AC_KOREA;
+	else m_io.powerSpecs = POWER_AC_OTHER;
 
 	HP1_PELT_ON();
 	PELTIER_PWR_OFF();
@@ -610,6 +589,8 @@ void IO_Init()
 		m_io.footInsert = 0;
 		m_rf.switchHandFoot = SWITCH_HAND_FOOT_NO;
 	}
+
+	RTC_Init();
 }
 void RTC_Init(void)
 {
@@ -636,7 +617,7 @@ void RTC_Config(void)
 	{
 
 		timeStamp = HAL_GetTick();
-		// RTC·ÎºÎÅÍ ½Ã°£ ÀÐ±â
+		// RTCï¿½Îºï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½Ð±ï¿½
 		DS1308_GetTime(&m_io.hour, &m_io.min, &m_io.sec);
 		DS1308_GetDay(&m_io.dayOfWeek, &m_io.DD, &m_io.MM, &m_io.YY);
 
@@ -657,7 +638,7 @@ void RTC_Config(void)
 			m_io.minPre = m_io.min;
 		}
 #endif
-		// ÀÐÀº °ª È®ÀÎ¿ë (¿¹: UART Ãâ·Â - ½ÇÁ¦ È¯°æ¿¡ ¸Â°Ô ´ëÃ¼)
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ È®ï¿½Î¿ï¿½ (ï¿½ï¿½: UART ï¿½ï¿½ï¿?- ï¿½ï¿½ï¿½ï¿½ È¯ï¿½æ¿¡ ï¿½Â°ï¿½ ï¿½ï¿½Ã¼)
 //		printf("RTC Time: %02d:%02d:%02d\r\n", hour, min, sec);
 	}
 }
@@ -717,7 +698,7 @@ void Foot_Insert_Chk()
 		{
 			if(!m_io.footInsert)
 			{
-				Tx_LCD_Msg(CMD_ERR, IDX_FOOT_DISCONNECT);
+				Tx_LCD_Msg(CMD_ALRAM, IDX_FOOT_CONNECT);
 				m_rf.switchHandFoot = SWITCH_FOOT;
 				Tx_LCD_Msg(CMD_HAND_FOOT, m_rf.switchHandFoot);
 			}
@@ -727,7 +708,7 @@ void Foot_Insert_Chk()
 		{
 			if(m_io.footInsert)
 			{
-				Tx_LCD_Msg(CMD_ERR, IDX_FOOT_CONNECT);
+				Tx_LCD_Msg(CMD_ALRAM, IDX_FOOT_DISCONNECT);
 				m_rf.switchHandFoot = SWITCH_HAND_FOOT_NO;
 				Tx_LCD_Msg(CMD_HAND_FOOT, m_rf.switchHandFoot);
 			}
@@ -736,6 +717,12 @@ void Foot_Insert_Chk()
 		timeStamp = HAL_GetTick();
 	}
 
+}
+
+void PowerSpecs_Chk()
+{
+	if(m_io.powerSpecs != m_eep.powerSpecs) m_err.powerSpecs = 1;
+	else m_err.powerSpecs = 0;
 }
 void WDT_LED_Config()
 {
@@ -753,13 +740,12 @@ void IO_Config()
 
 //	Level_Check();
 	HP_Connect_Config();
-//	Flow_Stop_Check();
-
 	Battery_Read();
 	RTC_Config();
 	Chiller_Temperature_Read();
  	WDT_LED_Config();
  	Foot_Insert_Chk();
+ 	PowerSpecs_Chk();
 
 
  }
