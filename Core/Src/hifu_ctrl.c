@@ -2634,6 +2634,19 @@ void Exp_Config()
 		case STEP0:
 			if(testExpFlag || Exp_Shot_Chk())
 			{
+				m_rf.totaEnergy = m_rf.totaEnergy + m_rf.energy;
+				totalEenerge = m_rf.totaEnergy;
+				Tx_LCD_Msg(CMD_TOTAL_JOULE, totalEenerge);
+
+				m_rf.currentShot++;
+				Tx_LCD_Msg(CMD_CURRENT_SHOT, m_rf.currentShot);
+				if(m_eep.remainingShotNum > 0) m_eep.remainingShotNum--;
+
+				Tx_LCD_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
+				Tx_LCD_Msg(CMD_LCD_EXP, LCD_EXP_END);
+				Tx_Hand1_Msg(CMD_LCD_EXP, LCD_EXP_END);
+				Tx_Hand1_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
+
 				HAL_Delay(100);//200org
 				testExpFlag = 0;
 				Tx_LCD_Msg(CMD_LCD_EXP, LCD_EXP_START);
@@ -2661,18 +2674,6 @@ void Exp_Config()
 			{
 				m_rf.expEndFlag = 0;
 
-				m_rf.totaEnergy = m_rf.totaEnergy + m_rf.energy;
-				totalEenerge = m_rf.totaEnergy;
-				Tx_LCD_Msg(CMD_TOTAL_JOULE, totalEenerge);
-
-				m_rf.currentShot++;
-				Tx_LCD_Msg(CMD_CURRENT_SHOT, m_rf.currentShot);
-				if(m_eep.remainingShotNum > 0) m_eep.remainingShotNum--;
-
-				Tx_LCD_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
-				Tx_LCD_Msg(CMD_LCD_EXP, LCD_EXP_END);
-				Tx_Hand1_Msg(CMD_LCD_EXP, LCD_EXP_END);
-				Tx_Hand1_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
 
 				Exp_Total_Log();
 				Body_Led_Ctrl(BODY_LED_READY);
