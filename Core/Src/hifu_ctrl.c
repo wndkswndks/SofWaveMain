@@ -2606,6 +2606,7 @@ void Exp_Shot_Chk_Stop()
 				if(Exp_Shot_Chk())
 				{
 					m_rf.shotChkStep = STEP0;
+					m_rf.stbyTimeStamp = HAL_GetTick();
 					RF_PWM_Force_Force_Stop();
 				}
 			break;

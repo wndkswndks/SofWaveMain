@@ -575,8 +575,9 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 	switch (add)
 	{
 		case CMD_TEST_DEBUG:
-			Debug_Printf_Value("CMD_GET_ALL_CART_END : ", data, 1);
-			Tx_LCD_Msg(CMD_GET_ALL_CART_END, data);
+//			Debug_Printf_Value("CMD_GET_ALL_CART_END : ", data, 1);
+//			Tx_LCD_Msg(CMD_GET_ALL_CART_END, data);
+			Tx_Hand1_Msg(CMD_TEST_DEBUG, data);
 
 		break;
 
