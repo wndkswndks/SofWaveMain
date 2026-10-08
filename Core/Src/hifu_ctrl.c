@@ -2643,8 +2643,6 @@ void Exp_Config()
 				if(m_eep.remainingShotNum > 0) m_eep.remainingShotNum--;
 
 				Tx_LCD_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
-				Tx_LCD_Msg(CMD_LCD_EXP, LCD_EXP_END);
-				Tx_Hand1_Msg(CMD_LCD_EXP, LCD_EXP_END);
 				Tx_Hand1_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
 
 				HAL_Delay(100);//200org
@@ -2674,6 +2672,8 @@ void Exp_Config()
 			{
 				m_rf.expEndFlag = 0;
 
+				Tx_LCD_Msg(CMD_LCD_EXP, LCD_EXP_END);
+				Tx_Hand1_Msg(CMD_LCD_EXP, LCD_EXP_END);
 
 				Exp_Total_Log();
 				Body_Led_Ctrl(BODY_LED_READY);

@@ -742,7 +742,7 @@ void IO_Config()
 	HP_Connect_Config();
 	Battery_Read();
 	RTC_Config();
-	Chiller_Temperature_Read();
+//	Chiller_Temperature_Read();
  	WDT_LED_Config();
  	Foot_Insert_Chk();
  	PowerSpecs_Chk();
