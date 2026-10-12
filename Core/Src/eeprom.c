@@ -163,14 +163,14 @@ uint16_t Eeprom_Word_Read(uint8_t startIdx)
 }
 
 
-uint16_t Eeprom_Byte_Read(uint8_t startIdx)
+uint8_t Eeprom_Byte_Read(uint8_t startIdx)
 {
-    uint16_t data = 0;
+    uint8_t data = 0;
 
     if (startIdx >= MAX_EEPROM_SIZE)
         return 0;
 
-    CAT24C16_ReadByte(&hi2c1, startIdx, &data);
+    CAT24C16_ReadByte(&hi2c1, (uint16_t)startIdx, &data);
 
     m_eepMain.buff[startIdx] = data;
 

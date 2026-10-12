@@ -389,7 +389,13 @@ void Debug_Printf(char* str, uint8_t cr);
 void LCD_Rx_Parssing(uint8_t add, int data);
 void Hand_Rx_Parssing(uint8_t add, int data);
 void Debug_Rx_Parssing(uint8_t add, int data);
+void Check_Cart_Req_Config();
+void Debug_Tx_FeedBack_Check_Printf();
+void Debug_Printf_Value(char* str, int data, uint8_t cr);
 
+void Ready_ON();
+void Ready_OFF(uint8_t event);
+void Debug_Event(uint8_t event);
 
 /*  			extern start  			*/
 extern DEBUG_CMD_T m_debug;

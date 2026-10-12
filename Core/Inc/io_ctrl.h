@@ -258,18 +258,32 @@ typedef struct
 
 
 /*  			function start  		*/
+void PELTIER_PWR_ON();
+void PELTIER_PWR_OFF();
+void SOL1_ON();
+void SOL1_OFF();
+void RF_Pwr_ON();
+void RF_Pwr_OFF();
+void HP1_Pwr_ON();
+void HP1_Pwr_OFF();
+void HP2_Pwr_ON();
+void HP2_Pwr_OFF();
 void WaterPump_Pwr_ON();
 void WaterPump_Pwr_OFF();
 void Ciller_Pwr_ON();
 void Ciller_Pwr_OFF();
+void Buzzer_ON();
+void Buzzer_OFF_Config();
+
+
 void IO_Init();
 void IO_Test();
-void RF_Pwr_ON();
 void IO_Config();
 void RTC_Init(void);
 void Body_Led_Ctrl(uint8_t mode);
 void Chiller_Temperature_Read();
 void Flow_Stop_Check();
+
 
 
 /*  			function end  			*/

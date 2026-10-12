@@ -42,11 +42,10 @@ typedef enum
 	CATRIDGE_REMAIN_MIN = 1,
 	CATRIDGE_REMAIN_MAX = 10001,
 
-
+	CATRIDGE_WATT_MIN = 1,
 	CATRIDGE_WATT_MAX = 400,
-	CATRIDGE_WATT_MIN = 0,
-	CATRIDGE_FRQ_MAX = 13000,
 	CATRIDGE_FRQ_MIN = 9000,
+	CATRIDGE_FRQ_MAX = 13000,
 
 	CATRIDGE_ID_MAX = 100,
 
@@ -56,6 +55,9 @@ typedef enum
 	MM_MIN = 1,
 	DD_MAX = 31,
 	DD_MIN = 1,
+
+	CART_ID_MIN = 1,
+	CART_ID_MAX = 99,
 
 	HOUR_MAX = 24,
 	HOUR_MIN = 1,
@@ -200,6 +202,9 @@ typedef struct
 void Error_Check_Main();
 void Error_Check_HP();
 void Error_Check_RF();
+void Error_Buff_Main_Tx();
+void Error_Buff_HP_Tx();
+void Error_Buff_Rf_Tx();
 
 
 /*  			function end  			*/

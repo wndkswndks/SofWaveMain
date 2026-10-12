@@ -37,6 +37,9 @@ void Err_Init()
 		  case IDX_CATRIGE_RESHOT_ZERO:
 			   m_err.errStandBuff[i] = 5;
 		  break;
+		  case IDX_CHILER_TEMP_OVER:
+		  	   m_err.errStandBuff[i] = 2;
+		  break;
 
 		  default:
 			  m_err.errStandBuff[i] = 1;
@@ -346,8 +349,6 @@ void Error_Check_Main()
 
 void Error_Check_HP()
 {
-	uint8_t errStatus;
-
 
 
 #if 1
@@ -356,14 +357,6 @@ void Error_Check_HP()
 		m_err.handTimeout++;
 		if(Check_Max(m_err.handTimeout, COMU_MAX_CNT, IDX_HAND_COMU_ERR)){m_hand1.temprature = 0;}
 		if(Check_Status(m_err.preCoolStatus, 0, IDX_PRE_COOL_ERR)){}
-
-//		if(m_err.handTimeout == 5)
-//		{
-//			HP1_RST_CONTROL_H();
-//			HAL_Delay(100);
-//			HP1_RST_CONTROL_L();
-//		}
-
 	}
 	if(Check_Max_Min(m_hand1.temprature, TEMP_OUT_MAX, TEMP_OUT_MIN,IDX_TEMP_OUT)){}
 	else if(Check_Min(m_hand1.temprature, TEMP_MIN, IDX_TEMP_LIMIT_UNDER)){}
@@ -430,7 +423,8 @@ void Error_Check_Config()
 	static uint32_t timeStamp;
 	if(!m_rf.sysChkFlag) return;
 	if(m_eep.cartDataMoving) return;
-//	if(m_rf.pluseOn) return;
+
+	Check_Cart_Req_Config();
 	if(HAL_GetTick()-timeStamp >= 1000)
 	{
 		Error_Check_Main();

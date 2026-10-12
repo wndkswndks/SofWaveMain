@@ -90,6 +90,7 @@ void Debug_HAND_Printf(uint8_t rxtx, uint8_t cmd, int data)
 	if(m_debug.noview) return;
 #ifdef DEBUG_PRINT
 
+	if((cmd == CMD_TEMPERATURE) ||(cmd == CMD_PWM_DUTY))return;
 	if(rxtx != DEBUG_RX && rxtx != DEBUG_TX) return;
 	char rxtxStr[2][3] = {"Rx","Tx"};
 	printf("[%s_HAND] [%u,%d]\r\n",rxtxStr[rxtx], cmd, data);
@@ -218,7 +219,7 @@ void Debug_Tx_RF_MaxOntime_Printf()
 }
 void Debug_Tx_GenStatus_Check_Printf()
 {
-#if 1
+#if 0
 	if(m_debug.noview) return;
 	printf("[TX_RF] ");
 	printf("GenStatus_Check\r\n");
@@ -341,9 +342,7 @@ uint8_t Ready_Enter_Chk()
 	uint8_t bool2 = (m_io.HP1_Insert == HP_INSERT);
 	uint8_t bool3 = (m_eep.catridgeStatus == SING_UP_CODE);
 	uint8_t bool4 = 1;
-	uint8_t boolEx1 = 0;
-	uint8_t boolEx2 = 0;
-	uint8_t boolEx3 = 0;
+
 
 	for(int i =0 ;i < 50;i++)
 	{
@@ -400,8 +399,6 @@ void Peltier_Ctrl_Start()
 
 void CMD_Is_All_Live(uint8_t who)
 {
-	uint8_t rxLiveStatus = 0;
-
 	switch (who)
 	{
 		case LIVE_HP:
@@ -514,7 +511,6 @@ void HP_Reset_Config()
 }
 void Check_CartAllData(uint8_t status)
 {
-	uint8_t eepErr = 0;
 #if 1
 	HP_Cmd_Recall(CMD_CART_ID, m_eep.catridgeId, status);
 	HP_Cmd_Recall(CMD_MANUFAC_YY, m_eep.manufacYY, status);
@@ -562,6 +558,79 @@ void Check_CartAllData(uint8_t status)
 	m_eep.catridgeRxErrCnt = 0;
 
 }
+
+
+uint8_t Check_Cart_Req(uint8_t cmd, uint16_t nowValue, uint16_t min, uint16_t max)
+{
+	if((nowValue < min) || (nowValue > max))
+	{
+		Tx_Hand1_Msg(cmd, REQ_DATA);
+		return 1;
+	}
+	return 0;
+}
+
+void Check_Cart_Req_Config()
+{
+	static uint8_t txCnt = 0;
+
+	static uint32_t timeStamp;
+
+	if(!m_eep.catridgeChk)return;
+
+	if(((m_eep.catridgeDetect != CATRIGE_CHK_OK) && (m_eep.catridgeDetect != CATRIGE_CHK_NEW)) ||
+	(m_eep.catridgeStatus != SING_UP_CODE) ||
+	(m_err.handTimeout >=COMU_MAX_CNT)
+	)
+	{
+		txCnt = 0;
+		return;
+	}
+	if(txCnt >= 100) return;
+
+	if(HAL_GetTick()-timeStamp >= 500)
+	{
+
+		timeStamp = HAL_GetTick();
+
+		    if(Check_Cart_Req(CMD_CART_ID, m_eep.catridgeId, CART_ID_MIN, CART_ID_MAX) ){txCnt++; }
+		else if(Check_Cart_Req(CMD_MANUFAC_YY, m_eep.manufacYY, YY_MIN, YY_MAX) ){txCnt++; }
+		else if(Check_Cart_Req(CMD_MANUFAC_MM, m_eep.manufacMM, MM_MIN, MM_MAX) ){txCnt++; }
+		else if(Check_Cart_Req(CMD_MANUFAC_DD, m_eep.manufacDD, DD_MIN, DD_MAX) ){txCnt++; }
+		else if(Check_Cart_Req(CMD_ISSUED_YY, m_eep.issuedYY, YY_MIN, YY_MAX)){txCnt++; }
+		else if(Check_Cart_Req(CMD_ISSUED_MM, m_eep.issuedMM, MM_MIN, MM_MAX)){txCnt++; }
+		else if(Check_Cart_Req(CMD_ISSUED_DD, m_eep.issuedDD, DD_MIN, DD_MAX)){txCnt++; }
+		else if(Check_Cart_Req(CMD_REMIND_SHOT, m_eep.remainingShotNum, 1, CATRIDGE_REMAIN_MAX)){txCnt++; }
+		else if(Check_Cart_Req(CMD_REMIND_SHOT_MAX, m_eep.remainingShotNumMax, 1, CATRIDGE_REMAIN_MAX)){txCnt++; }
+		else if(Check_Cart_Req(CMD_POWER_SPECS, m_eep.powerSpecs, 0, 1)){txCnt++; }
+		else if(Check_Cart_Req(CMD_CATRIDGE_STATUS, m_eep.catridgeStatus, NONE_SING_UP_CODE, SING_UP_CODE)){txCnt++; }
+		else
+		{
+			for(int i =1 ;i <= 7;i++)
+			{
+				if(Check_Cart_Req(CMD_TRANDU_FRQ_BASE + i,m_eep.rfFrqBuff[i], CATRIDGE_FRQ_MIN, CATRIDGE_FRQ_MAX)){txCnt++; break;; }
+			}
+
+			if(!txCnt)
+			{
+				for(int i =1 ;i <= 77;i++)
+				{
+					if(Check_Cart_Req(CMD_TRANDU_WATT_BASE + i,m_eep.rfWattBuff[i], CATRIDGE_WATT_MIN, CATRIDGE_WATT_MAX)){txCnt++; return; }
+				}
+			}
+		}
+		if(txCnt==0)
+		{
+			Debug_Printf("CartAll Chk Complite",1);
+			m_eep.catridgeChk = 0;
+		}
+		//온도 오프셋은 0일수도있어서 구분이 안되서 여기서 못보냄
+	}
+
+
+
+}
+
 
 extern int wattDa;
 
@@ -1253,6 +1322,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 		case CMD_SYS_CHK:
 			m_rf.sysChkFlag = 1;
 			m_err.txEn = 1;
+			m_eep.catridgeChk = 1;
 			Body_Led_Ctrl(BODY_LED_STANDBY);
 			Tx_Hand1_Msg(CMD_SYS_CHK, 1);
 			LCD_Init();
@@ -1346,7 +1416,10 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 		break;
 
 		case CMD_GET_WATT_CART:
-			Tx_Hand1_Msg(CMD_GET_WATT_CART, 1);
+			for(int i =1 ;i <= 77;i++)
+			{
+				Tx_LCD_Msg(CMD_TRANDU_WATT_BASE + i,m_eep.rfWattBuff[i]);
+			}
 		break;
 
 
@@ -1664,13 +1737,20 @@ void Hand_Rx_Parssing(uint8_t add, int data)
 				{
 					case CATRIGE_CHK_OK:
 
-						if(m_rf.sysChkFlag)Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_OK);
-
+						if(m_rf.sysChkFlag)
+						{
+							Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_OK);
+							m_eep.catridgeChk = 1;
+						}
 						Debug_Printf("CATRIDGE Detect",1);
 					break;
 
 					case CATRIGE_CHK_NEW:
-						if(m_rf.sysChkFlag)Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_NEW);
+						if(m_rf.sysChkFlag)
+						{
+							Tx_LCD_Msg(CMD_CATRIDGE_EVENT, CATRIGE_CHK_NEW);
+							m_eep.catridgeChk = 1;
+						}
 						Debug_Printf("CATRIDGE Detect NeW",1);
 					break;
 
@@ -1760,20 +1840,20 @@ void Hand_Rx_Parssing(uint8_t add, int data)
 
 
 			case CMD_GET_ALL_CART_END:
-				uint8_t eepErr = 0;
-				Check_CartAllData(data);
+//				Check_CartAllData(data);
+				Tx_LCD_Msg(CMD_GET_ALL_CART_END, data);
 			break;
 
 			default:
 				if(CMD_TRANDU1_FRQ <= add && add <=CMD_TRANDU7_FRQ)
 				{
 					m_eep.rfFrqBuff[add-CMD_TRANDU_FRQ_BASE] = data;
-					Tx_LCD_Msg(add, data);
+					//Tx_LCD_Msg(add, data);
 				}
 				else if(CMD_TRANDU1_WATT10 <= add && add <=CMD_TRANDU7_WATT005)
 				{
 					m_eep.rfWattBuff[add -CMD_TRANDU_WATT_BASE] = data;
-					Tx_LCD_Msg(add, data);
+					//Tx_LCD_Msg(add, data);
 				}
 
 			break;
@@ -1860,19 +1940,8 @@ void UartRx5DataProcess()
 
 void Uart_Tx_Polling_Status()
 {
-	static uint32_t timeStamp, timeStamp2;
-#if 0
-	if(m_hand1.commuChk == 1)
-	{
-		if(HAL_GetTick()-timeStamp >= 1000)
-		{
-			Tx_LCD_Msg_NoDebug(CMD_TEMPERATURE_SHOT, m_hand1.temprature);
-			Tx_LCD_Msg_NoDebug(CMD_PELTIER_DUTY, m_hand1.pwmDuty);
-			timeStamp = HAL_GetTick();
-		}
-	}
+	static uint32_t timeStamp2;
 
-#endif
 	if(m_err.statusTx)
 	{
 
@@ -1892,8 +1961,10 @@ void Uart_Tx_Polling_Status()
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
 			txData = 6000 + m_io.battery*10;
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
+
 			txData = 7000 + (m_io.flowSensorFrq*10.0);
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
+
 			txData = 8000 + m_io.level1Status;
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
 			txData = 9000 + m_io.HP1_Insert;

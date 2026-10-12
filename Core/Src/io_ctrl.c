@@ -196,9 +196,7 @@ void Cooling_ON(uint8_t num)
 		case COOL_LV2:
 			COOLING_LV2_H();
 		break;
-		case COOL_LV3:
-			COOLING_LV3_H();
-		break;
+
 		case COOL_LV4:
 			COOLING_LV4_H();
 		break;
@@ -341,11 +339,6 @@ void HP_Connect_Config()
 	static uint32_t timeStamp;
 	static uint8_t isCartDetectCnt = 0;
 
-	int flowINt;
-
-	flowINt = m_io.flowSensorFrq*10.0;
-
-
 	if(HAL_GetTick()-timeStamp >= 500)
 	{
 		timeStamp = HAL_GetTick();
@@ -444,34 +437,6 @@ void Level_Check()
 
 }
 
-uint8_t IO_ErrCnt_Chk(uint8_t BooL, uint8_t idx )
-{
-	static uint8_t cntBuff[10];
-	uint8_t eventOn = 0;
-
-	if(idx >= 10) return 0;
-
-	if(BooL)
-	{
-		 if(cntBuff[idx] < 10) cntBuff[idx]++;
-	}
-	else cntBuff[idx] = 0;
-
-	if(cntBuff[idx] >= 10)
-	{
-		cntBuff[idx] = 0;
-		eventOn = 1;
-	}
-
-	return eventOn;
-}
-
-
-uint8_t Flow_Nomal_Check()
-{
-	static uint8_t flowErrCnt1;
-
-}
 
 void Flow_Stop_Check()
 {
@@ -486,7 +451,7 @@ void Flow_Stop_Check()
 	if(HAL_GetTick()-timeStamp >= 1000)
 	{
 		timeStamp = HAL_GetTick();
-
+		if(m_io.flowSensorFrqChk==0) m_io.flowSensorFrq = 0;
 		switch (m_io.sol1On)
 		{
 			case 1:
@@ -742,7 +707,7 @@ void IO_Config()
 	HP_Connect_Config();
 	Battery_Read();
 	RTC_Config();
-//	Chiller_Temperature_Read();
+	Chiller_Temperature_Read();
  	WDT_LED_Config();
  	Foot_Insert_Chk();
  	PowerSpecs_Chk();

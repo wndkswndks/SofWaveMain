@@ -1321,7 +1321,6 @@ void Tx_RF_GenStatus_Check()
 {
 
 	uint8_t len = 0;
-	uint8_t dataLen = 0;
 
 	len = RF_NUM_FIX+1;
 	m_rf.txBuff[RF_INDEX_STX] = STX;
@@ -1330,7 +1329,6 @@ void Tx_RF_GenStatus_Check()
 	m_rf.txBuff[RF_INDEX_CMD] = GEN_STATUS_CHECK;
 
 	m_rf.txBuff[RF_INDEX_DATA] = 0x00;
-	dataLen = 3;
 
 
 	for(int i =0 ;i <= RF_INDEX_DATA ;i++)
@@ -1349,7 +1347,6 @@ void Tx_RF_FeedBack_Check()
 {
 
 	uint8_t len = 0;
-	uint8_t dataLen = 0;
 
 	len = RF_NUM_FIX + 1;
 	m_rf.txBuff[RF_INDEX_STX] = STX;
@@ -1358,7 +1355,6 @@ void Tx_RF_FeedBack_Check()
 	m_rf.txBuff[RF_INDEX_CMD] = GEN_RF_VOLTAGE_REQ;
 
 	m_rf.txBuff[RF_INDEX_DATA] = 0x00;
-	dataLen = 3;
 
 
 	for(int i =0 ;i <= RF_INDEX_DATA ;i++)
@@ -2072,12 +2068,13 @@ void AutoCal()
 	printf("%d ",qsortBuff[4]);
 
 	watt = AutoCal_Avg();
-#else
-	watt = qsortBuff[0];
+#endif
 
-//	if((watt-preWatt >= 4) && !jump) watt = preWatt;
-//	preWatt = watt;
-//	jump = 0;
+	watt = qsortBuff[0];
+#if 0
+	if((watt-preWatt >= 4) && !jump) watt = preWatt;
+	preWatt = watt;
+	jump = 0;
 #endif
 
 	if(watt >= wattBuff[m_rf.autoCalWattLevel])
@@ -2109,10 +2106,6 @@ void AutoCal()
 }
 void AutoCal_test()
 {
-  uint8_t wattBuff[10] = {10, 20, 30, 40, 50, 60 , 70, 80 , 90, 100};
-  int avg = 0;
-  uint16_t add;
-
   if(m_rf.autoCalFlag != AUTOCAL_TEST)return;
 
   memset(m_rf.FeedBackWBuff, 0, sizeof(m_rf.FeedBackWBuff));
@@ -2168,7 +2161,7 @@ void AutoCal_test()
   qsortBuff[4] = m_rf.FeedBackWBuff[9] +(-1*m_rf.FeedBackWBuff[8]);
   printf(">>> %d\r\n",qsortBuff[4]);
 
-  avg = AutoCal_Avg();
+  AutoCal_Avg();
 
   m_rf.autoCalFlag = 0;
 
@@ -2176,9 +2169,6 @@ void AutoCal_test()
 void AutoCal_100ms()// 100ms  ���� �д�
 {
   int wattLongBuff[60] ={0,};
-  int avg = 0;
-  uint16_t add;
-  static uint16_t calCnt;
 
   if(m_rf.autoCalFlag != AUTOCAL_100MS)return;
 
@@ -2233,7 +2223,7 @@ void AutoCal_100ms()// 100ms  ���� �д�
 			qsort10Buff[i-25]= wattLongBuff[i];
 		}
 	}
-	avg = AutoCal_10_Avg();
+	AutoCal_10_Avg();
 
 }
 
@@ -2241,9 +2231,7 @@ void AutoCal_100ms()// 100ms  ���� �д�
 
 void AutoCal_1watt()
 {
-	uint8_t wattBuff[10] = {10, 20, 30, 40, 50, 60 , 70, 80 , 90, 100};
 	int avg = 0;
-	uint16_t add;
 
 	if(m_rf.autoCalFlag != AUTOCAL_1WATT)return;
 
@@ -2303,8 +2291,6 @@ void AutoCal_1watt()
 
 void AutoCal_Frq()
 {
-  int avg = 0;
-  uint16_t add;
 
   if(m_rf.autoCalFlag != AUTOCAL_FRQ)return;
 
@@ -2491,10 +2477,12 @@ void RF_Rx_Parssing(uint8_t rxID)
 		memcpy(rxBuffPassing, m_rf.rxBuff, 30);
 		memset(m_rf.rxBuff, 0, 30);
 
-		Debug_Rx_RF_Printf(rxBuffPassing, m_rf.rxCnt);
-
-		m_rf.rxCnt = 0;
 		rxCallBackCmd = rxBuffPassing[RF_INDEX_CMD];
+		if(rxCallBackCmd != GEN_STATUS_CHECK_R)
+		{
+			Debug_Rx_RF_Printf(rxBuffPassing, m_rf.rxCnt);
+		}
+		m_rf.rxCnt = 0;
 		switch (rxCallBackCmd)
 		{
 			case GEN_STATUS_CHECK_R:

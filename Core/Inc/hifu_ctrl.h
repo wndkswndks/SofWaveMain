@@ -350,6 +350,7 @@ typedef struct
 	uint16_t powerSpecs;
 	uint8_t catridgeRxErrCnt;
 	uint8_t cartDataMoving;
+	uint8_t catridgeChk;
 } EEPROM_T;
 
 
@@ -400,6 +401,8 @@ void CARTRIGE_REQ_DATA(uint8_t idx);
 void Err_Init();
 void RF_PWM_Force_Stop();
 void RF_PWM_Force_Force_Stop();
+void Rf_TD_BHB004_Table_260212();
+void Pulse_Trig_TimeSave();
 
 
 /*  			function end  			*/
