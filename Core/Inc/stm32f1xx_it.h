@@ -62,6 +62,7 @@ void USART3_IRQHandler(void);
 void UART4_IRQHandler(void);
 void UART5_IRQHandler(void);
 /* USER CODE BEGIN EFP */
+void RF_Eg_Exp_Conter();
 
 /* USER CODE END EFP */
 

@@ -376,7 +376,6 @@ typedef struct
 void Rf_Config();
 void Rx_RF_Get(uint8_t getData);
 void Rf_Init();
-void RF_Eg_Exp_Conter();
 
 
 void RF_Rx_Parssing(uint8_t rxID);
