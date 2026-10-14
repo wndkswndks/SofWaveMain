@@ -198,7 +198,7 @@ typedef enum
 	ADC_CH_PELTIER = 1,
 	ADC_CH_WATER_TEMP = 2,
 
-	POWER_AC_OTHER = 0,
+	POWER_AC_OTHER = 2,
 	POWER_AC_KOREA = 1,
 } IO_E;
 
@@ -237,7 +237,8 @@ typedef struct
 	uint8_t MM;
 	uint8_t DD;
 	uint8_t dayOfWeek;
-	uint32_t time;
+	uint32_t hhmmss;
+	uint32_t hhmm;
 	uint8_t hour;
 	uint8_t min;
 	uint8_t sec;

@@ -352,7 +352,6 @@ typedef struct
 /*  			stuct end  				*/
 
 
-
 /*  			function start  		*/
 void TxTest();
 
@@ -396,6 +395,10 @@ void Debug_Printf_Value(char* str, int data, uint8_t cr);
 void Ready_ON();
 void Ready_OFF(uint8_t event);
 void Debug_Event(uint8_t event);
+void SD_Init(void);
+void SD_Write_Record(char* dirName, uint32_t yymmdd, uint16_t hhmm, const uint8_t* data, uint16_t len);
+void Debug_printf_str(const char *format, ...);
+
 
 /*  			extern start  			*/
 extern DEBUG_CMD_T m_debug;

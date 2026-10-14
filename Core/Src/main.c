@@ -113,7 +113,7 @@ int main(void)
 
 
   Err_Init();
-  SD_Init();
+//  SD_Init();
 
 
 //  HAL_Delay(5000);
@@ -135,6 +135,7 @@ int main(void)
   UartRxDataProcess();
   Rf_Config();
   Error_Check_Config();
+//  SD_Test();
 
 #else
 

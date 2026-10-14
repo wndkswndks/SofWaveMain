@@ -525,6 +525,7 @@ void IO_Init()
 
 	if(IS_AC_INPUT_STATE()) m_io.powerSpecs = POWER_AC_KOREA;
 	else m_io.powerSpecs = POWER_AC_OTHER;
+	Debug_printf_str("m_io.powerSpecs : %u", m_io.powerSpecs);
 
 	HP1_PELT_ON();
 	PELTIER_PWR_OFF();
@@ -587,8 +588,8 @@ void RTC_Config(void)
 		DS1308_GetDay(&m_io.dayOfWeek, &m_io.DD, &m_io.MM, &m_io.YY);
 
 		m_io.day = m_io.YY*10000 + m_io.MM*100 + m_io.DD;
-		m_io.time = m_io.hour*10000 + m_io.min*100 + m_io.sec;
-
+		m_io.hhmmss = m_io.hour*10000 + m_io.min*100 + m_io.sec;
+		m_io.hhmm = m_io.hour*10000 + m_io.min*100;
 
 
 #if 0

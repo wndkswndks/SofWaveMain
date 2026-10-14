@@ -651,7 +651,7 @@ uint8_t SD_CheckFreeSpace(void)
 
   return 0;
 }
-
+uint8_t sdExist;
 void SD_Init(void)
 {
   if(SD_Error_Chk(f_mount(&fs, "", 0), "f_mount"))return;
@@ -662,6 +662,7 @@ void SD_Init(void)
     f_mkdir("ERROR_LOG");
 
   printf("SD_Init Done\r\n");
+  sdExist = 1;
 }
 
 void SD_Read_All(const char* filename)
@@ -916,34 +917,7 @@ void SD_CleanupAll(void)
 }
 
 
-void SD_Error_Save(uint8_t YY, uint8_t MM, uint8_t DD, uint8_t hh, uint8_t mm)
-{
-	uint32_t YYMMDD = YY*10000 + MM*100 + DD;
-	uint16_t hhmm = hh*100 + mm;
-	uint8_t timeStr[11] ={0,};
 
-	sprintf(timeStr,"%08lu\r\n",HAL_GetTick());
-	SD_Write_Record("ERROR_LOG",YYMMDD, hhmm, timeStr, 10);
-
-}
-
-uint32_t tt1,tt2;
-uint8_t clrFlag;
-void SD_Test()
-{
-	static uint32_t timeStamp;
-
-	if(HAL_GetTick()-timeStamp >= 1000)
-	{
-
-		timeStamp = HAL_GetTick();
-		tt1 = timeStamp;
-		SD_Error_Save(26, 7, 31, 12, 19);
-		printf("%08lu\r\n",timeStamp);
-		tt2= HAL_GetTick() -tt1;
-	}
-
-}
 
 
 // ==============================================================================

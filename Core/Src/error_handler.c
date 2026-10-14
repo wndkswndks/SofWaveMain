@@ -20,7 +20,6 @@ void Err_Init()
 		  case IDX_TEMP_OUT:
 		  case IDX_TEMP_LIMIT_UNDER:
 		  case IDX_TEMP_LOW:
-		  case IDX_FLOW_LIMIT_UNDER:
 		  case IDX_BATTRY_LIMIT_OVER:
 		  case IDX_BATTRY_LIMIT_UNDER:
 		  case IDX_BATTRY_LIMIT_LOW:
@@ -322,7 +321,7 @@ void Error_Check_Main()
 #if 1
 	Check_Status(m_io.level1Status, 0, IDX_LEVEL_LOW);
 	Check_Status(m_err.flowLimitUnder, 0, IDX_FLOW_LIMIT_UNDER);
-	Check_Status(m_err.flowZero, 0, IDX_FLOW_LIMIT_UNDER);
+//	Check_Status(m_err.flowZero, 0, IDX_FLOW_LIMIT_UNDER);
 	Check_Status(m_err.powerSpecs, 0, IDX_POWER_SPECS);
 
 
@@ -417,12 +416,39 @@ void Error_Check_RF()
 	if(m_err.txEn)Error_Buff_Rf_Tx();
 
 }
+void SD_Error_Save(uint32_t YYMMDD, uint32_t hhmm, uint8_t* logData)
+{
+	uint8_t timeStr[11] ={0,};
+
+	if (logData == NULL) return;
+	int len = strlen((char*)logData);
+	SD_Write_Record("ERROR_LOG",YYMMDD, hhmm, logData, len);
+}
+
+uint32_t tt1,tt2;
+extern uint8_t sdExist;
+void SD_Test()
+{
+	if(!sdExist)return;
+	static uint32_t timeStamp;
+
+	if(HAL_GetTick()-timeStamp >= 1000)
+	{
+
+		timeStamp = HAL_GetTick();
+		tt1 = timeStamp;
+		SD_Error_Save(m_io.day,m_io.hhmm);
+		printf("%08lu\r\n",timeStamp);
+		tt2= HAL_GetTick() -tt1;
+	}
+
+}
 
 void Error_Check_Config()
 {
 	static uint32_t timeStamp;
 	if(!m_rf.sysChkFlag) return;
-	if(m_eep.cartDataMoving) return;
+//	if(m_eep.cartDataMoving) return;
 
 	Check_Cart_Req_Config();
 	if(HAL_GetTick()-timeStamp >= 1000)

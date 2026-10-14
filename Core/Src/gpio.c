@@ -60,8 +60,7 @@ void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(PELTIER_DA_OUT_GPIO_Port, PELTIER_DA_OUT_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, SPI1_NSS_Pin|CON_SOL2_ON_Pin|CON_SOL1_ON_Pin|COOLING_LV5_Pin
-                          |COOLING_LV4_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(SPI1_NSS_GPIO_Port, SPI1_NSS_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, HP1_RST_CONTROL_Pin|HP1_Boot_CONTROL_Pin|MP3_PREVIOUS_VOLMI_Pin|VBAT_ADC_EN_Pin, GPIO_PIN_RESET);
@@ -71,6 +70,9 @@ void MX_GPIO_Init(void)
                           |RF_Pulse_Signal_Pin|CILLER_PWR_ON_Pin|WATER_PUMP_PWR_EN_Pin|RF_PWR_EN_Pin
                           |AC_RLY_ON_Pin|BUFFER_ON_Pin|HANDLE_LED_BLUE_Pin|HANDLE_LED_GREED_Pin
                           |HANDLE_LED_RED_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOC, CON_SOL2_ON_Pin|CON_SOL1_ON_Pin|COOLING_LV5_Pin|COOLING_LV4_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : BUZZER_Pin BAT_CHG_ON_Pin HP1_PWR_EN_Pin HP2_Boot_CONTROL_Pin
                            HP2_RST_CONTROL_Pin HP2_PWR_EN_Pin PELTIER_PWR_ON_Pin LED_DR2_Pin

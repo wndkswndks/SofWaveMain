@@ -60,6 +60,28 @@ void Uart_Clear_Rx_Ring(UART_T* uart, uint8_t idx)
 	uart->rxCmdChk &= ~(1<<idx);
 }
 
+
+void Debug_printf_str(const char *format, ...)
+{
+	char buffer[128]; // 변환된 문자열을 담을 임시 버퍼 (크기는 시스템에 맞게 조절)
+	va_list args; // 가변 인자 목록을 저장할 변수
+
+	// 1. 가변 인자 처리 시작 (format 이후의 인자들을 args에 묶음)
+	va_start(args, format);
+
+	// 2. 가변 인자들을 사용해 형식에 맞게 문자열을 만들어 buffer에 저장
+	// vsnprintf는 버퍼 크기(sizeof)를 넘지 않게 막아주어 안전해!
+	vsnprintf(buffer, sizeof(buffer), format, args);
+
+	// 3. 가변 인자 처리 종료
+	va_end(args);
+
+	// 4. 완성된 텍스트(buffer)를 실제 UART로 전송 (이 부분을 DMA나 인터럽트 함수로 연결)
+	// 예: HAL_UART_Transmit_DMA(&huart1, (uint8_t*)buffer, strlen(buffer));
+	HAL_UART_Transmit(&huart1, (uint8_t*)buffer, strlen(buffer), 100);
+}
+
+
 void Debug_Printf(char* str, uint8_t cr)
 {
 #ifdef DEBUG_PRINT
