@@ -305,7 +305,7 @@ typedef enum
 	EVENT_16 = 16,
 	EVENT_17 = 17,
 
-	CMD_HP1_COOL_CTRL = 1,
+	CMD_HP1_COOL_ON = 1,
 	CMD_HP1_COOL_OFF = 2,
 
 	AUTOCAL_MAIN     = 1,

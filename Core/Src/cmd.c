@@ -348,6 +348,7 @@ void Ready_ON()
 void Ready_OFF(uint8_t event)
 {
 	m_rf.treatStatus = STATUS_STNBY;
+	RF_Pulse_Signal_GPIO_Port_L();
 	RF_PWM_Force_Stop();
 	Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_STNBY);
 	Tx_Hand1_Msg(CMD_LCD_STATUS, STATUS_STNBY);
@@ -400,7 +401,6 @@ void PreCooling_ON()
 	m_rf.treatStatus = STATUS_PRECOOLING;
 	PELTIER_PWR_ON();
 	Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_PRECOOLING);
-	Tx_Hand1_Msg(CMD_LCD_STATUS, STATUS_PRECOOLING);
 	if(m_io.sol1OnStatus) SOL1_ON();
 	Debug_Printf("PreCooling_ON",1);
 
@@ -411,7 +411,6 @@ void Peltier_Ctrl_Start()
 	if(m_io.waterPumpPwrEn && m_io.ChillerPwrEn && m_io.sol1OnStatus)
 	{
 		PELTIER_PWR_ON();
-		Tx_Hand1_Msg(CMD_LCD_STATUS, STATUS_PRECOOLING);
 		SOL1_ON();
 		Debug_Printf("PreCooling_ON",1);
 	}
@@ -624,7 +623,7 @@ void Check_Cart_Req_Config()
 		else if(Check_Cart_Req(CMD_ISSUED_DD, m_eep.issuedDD, DD_MIN, DD_MAX)){txCnt++; }
 		else if(Check_Cart_Req(CMD_REMIND_SHOT, m_eep.remainingShotNum, 1, CATRIDGE_REMAIN_MAX)){txCnt++; }
 		else if(Check_Cart_Req(CMD_REMIND_SHOT_MAX, m_eep.remainingShotNumMax, 1, CATRIDGE_REMAIN_MAX)){txCnt++; }
-		else if(Check_Cart_Req(CMD_POWER_SPECS, m_eep.powerSpecs, 0, 1)){txCnt++; }
+		else if(Check_Cart_Req(CMD_POWER_SPECS, m_eep.powerSpecs, POWER_AC_KOREA, POWER_AC_OTHER)){txCnt++; }
 		else if(Check_Cart_Req(CMD_CATRIDGE_STATUS, m_eep.catridgeStatus, NONE_SING_UP_CODE, SING_UP_CODE)){txCnt++; }
 		else
 		{
@@ -1534,14 +1533,14 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 		break;
 
 		case CMD_DEBUG_PELTIER:
-			if (data== CMD_HP1_COOL_CTRL)
+			if (data== CMD_HP1_COOL_ON)
 			{
-				Tx_Hand1_Msg(CMD_HP1_ADD, CMD_HP1_COOL_CTRL);
+
 				PELTIER_PWR_ON();
 			}
 			else if (data== CMD_HP1_COOL_OFF)
 			{
-				Tx_Hand1_Msg(CMD_HP1_ADD, CMD_HP1_COOL_OFF);
+
 				PELTIER_PWR_OFF();
 			}
 
@@ -1870,7 +1869,7 @@ void Hand_Rx_Parssing(uint8_t add, int data)
 				if(CMD_TRANDU1_FRQ <= add && add <=CMD_TRANDU7_FRQ)
 				{
 					m_eep.rfFrqBuff[add-CMD_TRANDU_FRQ_BASE] = data;
-					//Tx_LCD_Msg(add, data);
+					Tx_LCD_Msg(add, data);
 				}
 				else if(CMD_TRANDU1_WATT10 <= add && add <=CMD_TRANDU7_WATT005)
 				{

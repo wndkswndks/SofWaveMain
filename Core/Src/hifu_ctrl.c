@@ -1222,7 +1222,7 @@ void Rf_Init()
 //	HP1_Pwr_ON();
 	m_rf.pluseOn = 0;
 	m_rf.pluseLevel = 0;
-	HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_LOW);
+	RF_Pulse_Signal_GPIO_Port_L();
 	HAL_Delay(1500);
 	RF_Pwr_ON();
 
@@ -1636,7 +1636,7 @@ void RF_eg_Exp_On(uint32_t expTime)
 	m_rf.egExpOn = 1;
 	m_rf.pluseEgTimeStamp = HAL_GetTick();
 	m_rf.pluseEnginerHigh = expTime;
-	HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_HIGH);
+	RF_Pulse_Signal_GPIO_Port_H();
 }
 
 
@@ -1691,7 +1691,7 @@ void RF_Pwm_Conter_Common(uint8_t pulseNum)
 		switch (m_rf.pluseLevel)
 		{
 			case PWM_H_LEVEL:
-				HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_HIGH);
+				RF_Pulse_Signal_GPIO_Port_H();
 				if(HAL_GetTick() - m_rf.pluseTimeStamp >= ((float)m_rf.pulseDuration/pulseNum *TIME_100MS))
 				{
 					Pulse_Trig_TimeSave();
@@ -1711,7 +1711,7 @@ void RF_Pwm_Conter_Common(uint8_t pulseNum)
 			break;
 
 			case PWM_L_LEVEL:
-				if(m_rf.interval != 0)HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_LOW);
+				if(m_rf.interval != 0)RF_Pulse_Signal_GPIO_Port_L();
 				if(HAL_GetTick() - m_rf.pluseTimeStamp >= m_rf.interval*TIME_100MS)
 				{
 					Pulse_Trig_TimeSave();
@@ -1722,7 +1722,7 @@ void RF_Pwm_Conter_Common(uint8_t pulseNum)
 			break;
 
 			case PWM_POST_LEVEL:
-				HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_LOW);
+				RF_Pulse_Signal_GPIO_Port_L();
 				if(HAL_GetTick() - m_rf.pluseTimeStamp >= m_rf.postCooling*TIME_100MS)
 				{
 					Pulse_Trig_TimeSave();
@@ -1743,7 +1743,6 @@ void RF_PWM_Force_Stop()
 	if(m_rf.pluseOn)
 	{
 		m_rf.pluseOn = 0;
-		HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_LOW);
 		Pulse_Trig_TimeSave();
 		m_rf.pluseLevel = PWM_H_LEVEL;
 		m_rf.readyFlag = READY_OFF;
@@ -1759,7 +1758,7 @@ void RF_PWM_Force_Force_Stop()
 {
 	m_rf.pluseOn = 0;
 	m_rf.treatStatus = STATUS_STNBY;
-	HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_LOW);
+	RF_Pulse_Signal_GPIO_Port_L();
 	Pulse_Trig_TimeSave();
 	m_rf.pluseLevel = PWM_H_LEVEL;
 	m_rf.readyFlag = READY_OFF;
@@ -1774,8 +1773,7 @@ void RF_PWM_Force_Force_Stop()
 	Tx_Hand1_Msg(CMD_LCD_STATUS, STATUS_STNBY);
 	m_rf.readyFlag = READY_OFF;
 	Body_Led_Ctrl(BODY_LED_STANDBY);
-	Debug_Printf("READY_OFF",1);
-	Debug_Event(EVENT_11);
+	Debug_Printf("FORCE READY_OFF",1);
 }
 
 void RF_Eg_Exp_Conter()
@@ -1784,7 +1782,7 @@ void RF_Eg_Exp_Conter()
 	{
 		if(HAL_GetTick()- m_rf.pluseEgTimeStamp > m_rf.pluseEnginerHigh)
 		{
-			HAL_GPIO_WritePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin ,SOF_LOW);
+			RF_Pulse_Signal_GPIO_Port_L();
 			m_rf.egExpOn = 0;
 			m_rf.expEndFlag = 1;
 		}

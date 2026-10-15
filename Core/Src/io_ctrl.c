@@ -41,12 +41,14 @@ void PELTIER_PWR_ON()
 {
 	PELTIER_PWR_H();
 	Debug_Printf("PELTIER_PWR_ON",1);
+	Tx_Hand1_Msg(CMD_HP1_ADD, CMD_HP1_COOL_ON);
 	m_io.ptrPwrOn = 1;
 }
 void PELTIER_PWR_OFF()
 {
 	PELTIER_PWR_L();
 	Debug_Printf("PELTIER_PWR_OFF",1);
+	Tx_Hand1_Msg(CMD_HP1_ADD, CMD_HP1_COOL_OFF);
 	m_io.ptrPwrOn = 0;
 }
 
@@ -348,7 +350,6 @@ void HP_Connect_Config()
 			if(m_io.HP1_Insert != HP_INSERT)
 			{
 				Debug_Printf("HP_INSERT",1);
-				Debug_Event(EVENT_7);
 			}
 			m_io.HP1_Insert = HP_INSERT;
 		}
@@ -357,7 +358,6 @@ void HP_Connect_Config()
 			if(m_io.HP1_Insert != HP_UN_INSERT)
 			{
 				Debug_Printf("HP_UN_INSERT",1);
-				Debug_Event(EVENT_8);
 				m_eep.catridgeDetect = CATRIGE_CHK_UN_DETECT;
 //				Tx_LCD_Msg(CMD_CATRIDGE_EVENT, m_eep.catridgeDetect);
 			}
@@ -451,7 +451,7 @@ void Flow_Stop_Check()
 	if(HAL_GetTick()-timeStamp >= 1000)
 	{
 		timeStamp = HAL_GetTick();
-		if(m_io.flowSensorFrqChk==0) m_io.flowSensorFrq = 0;
+
 		switch (m_io.sol1On)
 		{
 			case 1:
@@ -461,6 +461,7 @@ void Flow_Stop_Check()
 					if(flowErrCnt1>=3)
 					{
 						flowErrCnt1 = 0;
+						if(m_io.flowSensorFrqChk==0) m_io.flowSensorFrq = 0;
 						if(m_err.flowLimitUnder !=1)
 						{
 							Ready_OFF(EVENT_4);
@@ -484,6 +485,7 @@ void Flow_Stop_Check()
 					if(flowErrCnt2>=3)
 					{
 						flowErrCnt2 = 0;
+						if(m_io.flowSensorFrqChk==0) m_io.flowSensorFrq = 0;
 						if(m_err.flowLimitUnder !=2)
 						{
 							Ready_OFF(EVENT_10);
@@ -525,7 +527,7 @@ void IO_Init()
 
 	if(IS_AC_INPUT_STATE()) m_io.powerSpecs = POWER_AC_KOREA;
 	else m_io.powerSpecs = POWER_AC_OTHER;
-	Debug_printf_str("m_io.powerSpecs : %u", m_io.powerSpecs);
+	Debug_printf_str("m_io.powerSpecs : %u\r\n", m_io.powerSpecs);
 
 	HP1_PELT_ON();
 	PELTIER_PWR_OFF();
@@ -708,7 +710,7 @@ void IO_Config()
 	HP_Connect_Config();
 	Battery_Read();
 	RTC_Config();
-	Chiller_Temperature_Read();
+	//Chiller_Temperature_Read();
  	WDT_LED_Config();
  	Foot_Insert_Chk();
  	PowerSpecs_Chk();

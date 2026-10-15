@@ -437,7 +437,7 @@ void SD_Test()
 
 		timeStamp = HAL_GetTick();
 		tt1 = timeStamp;
-		SD_Error_Save(m_io.day,m_io.hhmm);
+		SD_Error_Save(m_io.day,m_io.hhmm,"test");
 		printf("%08lu\r\n",timeStamp);
 		tt2= HAL_GetTick() -tt1;
 	}
