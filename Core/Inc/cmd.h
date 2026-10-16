@@ -347,6 +347,7 @@ typedef struct
 typedef struct
 {
 	uint8_t noview;
+	uint8_t preCmd;
 } DEBUG_CMD_T;
 
 /*  			stuct end  				*/

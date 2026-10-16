@@ -269,10 +269,13 @@ void HP1_Pwr_ON();
 void HP1_Pwr_OFF();
 void HP2_Pwr_ON();
 void HP2_Pwr_OFF();
-void WaterPump_Pwr_ON();
-void WaterPump_Pwr_OFF();
+void Pump_Pwr_ON();
+void Pump_Pwr_OFF();
 void Ciller_Pwr_ON();
 void Ciller_Pwr_OFF();
+void Pump_Ciller_Pwr_ON();
+void Pump_Ciller_Pwr_OFF();
+
 void Buzzer_ON();
 void Buzzer_OFF_Config();
 

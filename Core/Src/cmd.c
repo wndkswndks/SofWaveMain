@@ -107,30 +107,68 @@ void Debug_Event(uint8_t event)
 	Debug_Printf_Value("EVENT", event, 1);
 
 }
+
+uint8_t Excep_Printf(uint8_t cmd, int data, uint8_t rxtx)
+{
+	uint8_t num;
+	int veiwData;
+	switch (cmd)
+	{
+		case CMD_ENERGY:
+			if(rxtx == DEBUG_TX) Debug_printf_str("J%u",data);
+			return 0;
+		break;
+		case CMD_PULSE_DURATION:
+			if(rxtx == DEBUG_TX) Debug_printf_str("T%u",data);
+			return 0;
+		break;
+		case CMD_POST_COOLING:
+			if(rxtx == DEBUG_TX) Debug_printf_str("C%u",data);
+			return 0;
+		break;
+		case CMD_INTERVAL:
+			if(rxtx == DEBUG_TX) Debug_printf_str("i%u",data);
+			return 0;
+		break;
+		case CMD_DEVICE_STATUS:
+			num = data/1000;
+			veiwData = data%1000;
+			if(rxtx == DEBUG_TX) Debug_printf_str("[%u] :%d",num, veiwData);
+			return 0;
+		break;
+		case CMD_TEST_PULSE:
+			if(rxtx == DEBUG_TX) Debug_printf_str("P%u",data);
+			return 0;
+		break;
+
+	}
+	return 1;
+}
+uint8_t Divis_Printf(uint8_t cmd)
+{
+	if(m_debug.preCmd == cmd) Debug_printf_str(" /");
+	else Debug_printf_str("\r\n");
+
+	m_debug.preCmd = cmd;
+}
 void Debug_HAND_Printf(uint8_t rxtx, uint8_t cmd, int data)
 {
 	if(m_debug.noview) return;
-#ifdef DEBUG_PRINT
-
 	if((cmd == CMD_TEMPERATURE) ||(cmd == CMD_PWM_DUTY))return;
 	if(rxtx != DEBUG_RX && rxtx != DEBUG_TX) return;
 	char rxtxStr[2][3] = {"Rx","Tx"};
-	printf("[%s_HAND] [%u,%d]\r\n",rxtxStr[rxtx], cmd, data);
 
-#endif
+	printf("[%s_HAND] [%u,%d]\r\n",rxtxStr[rxtx], cmd, data);
 
 }
 
 void Debug_LCD_Printf(uint8_t rxtx, uint8_t cmd, int data)
 {
-#ifdef DEBUG_PRINT
 	if(m_debug.noview) return;
 	if(rxtx != DEBUG_RX && rxtx != DEBUG_TX) return;
 	char rxtxStr[2][3] = {"Rx","Tx"};
+
 	printf("[%s_LCD] [%u,%d]\r\n",rxtxStr[rxtx], cmd, data);
-
-#endif
-
 }
 
 
@@ -310,9 +348,7 @@ void Tx_RF_Msg(uint8_t* buff, uint8_t len)
 {
 	while(HAL_GetTick() -m_rf.lastRfGenTxTime<50);
 	HAL_UART_Transmit(&huart4,buff, len,100);
-#ifdef DEBUG_PRINT
 	//Debug_Tx_RF_Printf(buff, len);
-#endif
 	m_rf.lastRfGenTxTime = HAL_GetTick();
 	RF_Rx_Parssing(RF_RX_CALLBACK);
 
@@ -366,17 +402,24 @@ uint8_t Ready_Enter_Chk()
 	uint8_t bool3 = (m_eep.catridgeStatus == SING_UP_CODE);
 	uint8_t bool4 = 1;
 
-
+	if(m_err.errSkip)
+	{
+		Debug_printf_str("Ready ERROR Skip");
+		return 1;
+	}
 	for(int i =0 ;i < 50;i++)
 	{
 		if(i==IDX_CATRIGE_RESHOT_LOW_1000)continue;
 		if(i==IDX_CATRIGE_RESHOT_LOW_500)continue;
 		if(i==IDX_CATRIGE_RESHOT_ERR)continue;
 		if(i==IDX_PRE_COOL_ERR)continue;
+		if(i==IDX_FLOW_LIMIT_UNDER)continue;
+		if(i==IDX_FLOW_LIMIT_STOP)continue;
+
 		if(m_err.errDataBuff[i])
 		{
 			Tx_LCD_Msg(CMD_ERR, m_err.errDataBuff[i]);
-			HAL_Delay(1500);
+			HAL_Delay(1000);
 			bool4 = 0;
 		}
 
@@ -593,7 +636,8 @@ uint8_t Check_Cart_Req(uint8_t cmd, uint16_t nowValue, uint16_t min, uint16_t ma
 
 void Check_Cart_Req_Config()
 {
-	static uint8_t txCnt = 0;
+	uint8_t txCnt = 0;
+	static uint8_t txOver = 0;
 
 	static uint32_t timeStamp;
 
@@ -601,13 +645,14 @@ void Check_Cart_Req_Config()
 
 	if(((m_eep.catridgeDetect != CATRIGE_CHK_OK) && (m_eep.catridgeDetect != CATRIGE_CHK_NEW)) ||
 	(m_eep.catridgeStatus != SING_UP_CODE) ||
-	(m_err.handTimeout >=COMU_MAX_CNT)
-	)
+	(m_err.handTimeout >=COMU_MAX_CNT)||
+	(txOver >= 20))
 	{
-		txCnt = 0;
+		txOver = 0;
+		m_eep.catridgeChk = 0;
 		return;
 	}
-	if(txCnt >= 100) return;
+
 
 	if(HAL_GetTick()-timeStamp >= 500)
 	{
@@ -701,7 +746,6 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 		break;
 		case CMD_TEMP_DUTY_ON:
 			Tx_Hand1_Msg(CMD_TEMP_DUTY_ON, data);
-			m_hand1.commuChk = data;
 		break;
 
 		case CMD_DEBUG_RF_WATT_MEATER_IP:
@@ -736,8 +780,8 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 
 
 		case CMD_DEBUG_PUMP:
-			if(data) WaterPump_Pwr_ON();
-			else WaterPump_Pwr_OFF();
+			if(data) Pump_Pwr_ON();
+			else Pump_Pwr_OFF();
 		break;
 
 		case CMD_DEBUG_CHILLER:
@@ -800,17 +844,15 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 		case CMD_DEBUG_ERR_CRL:
 			if (data)
 			{
-				m_rf.sysChkFlag = 1;
+				m_err.errSkip = 1;
+				Debug_printf_str("ERROR Skip");
 			}
 			else
 			{
-				m_rf.sysChkFlag = 0;
-				for(int i =0 ;i < 50;i++)
-				{
-					m_err.errDataBuff[i] = 0;
-					m_err.errCheckBuff[i] = 0;
-				}
+				m_err.errSkip = 0;
+				Debug_printf_str("ERROR Check");
 			}
+
 		break;
 
 
@@ -1077,8 +1119,6 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 				}
 			}
 			Tx_LCD_Msg(CMD_PULSE_DURATION, m_rf.pulseDuration);
-
-
 		break;
 
 		case CMD_POST_COOLING:
@@ -1354,8 +1394,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 			{
 				if(Ready_Enter_Chk())
 				{
-					WaterPump_Pwr_ON();
-					Ciller_Pwr_ON();
+					Pump_Ciller_Pwr_ON();
 					PreCooling_ON();
 					if(m_rf.stbyTimeStamp && HAL_GetTick() - m_rf.stbyTimeStamp <10000)
 					{
@@ -1446,7 +1485,6 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 
 		case CMD_TEMP_DUTY_ON:
 			Tx_Hand1_Msg(CMD_TEMP_DUTY_ON, data);
-			m_hand1.commuChk = data;
 		break;
 
 		case CMD_TEST_PULSE:
@@ -1459,6 +1497,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 			{
 				m_rf.interval = 0;
 				Tx_LCD_Msg(CMD_INTERVAL, m_rf.interval);
+
 			}
 			else if(m_rf.PulseOption == 2)
 			{
@@ -1513,9 +1552,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 		break;
 
 		case CMD_COOLING:
-			WaterPump_Pwr_ON();
-			HAL_Delay(5);
-			Ciller_Pwr_ON();//나중에 플로우 값 정상들어와야지 켜지게 하기
+			Pump_Ciller_Pwr_ON();
 		break;
 
 		case CMD_TEMP_OFFSET:
@@ -1523,8 +1560,8 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 		break;
 
 		case CMD_DEBUG_PUMP:
-			if(data) WaterPump_Pwr_ON();
-			else WaterPump_Pwr_OFF();
+			if(data) Pump_Pwr_ON();
+			else Pump_Pwr_OFF();
 		break;
 
 		case CMD_DEBUG_CHILLER:
@@ -1549,17 +1586,15 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 		case CMD_DEBUG_ERR_CRL:
 			if (data)
 			{
-				m_rf.sysChkFlag = 1;
+				m_err.errSkip = 1;
+				Debug_printf_str("ERROR Skip");
 			}
 			else
 			{
-				m_rf.sysChkFlag = 0;
-				for(int i =0 ;i < 50;i++)
-				{
-					m_err.errDataBuff[i] = 0;
-					m_err.errCheckBuff[i] = 0;
-				}
+				m_err.errSkip = 0;
+				Debug_printf_str("ERROR Check");
 			}
+
 		break;
 
 		case CMD_RF_AREA_ALL_EN:

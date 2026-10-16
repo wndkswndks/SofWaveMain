@@ -362,7 +362,6 @@ typedef struct
 	uint32_t lastHPTxTime;
 	uint8_t liveOk;
 	uint8_t liveChkCnt;
-	uint8_t commuChk;
 	uint8_t cartAllOk;
 	uint16_t cartDetectFlag;
 } HAND_T;
@@ -397,7 +396,6 @@ void Tx_RF_Watt_Module(uint8_t ch, uint16_t watt);
 void RF_eg_Exp_On(uint32_t expTime);
 void Tx_RF_FRQ_Module(uint8_t ch, uint16_t frequency);
 void CARTRIGE_REQ_DATA(uint8_t idx);
-void Err_Init();
 void RF_PWM_Force_Stop();
 void RF_PWM_Force_Force_Stop();
 void Rf_TD_BHB004_Table_260212();

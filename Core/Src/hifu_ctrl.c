@@ -1234,10 +1234,7 @@ void Rf_Init()
 }
 void Hand_Init()//
 {
-
-	m_hand1.commuChk = 1;
 	Debug_Printf("HP1_CATRIGE_DETECT INIT",1);
-
 }
 
 
@@ -2463,10 +2460,14 @@ void RF_Rx_Parssing(uint8_t rxID)
 				if(HAL_GetTick() - m_rf.lastTimeStamp>50)break;
 			}
 		}
+//		if(m_rf.lastTimeStamp == 0)
+//		{
+//			printf("[ERR]RF_FeedBack No!!\r\n");
+//			return;
+//		}
 	}
 
 
-	if(m_rf.lastTimeStamp == 0) return;
 
 	if(HAL_GetTick() - m_rf.lastTimeStamp>50)
 	{

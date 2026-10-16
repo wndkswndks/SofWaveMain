@@ -108,7 +108,7 @@ void HP2_Pwr_OFF()
 	m_io.HP2PwrEn = 1;
 }
 
-void WaterPump_Pwr_ON()
+void Pump_Pwr_ON()
 {
 	if(!m_io.waterPumpPwrEn)
 	{
@@ -118,7 +118,7 @@ void WaterPump_Pwr_ON()
 	}
 }
 
-void WaterPump_Pwr_OFF()
+void Pump_Pwr_OFF()
 {
 	WATER_PUMP_PWR_EN_L();
 	Debug_Printf("PUMP OFF",1);
@@ -143,7 +143,17 @@ void Ciller_Pwr_OFF()
 	m_io.ChillerPwrEn = 0;
 }
 
+void Pump_Ciller_Pwr_ON()
+{
+	Pump_Pwr_ON();
+	Ciller_Pwr_ON();
+}
 
+void Pump_Ciller_Pwr_OFF()
+{
+	Ciller_Pwr_OFF();
+	Pump_Pwr_OFF();
+}
 
 void Buzzer_ON()
 {
@@ -347,10 +357,7 @@ void HP_Connect_Config()
 
 		if(IS_HP1_INSERT())
 		{
-			if(m_io.HP1_Insert != HP_INSERT)
-			{
-				Debug_Printf("HP_INSERT",1);
-			}
+			if(m_io.HP1_Insert != HP_INSERT) Debug_Printf("HP_INSERT",1);
 			m_io.HP1_Insert = HP_INSERT;
 		}
 		else
@@ -359,7 +366,6 @@ void HP_Connect_Config()
 			{
 				Debug_Printf("HP_UN_INSERT",1);
 				m_eep.catridgeDetect = CATRIGE_CHK_UN_DETECT;
-//				Tx_LCD_Msg(CMD_CATRIDGE_EVENT, m_eep.catridgeDetect);
 			}
 			m_io.HP1_Insert = HP_UN_INSERT;
 		}
@@ -428,8 +434,7 @@ void Level_Check()
 		//error
 		if(!m_io.levelStatusErr)
 		{
-			Ciller_Pwr_OFF();//���߿� �÷ο� �� ������;���?������ �ϱ�
-			WaterPump_Pwr_OFF();
+			Pump_Ciller_Pwr_OFF();//���߿� �÷ο� �� ������;���?������ �ϱ�
 			m_io.levelStatusErr = 1;
 		}
 	}
@@ -445,7 +450,6 @@ void Flow_Stop_Check()
 	uint8_t is_flowOkSolOff = (10<m_io.flowSensorFrq&&m_io.flowSensorFrq<40);
 
 	static uint32_t timeStamp;
-	static uint8_t flowErrCnt1,flowErrCnt2;
 
 	if(!m_rf.sysChkFlag) return;
 	if(HAL_GetTick()-timeStamp >= 1000)
@@ -457,50 +461,22 @@ void Flow_Stop_Check()
 			case 1:
 				if((!is_flowOkSolOn)||(!m_io.flowSensorFrqChk))
 				{
-					flowErrCnt1++;
-					if(flowErrCnt1>=3)
-					{
-						flowErrCnt1 = 0;
-						if(m_io.flowSensorFrqChk==0) m_io.flowSensorFrq = 0;
-						if(m_err.flowLimitUnder !=1)
-						{
-							Ready_OFF(EVENT_4);
-							PELTIER_PWR_OFF();
-							SOL1_OFF();
-						}
-						m_err.flowLimitUnder = 1;
-					}
+					m_err.flowLimitUnder1 = 1;
 				}
 				else
 				{
-					m_err.flowLimitUnder = 0;
-					flowErrCnt1 = 0;
+					m_err.flowLimitUnder1 = 0;
 				}
 			break;
 
 			case 0:
 				if((!is_flowOkSolOff)||(!m_io.flowSensorFrqChk))
 				{
-					flowErrCnt2++;
-					if(flowErrCnt2>=3)
-					{
-						flowErrCnt2 = 0;
-						if(m_io.flowSensorFrqChk==0) m_io.flowSensorFrq = 0;
-						if(m_err.flowLimitUnder !=2)
-						{
-							Ready_OFF(EVENT_10);
-							PELTIER_PWR_OFF();
-							WaterPump_Pwr_OFF();
-							Ciller_Pwr_OFF();
-							SOL1_OFF();
-						}
-						m_err.flowLimitUnder = 2;
-					}
+					m_err.flowLimitUnder2 = 1;
 				}
 				else
 				{
-					m_err.flowLimitUnder = 0;
-					flowErrCnt2 = 0;
+					m_err.flowLimitUnder2 = 0;
 				}
 			break;
 
@@ -710,7 +686,7 @@ void IO_Config()
 	HP_Connect_Config();
 	Battery_Read();
 	RTC_Config();
-	//Chiller_Temperature_Read();
+	Chiller_Temperature_Read();
  	WDT_LED_Config();
  	Foot_Insert_Chk();
  	PowerSpecs_Chk();
@@ -727,7 +703,7 @@ void IO_Test()
 	{
 		m_io.test1 = 0;
 //		BAT_CHG_ON_H();
-	WaterPump_Pwr_ON();
+	Pump_Pwr_ON();
 
 
 	}
@@ -735,7 +711,7 @@ void IO_Test()
 	{
 		m_io.test1 = 0;
 //		BAT_CHG_ON_L();
-	WaterPump_Pwr_OFF();
+	Pump_Pwr_OFF();
 
 	}
 	if(m_io.test2 == 1)

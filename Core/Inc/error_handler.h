@@ -24,7 +24,7 @@ typedef enum
 
 	CHILLER_TEMP_MAX = 40,
 
-	COMU_MAX_CNT = 10,
+	COMU_MAX_CNT = 5,
 	FLOW_ZERO = 0,
 	FLOW_LOW_MAX = 40,
 	FLOW_LOW_MIN = 2,
@@ -96,6 +96,10 @@ typedef enum
 	ERR_CHK_MAIN = 11,
 	ERR_CHK_HP = 12,
 	ERR_CHK_RF = 13,
+
+	ERR_DEL_1 = 1,
+	ERR_DEL_2 = 2,
+	ERR_DEL_3 = 3,
 } ERROR_DATA_E;
 
 
@@ -119,7 +123,8 @@ typedef enum
     IDX_AREA_RESET = 15,
     IDX_GOTO_IDEL = 16,
     IDX_POWER_SPECS = 17,
-    IDX_MAIN_EVENT_END = 18, //~~~~~
+    IDX_FLOW_LIMIT_STOP = 18,
+    IDX_MAIN_EVENT_END = 19, //~~~~~
 
     //------------------------------
     IDX_HP_EVENT_START = 20,
@@ -176,7 +181,8 @@ typedef struct
 	uint8_t handComuErr;
 	int handTimeout;
 
-	uint8_t flowLimitUnder;
+	uint8_t flowLimitUnder1;
+	uint8_t flowLimitUnder2;
 	uint8_t flowZero;
 	uint8_t powerSpecs;
 	uint8_t autoCalComuErr;
@@ -188,6 +194,7 @@ typedef struct
 	uint8_t errDataBuff[50];
 	uint8_t errCheckBuff[50];
 	uint16_t errStatus[4];
+	uint8_t errSkip;
 	uint8_t statusTx;
 	uint8_t txEn;
 	uint32_t errLedViewTime;
@@ -205,6 +212,7 @@ void Error_Check_RF();
 void Error_Buff_Main_Tx();
 void Error_Buff_HP_Tx();
 void Error_Buff_Rf_Tx();
+void SD_Error_Save(uint32_t YYMMDD, uint32_t hhmm, uint8_t* logData);
 
 
 /*  			function end  			*/

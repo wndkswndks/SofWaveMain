@@ -112,7 +112,6 @@ int main(void)
   LCD_Init();
 
 
-  Err_Init();
 //  SD_Init();
 
 
