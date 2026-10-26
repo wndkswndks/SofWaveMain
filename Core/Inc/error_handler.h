@@ -19,7 +19,7 @@ typedef enum
 	TEMP_MIN = -10,
 	TEMP_LOW_VALUE = -5,
 
-	TEMP_OUT_MAX   = 290,
+	TEMP_OUT_MAX   = 350,
 	TEMP_OUT_MIN = -100,
 
 	CHILLER_TEMP_MAX = 40,

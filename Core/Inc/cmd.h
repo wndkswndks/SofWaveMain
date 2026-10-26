@@ -52,6 +52,7 @@ typedef enum
 	CMD_RF_AREA_3_EN	= 25,
 	CMD_RF_AREA_4_EN	= 26,
 	CMD_RF_AREA_SEL = 27,
+	CMD_SDCARD_READ = 28,
 
 
 	CMD_TEMP_OFFSET = 29,
@@ -346,7 +347,7 @@ typedef struct
 } UART_T;
 typedef struct
 {
-	uint8_t noview;
+	uint8_t statusView;
 	uint8_t preCmd;
 } DEBUG_CMD_T;
 
@@ -399,6 +400,7 @@ void Debug_Event(uint8_t event);
 void SD_Init(void);
 void SD_Write_Record(char* dirName, uint32_t yymmdd, uint16_t hhmm, const uint8_t* data, uint16_t len);
 void Debug_printf_str(const char *format, ...);
+void SD_Read_All_Binary(const char* filename);
 
 
 /*  			extern start  			*/

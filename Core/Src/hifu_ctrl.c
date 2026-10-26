@@ -1234,7 +1234,6 @@ void Rf_Init()
 }
 void Hand_Init()//
 {
-	Debug_Printf("HP1_CATRIGE_DETECT INIT",1);
 }
 
 
@@ -1263,6 +1262,7 @@ void LCD_Init()
 	Tx_LCD_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
 	Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_STNBY);
 	Tx_LCD_Msg(CMD_RF_AREA_SEL, m_rf.rfAreaMode);
+//	Tx_Hand1_Msg(CMD_ADC_CHANGE, 5);//TEMP 5
 
 
 	m_rf.preCooltimeOut = PRECOOL_TIMEOUT;
@@ -1288,7 +1288,6 @@ void RF_Watt_All_Calculate()
 	}
 	switch (m_rf.rfAreaMode)
 	{
-
 		case IDX_RF_AREA_3:
 			m_rf.rfwattBuff[3] = 0;
 			m_rf.rfwattBuff[4] = 0;
@@ -1629,7 +1628,7 @@ void RF_Pwm_On()
 
 void RF_eg_Exp_On(uint32_t expTime)
 {
-	Debug_Printf_Value("RF_eg_Exp_On ",expTime,1);
+//	Debug_Printf_Value("RF_eg_Exp_On ",expTime,1);
 	m_rf.egExpOn = 1;
 	m_rf.pluseEgTimeStamp = HAL_GetTick();
 	m_rf.pluseEnginerHigh = expTime;
@@ -1650,13 +1649,14 @@ void Exp_Total_Log()
 
 	Debug_Printf(">>================================",1 );
 	Debug_Printf_Value("Watt",m_rf.watt,1);
+	Debug_printf_str("Sec");
 
 	if(m_rf.trigCnt>=2)
 	{
 		for(int i =0 ;i < m_rf.trigCnt-1;i++)
 		{
 			timeGap = m_rf.trigTemeStamp[i+1] -m_rf.trigTemeStamp[i];
-			Debug_Printf_Value("Sec ",timeGap,1);
+			Debug_printf_str("%d /", timeGap);
 
 
 		}
@@ -1961,7 +1961,7 @@ int compare_32(const void *a, const void *b)    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï
 int wattDa = 0;
 int trandu = 0;
 int tranduOut = 6;
-int frqQ = 10500;
+int frqQ = 10000;
 int qsortBuff[5] = {0,};
 int qsort10Buff[10] = {0,};
 
@@ -2224,7 +2224,7 @@ void AutoCal_100ms()// 100ms  ï¿½ï¿½ï¿½ï¿½ ï¿½Ð´ï¿½
 
 
 
-void AutoCal_1watt()
+void AutoCal_FindOnly_1watt()
 {
 	int avg = 0;
 
@@ -2271,7 +2271,7 @@ void AutoCal_1watt()
 		{
 			printf("NEXT !!\r\n");
 			trandu++;
-			wattDa = 140;
+			wattDa = 280;
 		}
 		else
 		{
@@ -2296,7 +2296,7 @@ void AutoCal_Frq()
   Tx_RF_FRQ_Module(trandu, frqQ);
   Tx_RF_Watt_Module(trandu, wattDa);
 
-  printf("ACal %d %d -> \r\n",trandu, frqQ);
+  printf("ACal\t%d\t%d\t->",trandu, frqQ);
 
   for(int i =0 ;i < 1;i++)
   {
@@ -2313,25 +2313,31 @@ void AutoCal_Frq()
 
 
   qsortBuff[0] = m_rf.FeedBackWBuff[1] +(-1*m_rf.FeedBackWBuff[0]);
-  printf(">>> %d\r\n",qsortBuff[0]);
+  printf(">>>\t%d\r\n",qsortBuff[0]);
 
-//  qsortBuff[1] = m_rf.FeedBackWBuff[3] +(-1*m_rf.FeedBackWBuff[2]);
-//  printf(">>> %d\r\n",qsortBuff[1]);
+  static uint8_t high,low;
 
-//  qsortBuff[2] = m_rf.FeedBackWBuff[5] +(-1*m_rf.FeedBackWBuff[4]);
-//  printf(">>> %d\r\n",qsortBuff[2]);
-
-//  qsortBuff[3] = m_rf.FeedBackWBuff[7] +(-1*m_rf.FeedBackWBuff[6]);
-//  printf(">>> %d\r\n",qsortBuff[3]);
-
-//  qsortBuff[4] = m_rf.FeedBackWBuff[9] +(-1*m_rf.FeedBackWBuff[8]);
-//  printf(">>> %d\r\n",qsortBuff[4]);
-
-//  avg = AutoCal_Avg();
-  if(frqQ > 13000)
+  if (high)
   {
+	  if(qsortBuff[0]<50)
+	  {
+		low = 1;
+	  }
+  }
+  else
+  {
+	  if(qsortBuff[0]>90)
+	  {
+		high = 1;
+	  }
+  }
+
+  if((frqQ > 12500) || (high && low))
+  {
+  	low = 0;
+  	high = 0;
   	Tx_RF_Watt_Zero_ALL_Module();
-  	frqQ = 10800;
+  	frqQ = 10000;
   	trandu++;
 //	Tx_RF_FRQ_Module(trandu, frqQ);
 
@@ -2356,7 +2362,7 @@ void AutoCal_Config()
 		break;
 
 		case AUTOCAL_1WATT:
-			AutoCal_1watt();
+			AutoCal_FindOnly_1watt();
 		break;
 
 		case AUTOCAL_FRQ:
@@ -2433,7 +2439,6 @@ void RF_Borad_FeedBack_Test()
 void RF_FeedBack_Cal(uint8_t* buff)
 {
 	uint16_t fbVal = 0;
-	if(m_debug.noview) return;
 	printf("RF_FeedBack_Cal \r\n");
 	for(int i =0 ;i < 8;i++)
 	{
@@ -2457,74 +2462,69 @@ void RF_Rx_Parssing(uint8_t rxID)
 		{
 			if(m_rf.lastTimeStamp)
 			{
-				if(HAL_GetTick() - m_rf.lastTimeStamp>50)break;
+				if(HAL_GetTick() - m_rf.lastTimeStamp>10)break;
 			}
 		}
-//		if(m_rf.lastTimeStamp == 0)
-//		{
-//			printf("[ERR]RF_FeedBack No!!\r\n");
-//			return;
-//		}
+		if(m_rf.lastTimeStamp == 0)
+		{
+			Debug_Printf("[RF_CALL BACK ERR]",1);
+			return;
+		}
 	}
 
+	m_rf.lastTimeStamp = 0;
 
+	memcpy(rxBuffPassing, m_rf.rxBuff, 30);
+	memset(m_rf.rxBuff, 0, 30);
 
-	if(HAL_GetTick() - m_rf.lastTimeStamp>50)
+	rxCallBackCmd = rxBuffPassing[RF_INDEX_CMD];
+	if(rxCallBackCmd != GEN_STATUS_CHECK_R)
 	{
-		m_rf.lastTimeStamp = 0;
-
-		memcpy(rxBuffPassing, m_rf.rxBuff, 30);
-		memset(m_rf.rxBuff, 0, 30);
-
-		rxCallBackCmd = rxBuffPassing[RF_INDEX_CMD];
-		if(rxCallBackCmd != GEN_STATUS_CHECK_R)
-		{
-			Debug_Rx_RF_Printf(rxBuffPassing, m_rf.rxCnt);
-		}
-		m_rf.rxCnt = 0;
-		switch (rxCallBackCmd)
-		{
-			case GEN_STATUS_CHECK_R:
-				m_err.rfTimeout = 0;
-				m_err.rfComuErr = 0;
-				m_err.rfStatus= rxBuffPassing[RF_INDEX_ERR_STATUS];
-				m_err.rfStatusTemp = rxBuffPassing[RF_INDEX_TEMP];
-				m_err.rfStatusErrNo = rxBuffPassing[RF_INDEX_ERR_NO];
-
-				m_rf.liveChkCnt++;
-			break;
-
-			case GEN_GET_VERSION_R:
-			break;
-
-			case GEN_FREQ_SET_R:
-				Debug_Printf("[RX_RF] GEN_FREQ_SET_R",1);
-			break;
-
-			case GEN_OUTPUT_SET_R://
-				Debug_Printf("[RX_RF] GEN_OUTPUT_SET_R",1);
-			break;
-
-			case GEN_MAX_ON_TIME_SET_R:
-				Debug_Printf("[RX_RF] GEN_MAX_ON_TIME_SET_R",1);
-			break;
-
-			case GEN_RF_VOLTAGE_REQ_R:
-				Debug_Printf("[RX_RF] GEN_RF_VOLTAGE_REQ_R",1);
-				RF_FeedBack_Cal(rxBuffPassing);
-			break;
-
-			case ALL_CH_FREQ_SET_R:
-				Debug_Printf("[RX_RF] ALL_CH_FREQ_SET_R",1);
-			break;
-
-			case ALL_CH_OUTPUT_SET_R:
-				Debug_Printf("[RX_RF] ALL_CH_OUTPUT_SET_R",1);
-			break;
-		}
-
-		ddTimeEnd1(); //wndksdebug
+		Debug_Rx_RF_Printf(rxBuffPassing, m_rf.rxCnt);
 	}
+	m_rf.rxCnt = 0;
+	switch (rxCallBackCmd)
+	{
+		case GEN_STATUS_CHECK_R:
+			m_err.rfTimeout = 0;
+			m_err.rfComuErr = 0;
+			m_err.rfStatus= rxBuffPassing[RF_INDEX_ERR_STATUS];
+			m_err.rfStatusTemp = rxBuffPassing[RF_INDEX_TEMP];
+			m_err.rfStatusErrNo = rxBuffPassing[RF_INDEX_ERR_NO];
+
+			m_rf.liveChkCnt++;
+		break;
+
+		case GEN_GET_VERSION_R:
+		break;
+
+		case GEN_FREQ_SET_R:
+			Debug_Printf("[RX_RF] GEN_FREQ_SET_R",1);
+		break;
+
+		case GEN_OUTPUT_SET_R://
+			Debug_Printf("[RX_RF] GEN_OUTPUT_SET_R",1);
+		break;
+
+		case GEN_MAX_ON_TIME_SET_R:
+			Debug_Printf("[RX_RF] GEN_MAX_ON_TIME_SET_R",1);
+		break;
+
+		case GEN_RF_VOLTAGE_REQ_R:
+			Debug_Printf("[RX_RF] GEN_RF_VOLTAGE_REQ_R",1);
+			RF_FeedBack_Cal(rxBuffPassing);
+		break;
+
+		case ALL_CH_FREQ_SET_R:
+			Debug_Printf("[RX_RF] ALL_CH_FREQ_SET_R",1);
+		break;
+
+		case ALL_CH_OUTPUT_SET_R:
+			Debug_Printf("[RX_RF] ALL_CH_OUTPUT_SET_R",1);
+		break;
+	}
+
+	ddTimeEnd1(); //wndksdebug
 
 
 }

@@ -549,6 +549,15 @@ void RTC_Init(void)
 		HAL_Delay(500); //
 #endif
 	BAT_CHG_ON_L();
+
+	DS1308_GetTime(&m_io.hour, &m_io.min, &m_io.sec);
+	DS1308_GetDay(&m_io.dayOfWeek, &m_io.DD, &m_io.MM, &m_io.YY);
+
+	m_io.day = m_io.YY*10000 + m_io.MM*100 + m_io.DD;
+	m_io.hhmmss = m_io.hour*10000 + m_io.min*100 + m_io.sec;
+	m_io.hhmm = m_io.hour*100 + m_io.min;
+
+	Debug_printf_str("day: %06u, time: %06u\r\n",m_io.day, m_io.hhmmss);
 }
 
 void RTC_Config(void)
@@ -567,7 +576,7 @@ void RTC_Config(void)
 
 		m_io.day = m_io.YY*10000 + m_io.MM*100 + m_io.DD;
 		m_io.hhmmss = m_io.hour*10000 + m_io.min*100 + m_io.sec;
-		m_io.hhmm = m_io.hour*10000 + m_io.min*100;
+		m_io.hhmm = m_io.hour*100 + m_io.min;
 
 
 #if 0

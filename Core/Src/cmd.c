@@ -85,7 +85,6 @@ void Debug_printf_str(const char *format, ...)
 void Debug_Printf(char* str, uint8_t cr)
 {
 #ifdef DEBUG_PRINT
-	if(m_debug.noview) return;
 
 	printf("%s",str);
 	if(cr)printf("\r\n");
@@ -95,7 +94,6 @@ void Debug_Printf(char* str, uint8_t cr)
 void Debug_Printf_Value(char* str, int data, uint8_t cr)
 {
 #ifdef DEBUG_PRINT
-	if(m_debug.noview) return;
 	printf("%s",str);
 	printf("%d",data);
 	if(cr)printf("\r\n");
@@ -107,43 +105,6 @@ void Debug_Event(uint8_t event)
 	Debug_Printf_Value("EVENT", event, 1);
 
 }
-
-uint8_t Excep_Printf(uint8_t cmd, int data, uint8_t rxtx)
-{
-	uint8_t num;
-	int veiwData;
-	switch (cmd)
-	{
-		case CMD_ENERGY:
-			if(rxtx == DEBUG_TX) Debug_printf_str("J%u",data);
-			return 0;
-		break;
-		case CMD_PULSE_DURATION:
-			if(rxtx == DEBUG_TX) Debug_printf_str("T%u",data);
-			return 0;
-		break;
-		case CMD_POST_COOLING:
-			if(rxtx == DEBUG_TX) Debug_printf_str("C%u",data);
-			return 0;
-		break;
-		case CMD_INTERVAL:
-			if(rxtx == DEBUG_TX) Debug_printf_str("i%u",data);
-			return 0;
-		break;
-		case CMD_DEVICE_STATUS:
-			num = data/1000;
-			veiwData = data%1000;
-			if(rxtx == DEBUG_TX) Debug_printf_str("[%u] :%d",num, veiwData);
-			return 0;
-		break;
-		case CMD_TEST_PULSE:
-			if(rxtx == DEBUG_TX) Debug_printf_str("P%u",data);
-			return 0;
-		break;
-
-	}
-	return 1;
-}
 uint8_t Divis_Printf(uint8_t cmd)
 {
 	if(m_debug.preCmd == cmd) Debug_printf_str(" /");
@@ -153,7 +114,6 @@ uint8_t Divis_Printf(uint8_t cmd)
 }
 void Debug_HAND_Printf(uint8_t rxtx, uint8_t cmd, int data)
 {
-	if(m_debug.noview) return;
 	if((cmd == CMD_TEMPERATURE) ||(cmd == CMD_PWM_DUTY))return;
 	if(rxtx != DEBUG_RX && rxtx != DEBUG_TX) return;
 	char rxtxStr[2][3] = {"Rx","Tx"};
@@ -164,7 +124,6 @@ void Debug_HAND_Printf(uint8_t rxtx, uint8_t cmd, int data)
 
 void Debug_LCD_Printf(uint8_t rxtx, uint8_t cmd, int data)
 {
-	if(m_debug.noview) return;
 	if(rxtx != DEBUG_RX && rxtx != DEBUG_TX) return;
 	char rxtxStr[2][3] = {"Rx","Tx"};
 
@@ -174,7 +133,6 @@ void Debug_LCD_Printf(uint8_t rxtx, uint8_t cmd, int data)
 
 void Debug_Rx_RF_Printf(uint8_t* buff, uint8_t cnt)
 {
-	if(m_debug.noview) return;
 #if 1
 	printf("[RX_RF] ");
 	for(int i =0 ;i < cnt;i++)
@@ -190,7 +148,6 @@ void Debug_Rx_RF_Printf(uint8_t* buff, uint8_t cnt)
 void Debug_Tx_RF_Printf(uint8_t* buff,uint8_t len)
 {
 #if 1
-	if(m_debug.noview) return;
 	printf("Rf Tx :");
 	for(int i =0 ;i < len;i++)
 	{
@@ -205,7 +162,6 @@ void Debug_Tx_RF_Printf(uint8_t* buff,uint8_t len)
 void Debug_Tx_RF_Watt_Printf(uint8_t ch, uint16_t watt)
 {
 #if 1
-	if(m_debug.noview) return;
 	printf("[TX_RF] ");
 	printf("Ch[%u] Watt[%u] \r\n",ch, watt);
 
@@ -215,7 +171,6 @@ void Debug_Tx_RF_Watt_Printf(uint8_t ch, uint16_t watt)
 void Debug_Tx_RF_Frq_Printf(uint8_t ch, uint16_t frq)
 {
 #if 1
-	if(m_debug.noview) return;
 	printf("[TX_RF] ");
 	printf("Ch[%u] Frq[%u] \r\n",ch, frq);
 #endif
@@ -226,7 +181,6 @@ void Debug_Tx_RF_Frq_Printf(uint8_t ch, uint16_t frq)
 void Debug_Tx_RF_All_Watt_Printf()
 {
 #if 1
-	if(m_debug.noview) return;
 	float wattF = (float)m_rf.watt/10;
 	printf("[TX_RF] ");
 	printf("> %.1f Watt \r\n", wattF);
@@ -242,7 +196,6 @@ void Debug_Tx_RF_All_Watt_Printf()
 void Debug_Tx_RF_All_Zero_Watt_Printf()
 {
 #if 1
-	if(m_debug.noview) return;
 	printf("[TX_RF] ");
 	printf(">Watt Zero Da\r\n");
 	for(int i =0 ;i < 7;i++)
@@ -257,7 +210,6 @@ void Debug_Tx_RF_All_Zero_Watt_Printf()
 void Debug_Tx_RF_All_Frq_Printf()
 {
 #if 1
-	if(m_debug.noview) return;
 	printf("[TX_RF] ");
 	printf(">Frq\r\n");
 	for(int i =0 ;i < 7;i++)
@@ -272,7 +224,6 @@ void Debug_Tx_RF_All_Frq_Printf()
 void Debug_Tx_RF_MaxOntime_Printf()
 {
 #if 1
-	if(m_debug.noview) return;
 	printf("[TX_RF] ");
 	printf(">MaxOntime = %u\r\n", MAX_ONTIME);
 #endif
@@ -280,7 +231,7 @@ void Debug_Tx_RF_MaxOntime_Printf()
 void Debug_Tx_GenStatus_Check_Printf()
 {
 #if 0
-	if(m_debug.noview) return;
+	if(m_debug.statusView) return;
 	printf("[TX_RF] ");
 	printf("GenStatus_Check\r\n");
 #endif
@@ -288,7 +239,6 @@ void Debug_Tx_GenStatus_Check_Printf()
 void Debug_Tx_FeedBack_Check_Printf()
 {
 #if 1
-	if(m_debug.noview) return;
 	printf("[TX_RF] ");
 	printf("FeedBack_Check\r\n");
 #endif
@@ -298,22 +248,23 @@ uint8_t kp,ki,kd;
 void Debug_TempAll_View()
 {
 	static uint32_t timeStamp;
-	if(!m_debug.noview)return;
-
-	if(HAL_GetTick()-timeStamp >= 1000)
+	if(m_debug.statusView)
 	{
+		if(HAL_GetTick()-timeStamp >= 1000)
+		{
+			timeStamp = HAL_GetTick();
 
-		timeStamp = HAL_GetTick();
-		printf(">>\t%u\t%d\t%u\t%.1f\t%u\t%u\t%u\t%.1f\r\n",
-		m_rf.treatStatus,
-		m_hand1.temprature,
-		m_hand1.pwmDuty,
-		m_io.flowSensorFrq,
-		kp,
-		ki,
-		kd,
-		m_io.chillerTemp
-		);
+			printf(">>\t%u\t%d\t%u\t%.1f\t%u\t%u\t%u\t%.1f\r\n",
+			m_rf.treatStatus,
+			m_hand1.temprature,
+			m_hand1.pwmDuty,
+			m_io.flowSensorFrq,
+			kp,
+			ki,
+			kd,
+			m_io.chillerTemp
+			);
+		}
 	}
 }
 void Tx_LCD_Msg(uint8_t add, int data)
@@ -401,10 +352,11 @@ uint8_t Ready_Enter_Chk()
 	uint8_t bool2 = (m_io.HP1_Insert == HP_INSERT);
 	uint8_t bool3 = (m_eep.catridgeStatus == SING_UP_CODE);
 	uint8_t bool4 = 1;
+	uint8_t bool5 = 0;
 
 	if(m_err.errSkip)
 	{
-		Debug_printf_str("Ready ERROR Skip");
+		Debug_printf_str("Ready ERROR Skip\r\n");
 		return 1;
 	}
 	for(int i =0 ;i < 50;i++)
@@ -418,6 +370,7 @@ uint8_t Ready_Enter_Chk()
 
 		if(m_err.errDataBuff[i])
 		{
+			Debug_printf_str("Ready Err errCode [%u]\r\n", i);
 			Tx_LCD_Msg(CMD_ERR, m_err.errDataBuff[i]);
 			HAL_Delay(1000);
 			bool4 = 0;
@@ -426,14 +379,15 @@ uint8_t Ready_Enter_Chk()
 	}
 	if(!bool1) Tx_LCD_Msg(CMD_CATRIDGE_EVENT, m_eep.catridgeDetect);
 
-//	if(!bool2) //
-//	if(!bool3) //
-
 
 	if(bool1 && bool2 && bool3 && bool4)
 	{
 		return 1;
 	}
+
+	if(!bool1) Debug_printf_str("Ready Err catridgeDetect\r\n");
+	if(!bool2) Debug_printf_str("Ready Err HP1_Insert\r\n");
+	if(!bool3) Debug_printf_str("Ready Err catridgeStatus\r\n");
 
 	return 0;
 }
@@ -645,8 +599,7 @@ void Check_Cart_Req_Config()
 
 	if(((m_eep.catridgeDetect != CATRIGE_CHK_OK) && (m_eep.catridgeDetect != CATRIGE_CHK_NEW)) ||
 	(m_eep.catridgeStatus != SING_UP_CODE) ||
-	(m_err.handTimeout >=COMU_MAX_CNT)||
-	(txOver >= 20))
+	(m_err.handTimeout >=COMU_MAX_CNT))
 	{
 		txOver = 0;
 		m_eep.catridgeChk = 0;
@@ -691,6 +644,16 @@ void Check_Cart_Req_Config()
 			m_eep.catridgeChk = 0;
 		}
 		//온도 오프셋은 0일수도있어서 구분이 안되서 여기서 못보냄
+
+
+		if(txOver >= 10)
+		{
+			txOver = 0;
+			Debug_Printf("[ERR]CartAll Chk 10 Over",1);
+			m_eep.catridgeChk = 0;
+			return;
+		}
+		txOver++;
 	}
 
 
@@ -758,11 +721,26 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 			{
 				switch (data)
 				{
-					case AUTOCAL_MAIN: Debug_Printf("Autocal main",1); break;
-					case AUTOCAL_100MS: Debug_Printf("Autocal 100ms",1); break;
-					case AUTOCAL_1WATT: Debug_Printf("Autocal 1watt",1); break;
-					case AUTOCAL_FRQ: Debug_Printf("Autocal Frq",1); break;
-					case AUTOCAL_TEST: Debug_Printf("Autocal Test",1); break;
+					case AUTOCAL_MAIN:
+						Debug_Printf("Autocal main",1);
+						wattDa = 0;
+					break;
+					case AUTOCAL_100MS:
+						Debug_Printf("Autocal 100ms",1);
+						wattDa = 350;
+					break;
+					case AUTOCAL_1WATT:
+						Debug_Printf("Autocal 1watt",1);
+						wattDa = 280;
+					break;
+					case AUTOCAL_FRQ:
+						Debug_Printf("Autocal Frq",1);
+						wattDa = 350;
+					break;
+					case AUTOCAL_TEST:
+						Debug_Printf("Autocal Test",1);
+						wattDa = 0;
+					break;
 				}
 				TX_RF_Max_Ontime_Set();
 				Tx_RF_FRQ_ALL_Module();
@@ -891,7 +869,19 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 		break;
 
 		case CMD_DEBUG_NO_VIEW:
-			m_debug.noview = data;
+			m_debug.statusView = data;
+
+
+			Debug_printf_str(">>Status\t");
+			Debug_printf_str("Dtemp\t");
+			Debug_printf_str("Duty\t");
+			Debug_printf_str("flow\t");
+			Debug_printf_str("kp\t");
+			Debug_printf_str("ki\t");
+			Debug_printf_str("kd\t");
+			Debug_printf_str("chilTemp\r\n");
+
+
 		break;
 
 		case CMD_DEBUG_CART_AGING:
@@ -1040,6 +1030,9 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 			Tx_Hand1_Msg(CMD_COLOR_BLUE, data);
 		break;
 
+		case CMD_SDCARD_READ:
+			SD_Read_All_Binary("ERROR_LOG/error_log.txt");
+		break;
 
 
 	}
@@ -1675,6 +1668,8 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 		break;
 
 
+
+
 		default:
 			uint16_t reqAdd, reqData;
 			if(data == REQ_DATA)
@@ -1968,7 +1963,10 @@ void UartRx2DataProcess()
 
 void UartRx4DataProcess()
 {
-	RF_Rx_Parssing(RF_RX_COMMON);
+	if(m_rf.lastTimeStamp && HAL_GetTick() - m_rf.lastTimeStamp>10)
+	{
+		RF_Rx_Parssing(RF_RX_COMMON);
+	}
 }
 void UartRx5DataProcess()
 {

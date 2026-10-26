@@ -110,9 +110,7 @@ int main(void)
   IO_Init();
   Hand_Init();
   LCD_Init();
-
-
-//  SD_Init();
+  SD_Init();
 
 
 //  HAL_Delay(5000);

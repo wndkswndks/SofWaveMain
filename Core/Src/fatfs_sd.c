@@ -680,6 +680,36 @@ void SD_Read_All(const char* filename)
 
 }
 
+void SD_Read_All_Binary(const char* filename)
+{
+    UINT br;
+    uint8_t temp_buf[64];
+	if(!sdExist)
+	{
+		printf("SD_No Read\r\n");
+		return;
+	}
+
+    if(SD_Error_Chk(f_open(&fil, filename, FA_READ), "f_open")) return;
+
+    while(1)
+    {
+        // 64바이트씩 바이너리 단위로 읽기
+        if(f_read(&fil, temp_buf, sizeof(temp_buf), &br) != FR_OK || br == 0)
+            break;
+
+        // 터미널 출력을 위해 바이트 단위(16진수 또는 문자)로 출력
+        for(UINT i = 0; i < br; i++)
+        {
+            printf("%c", temp_buf[i]); // 순수 텍스트 확인용
+            // 또는 16진수 확인 시: printf("%02X ", temp_buf[i]);
+        }
+    }
+
+    SD_Error_Chk(f_close(&fil), "f_close");
+    printf("\r\nSD_Read_All Done\r\n");
+}
+
 void SD_Read_Addr(const char* filename, uint16_t add, uint16_t len)
 {
   UINT br;
@@ -774,7 +804,7 @@ void SD_Write_Record(char* dirName, uint32_t yymmdd, uint16_t hhmm, const uint8_
   sprintf(filename, "%s/error_log.txt", dirName);  // "TNOH/260621.txt"
 
   // 시간을 텍스트로 변환 (예: "0900,0008,")
-  sprintf(header, "%010lu,%04u,", YYMMDDhhmm, len);
+  sprintf(header, "%06lu/%04u,", yymmdd, hhmm);
   header_len = strlen(header);
 
   if(SD_Error_Chk(f_open(&fil, filename, FA_OPEN_ALWAYS | FA_WRITE), "f_open"))

@@ -200,26 +200,40 @@ m_err.errDataBuff[IDX_CATRIGE_NEW]
 
 void Error_Check_Main()
 {
+	static uint8_t flowChkFlag1, flowChkFlag2;
 //=============================================
 	Check_ERROR((m_io.level1Status==0), IDX_LEVEL_LOW, ERR_DEL_3);
 	if(Check_ERROR((m_err.flowLimitUnder1==0), IDX_FLOW_LIMIT_UNDER, ERR_DEL_3))
 	{
-		Ready_OFF(EVENT_4);
-		PELTIER_PWR_OFF();
-		SOL1_OFF();
-		if(m_io.flowSensorFrqChk==0) m_io.flowSensorFrq = 0;
+		if(!flowChkFlag1)
+		{
+			Ready_OFF(EVENT_4);
+			PELTIER_PWR_OFF();
+			SOL1_OFF();
+			if(m_io.flowSensorFrqChk==0) m_io.flowSensorFrq = 0;
+			flowChkFlag1 = 1;
+		}
 	}
+	else flowChkFlag1 = 0;
+
+
 	if(Check_ERROR((m_err.flowLimitUnder2==0), IDX_FLOW_LIMIT_STOP, ERR_DEL_3))
 	{
-		Ready_OFF(EVENT_10);
-		PELTIER_PWR_OFF();
-		Pump_Ciller_Pwr_OFF();
-		SOL1_OFF();
-		if(m_io.flowSensorFrqChk==0) m_io.flowSensorFrq = 0;
+		if(!flowChkFlag2)
+		{
+			Ready_OFF(EVENT_10);
+			PELTIER_PWR_OFF();
+			Pump_Ciller_Pwr_OFF();
+			SOL1_OFF();
+			if(m_io.flowSensorFrqChk==0) m_io.flowSensorFrq = 0;
+			flowChkFlag2 = 1;
+		}
+
 	}
+	else flowChkFlag2 = 0;
 
 
-	Check_ERROR((m_err.powerSpecs==0), IDX_POWER_SPECS, ERR_DEL_1);
+
 	Check_ERROR((m_io.chillerTemp<CHILLER_TEMP_MAX), IDX_CHILER_TEMP_OVER, ERR_DEL_3);
 	Check_ERROR((m_err.autoCalStatus==0), IDX_AUTO_CAL_COMU_ERR, ERR_DEL_1);
 #if 0
@@ -278,6 +292,8 @@ void Error_Check_HP()
 
 		if(Check_ERROR((m_eep.remainingShotNum > CATRIDGE_REMAIN_LOW_500), IDX_CATRIGE_RESHOT_LOW_500 ,ERR_DEL_1)){}
 		else if(Check_ERROR((m_eep.remainingShotNum > CATRIDGE_REMAIN_LOW_1000), IDX_CATRIGE_RESHOT_LOW_1000 ,ERR_DEL_1)){}
+
+		Check_ERROR((m_err.powerSpecs==0), IDX_POWER_SPECS, ERR_DEL_1);
 
 	}
 
