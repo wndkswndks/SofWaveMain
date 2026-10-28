@@ -418,9 +418,30 @@ void Level_Check()
 {
 	m_io.levelMedle = IS_LEVEL_SENSOR1_ON() ;//
 	m_io.levelHigh = IS_LEVEL_SENSOR2_ON() ;//
-//	m_io.levelLow = IS_LEVEL_SENSOR3_ON() ;
+	m_io.levelLow = IS_LEVEL_SENSOR3_ON() ;
 
-#if 0
+	if(m_io.levelHigh==WATER_ON && m_io.levelMedle==WATER_ON && m_io.levelLow==WATER_ON)
+	{
+		m_io.levelStatus = WATER_LV_FULL;
+	}
+	else if(m_io.levelHigh==WATER_OFF && m_io.levelMedle==WATER_ON && m_io.levelLow==WATER_ON)
+	{
+		m_io.levelStatus = WATER_LV_NOMAL;
+	}
+	else if(m_io.levelHigh==WATER_OFF && m_io.levelMedle==WATER_OFF && m_io.levelLow==WATER_ON)
+	{
+		m_io.levelStatus = WATER_LV_LOW;
+		m_io.levelStatusErr = WATER_LV_LOW;
+	}
+	else if(m_io.levelHigh==WATER_OFF && m_io.levelMedle==WATER_OFF && m_io.levelLow==WATER_OFF)
+	{
+		m_io.levelStatus = WATER_LV_EMPTY;
+		m_io.levelStatusErr = WATER_LV_EMPTY;
+	}
+
+
+
+#if 1
 	if(m_io.levelHigh && m_io.levelMedle)
 	{
 		// ok

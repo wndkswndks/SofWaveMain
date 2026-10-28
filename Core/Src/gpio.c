@@ -147,6 +147,12 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(RF_GPIO_IN_GPIO_Port, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : LEVEL_SENSOR3_Pin */
+  GPIO_InitStruct.Pin = LEVEL_SENSOR3_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(LEVEL_SENSOR3_GPIO_Port, &GPIO_InitStruct);
+
   /*Configure GPIO pins : FOOT_SW_IN_Pin FOOT_INSERT_Pin AC_INPUT_STATE_Pin */
   GPIO_InitStruct.Pin = FOOT_SW_IN_Pin|FOOT_INSERT_Pin|AC_INPUT_STATE_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
