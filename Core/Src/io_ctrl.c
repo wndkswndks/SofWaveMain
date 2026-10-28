@@ -416,15 +416,17 @@ void HP_Connect_Config()
 
 void Level_Check()
 {
-	m_io.level1Status = IS_LEVEL_SENSOR1_ON() ;
-	m_io.level2Status = IS_LEVEL_SENSOR2_ON() ;
+	m_io.levelMedle = IS_LEVEL_SENSOR1_ON() ;//
+	m_io.levelHigh = IS_LEVEL_SENSOR2_ON() ;//
+//	m_io.levelLow = IS_LEVEL_SENSOR3_ON() ;
 
-	if(m_io.level1Status && m_io.level2Status)
+#if 0
+	if(m_io.levelHigh && m_io.levelMedle)
 	{
 		// ok
 		m_io.levelStatusErr = 0;
 	}
-	else if(!m_io.level1Status && m_io.level2Status)
+	else if(!m_io.levelHigh && m_io.levelMedle)
 	{
 		// warning
 		m_io.levelStatusErr = 0;
@@ -438,6 +440,8 @@ void Level_Check()
 			m_io.levelStatusErr = 1;
 		}
 	}
+
+#endif
 
 
 }
@@ -691,7 +695,7 @@ void IO_Config()
 {
 	if(m_rf.pluseOn) return;
 
-//	Level_Check();
+	Level_Check();
 	HP_Connect_Config();
 	Battery_Read();
 	RTC_Config();

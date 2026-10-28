@@ -555,7 +555,6 @@ void Check_CartAllData(uint8_t status)
 	}
 
 	HP_Cmd_Recall(CMD_REMIND_SHOT, m_eep.remainingShotNum, status);
-	HP_Cmd_Recall(CMD_REMIND_SHOT_MAX, m_eep.remainingShotNumMax, status);
 	HP_Cmd_Recall(CMD_POWER_SPECS, m_eep.powerSpecs, status);
 	HP_Cmd_Recall(CMD_CATRIDGE_STATUS, m_eep.catridgeStatus, status);
 #endif
@@ -620,7 +619,6 @@ void Check_Cart_Req_Config()
 		else if(Check_Cart_Req(CMD_ISSUED_MM, m_eep.issuedMM, MM_MIN, MM_MAX)){txCnt++; }
 		else if(Check_Cart_Req(CMD_ISSUED_DD, m_eep.issuedDD, DD_MIN, DD_MAX)){txCnt++; }
 		else if(Check_Cart_Req(CMD_REMIND_SHOT, m_eep.remainingShotNum, 1, CATRIDGE_REMAIN_MAX)){txCnt++; }
-		else if(Check_Cart_Req(CMD_REMIND_SHOT_MAX, m_eep.remainingShotNumMax, 1, CATRIDGE_REMAIN_MAX)){txCnt++; }
 		else if(Check_Cart_Req(CMD_POWER_SPECS, m_eep.powerSpecs, POWER_AC_KOREA, POWER_AC_OTHER)){txCnt++; }
 		else if(Check_Cart_Req(CMD_CATRIDGE_STATUS, m_eep.catridgeStatus, NONE_SING_UP_CODE, SING_UP_CODE)){txCnt++; }
 		else
@@ -1050,7 +1048,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 
 	if(m_rf.treatStatus == STATUS_TRET ||m_rf.treatStatus == STATUS_PRECOOLING)
 	{
-		if(add != CMD_LCD_STATUS && add != CMD_DEVICE_STATUS)
+		if((add != CMD_LCD_STATUS) && (add != CMD_DEVICE_STATUS) && (add != CMD_REAL_TD_TEMP))
 		{
 			m_rf.stbyTimeStamp = HAL_GetTick();
 			Ready_OFF(EVENT_1);
@@ -1067,7 +1065,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 					uint8_t wattRange = (wattF <= 1.0);
 					if(wattRange)
 					{
-						m_rf.energy++;
+						m_rf.energy += 2;
 					}
 				}
 			}
@@ -1079,7 +1077,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 					uint8_t wattRange = (0.1 <= wattF);
 					if(wattRange)
 					{
-						m_rf.energy--;
+						m_rf.energy -= 2;
 					}
 				}
 			}
@@ -1176,9 +1174,10 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 			Data_Req_Set(CMD_REMIND_SHOT, data, &m_eep.remainingShotNum);
 		break;
 
-		case CMD_REMIND_SHOT_MAX:
-			Data_Req_Set(CMD_REMIND_SHOT_MAX, data, &m_eep.remainingShotNumMax);
+		case CMD_REAL_TD_TEMP:
+			Tx_Hand1_Msg(CMD_REAL_TD_TEMP, data);
 		break;
+
 
 		case CMD_POWER_SPECS:
 			Data_Req_Set(CMD_POWER_SPECS, data, &m_eep.powerSpecs);
@@ -1765,9 +1764,8 @@ void Hand_Rx_Parssing(uint8_t add, int data)
 				Tx_LCD_Msg(CMD_REMIND_SHOT, data);
 			break;
 
-			case CMD_REMIND_SHOT_MAX:
-				m_eep.remainingShotNumMax = data;
-				Tx_LCD_Msg(CMD_REMIND_SHOT_MAX, data);
+			case CMD_REAL_TD_TEMP:
+				Tx_LCD_Msg(CMD_REAL_TD_TEMP, data);
 			break;
 
 			case CMD_POWER_SPECS:
@@ -2019,7 +2017,7 @@ void Uart_Tx_Polling_Status()
 			txData = 7000 + (m_io.flowSensorFrq*10.0);
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
 
-			txData = 8000 + m_io.level1Status;
+			txData = 8000 + m_io.levelHigh;
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
 			txData = 9000 + m_io.HP1_Insert;
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);

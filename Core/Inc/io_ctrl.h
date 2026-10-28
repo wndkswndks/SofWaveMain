@@ -15,8 +15,8 @@
 
 
 /*  			define start  			*/
-#define IS_LEVEL_SENSOR1_ON()      (HAL_GPIO_ReadPin(LEVEL_SENSOR1_GPIO_Port, LEVEL_SENSOR1_Pin) == 0) //low active
-#define IS_LEVEL_SENSOR2_ON()      (HAL_GPIO_ReadPin(LEVEL_SENSOR2_GPIO_Port, LEVEL_SENSOR2_Pin) == 0) //low active
+#define IS_LEVEL_SENSOR1_ON()      (HAL_GPIO_ReadPin(LEVEL_SENSOR1_GPIO_Port, LEVEL_SENSOR1_Pin) != 0) //low active
+#define IS_LEVEL_SENSOR2_ON()      (HAL_GPIO_ReadPin(LEVEL_SENSOR2_GPIO_Port, LEVEL_SENSOR2_Pin) != 0) //low active
 #define IS_FLOWSENSOR_OUT()        (HAL_GPIO_ReadPin(FLOWSENSOR_OUT_GPIO_Port, FLOWSENSOR_OUT_Pin) != 0) // GPIO_EXIT0
 #define IS_AC_INPUT_STATE()        (HAL_GPIO_ReadPin(AC_INPUT_STATE_GPIO_Port, AC_INPUT_STATE_Pin) != 0)
 #define IS_HP1_SHOT_PUSH()         (HAL_GPIO_ReadPin(HP1_SHOT_PUSH_GPIO_Port, HP1_SHOT_PUSH_Pin) == 0)
@@ -200,6 +200,15 @@ typedef enum
 
 	POWER_AC_OTHER = 2,
 	POWER_AC_KOREA = 1,
+
+	WATER_ON = 1,
+	WATER_OFF = 0,
+
+	WATER_LV_FULL = 3,
+	WATER_LV_NOMAL = 2,
+	WATER_LV_LOW = 1,
+	WATER_LV_EMPTY = 0,
+
 } IO_E;
 
 
@@ -224,8 +233,9 @@ typedef struct
 	uint8_t sol1OnStatus;
 	uint8_t test1;
 	uint8_t test2;
-	uint8_t level1Status;
-	uint8_t level2Status;
+	uint8_t levelHigh;
+	uint8_t levelMedle;
+	uint8_t levelLow;
 	uint8_t levelStatusErr;
 	uint32_t day;
 	uint16_t infoUiDesing;

@@ -1276,6 +1276,52 @@ void RF_Watt_All_Calculate()
 {
 	int idx;
 	float wattF;
+	int wattI;
+	int wattM, wattS;
+	int gap;
+	wattF = ((float)m_rf.energy /(float)m_rf.pulseDuration);
+
+	wattI = (int)(wattF * 100.0);
+	if(wattI>100) wattI = 100;
+	if((wattI%2) != 0)wattI--;
+
+	m_rf.watt = wattI;
+
+	wattM = wattI/10;
+	wattS = (wattI%10)/2;
+
+	for(int i =0 ;i < 7; i++)
+	{
+		m_rf.rfwattBuff[i] = m_eep.rfWattBuff[wattM+(i*11)];
+
+		if(wattS != 0)
+		{
+			gap = (m_eep.rfWattBuff[wattM+(i*11)+1] - m_eep.rfWattBuff[wattM+(i*11)])/5;
+			m_rf.rfwattBuff[i] += (gap*wattS);
+		}
+	}
+
+
+	switch (m_rf.rfAreaMode)
+	{
+		case IDX_RF_AREA_3:
+			m_rf.rfwattBuff[3] = 0;
+			m_rf.rfwattBuff[4] = 0;
+			m_rf.rfwattBuff[5] = 0;
+			m_rf.rfwattBuff[6] = 0;
+		break;
+
+		case IDX_RF_AREA_4:
+			m_rf.rfwattBuff[4] = 0;
+			m_rf.rfwattBuff[5] = 0;
+			m_rf.rfwattBuff[6] = 0;
+		break;
+	}
+}
+void RF_Watt_All_Calculate_org()
+{
+	int idx;
+	float wattF;
 	wattF = ((float)m_rf.energy /(float)m_rf.pulseDuration);
 
 	m_rf.watt = (uint8_t)(wattF * 10.0);
@@ -1302,7 +1348,6 @@ void RF_Watt_All_Calculate()
 		break;
 	}
 }
-
 
 void RF_Frq_All_Calculate()
 {

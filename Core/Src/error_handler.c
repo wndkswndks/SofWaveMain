@@ -44,7 +44,7 @@ uint8_t Check_ERROR(uint8_t nomal, uint8_t cmd, uint8_t delay)
 				if(m_err.txEn)Tx_LCD_Msg(CMD_ERR, cmd);
 				Debug_Printf_Value("[ERR Event] ",cmd,1);
 
-				sprintf(str,"[ERR_EVENT_%u]\r\n",cmd);
+				sprintf(str,"[ERR_EVENT_%02u]\r\n",cmd);
 				SD_Error_Save(m_io.day,m_io.hhmm, str);
 			}
 		}
@@ -202,7 +202,7 @@ void Error_Check_Main()
 {
 	static uint8_t flowChkFlag1, flowChkFlag2;
 //=============================================
-	Check_ERROR((m_io.level1Status==0), IDX_LEVEL_LOW, ERR_DEL_3);
+	Check_ERROR((m_io.levelHigh==0), IDX_LEVEL_LOW, ERR_DEL_3);
 	if(Check_ERROR((m_err.flowLimitUnder1==0), IDX_FLOW_LIMIT_UNDER, ERR_DEL_3))
 	{
 		if(!flowChkFlag1)
