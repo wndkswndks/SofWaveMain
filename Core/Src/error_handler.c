@@ -200,20 +200,18 @@ m_err.errDataBuff[IDX_CATRIGE_NEW]
 
 void Error_Check_Main()
 {
-	static uint8_t flowChkFlag1, flowChkFlag2;
+	static uint8_t flowChkFlag1, flowChkFlag2, LvFlag;
 //=============================================
-	if(Check_ERROR((m_io.levelStatus != WATER_LV_EMPTY), IDX_LEVEL_LOW, ERR_DEL_3))
+	if(Check_ERROR((m_io.levelStatus != WATER_LV_EMPTY), IDX_LEVEL_LIMIT, ERR_DEL_3))
 	{
-
+		if(!LvFlag)
+		{
+			Pump_Ciller_Pwr_OFF();
+			LvFlag = 1;
+		}
 	}
-	else if(Check_ERROR((m_io.levelStatus != WATER_LV_LOW), IDX_LEVEL_LOW, ERR_DEL_3))
-	{
-
-	}
-	else if(Check_ERROR((m_io.levelStatus != WATER_LV_FULL), IDX_LEVEL_LOW, ERR_DEL_3))
-	{
-
-	}
+	else if(Check_ERROR((m_io.levelStatus != WATER_LV_LOW), IDX_LEVEL_LOW, ERR_DEL_3)){}
+	else LvFlag = 0;
 
 
 	if(Check_ERROR((m_err.flowLimitUnder1==0), IDX_FLOW_LIMIT_UNDER, ERR_DEL_3))

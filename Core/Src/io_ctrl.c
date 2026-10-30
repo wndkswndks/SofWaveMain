@@ -418,7 +418,7 @@ void Level_Check()
 {
 	m_io.levelMedle = IS_LEVEL_SENSOR1_ON() ;//
 	m_io.levelHigh = IS_LEVEL_SENSOR2_ON() ;//
-	m_io.levelLow = IS_LEVEL_SENSOR3_ON() ;
+	m_io.levelLow = WATER_ON; //ÀÓ½Ã ¾ÆÁ÷ ¼¾¼­ ¿¬°á¾ÈÇÔ//IS_LEVEL_SENSOR3_ON() ;
 
 	if(m_io.levelHigh==WATER_ON && m_io.levelMedle==WATER_ON && m_io.levelLow==WATER_ON)
 	{
@@ -431,40 +431,11 @@ void Level_Check()
 	else if(m_io.levelHigh==WATER_OFF && m_io.levelMedle==WATER_OFF && m_io.levelLow==WATER_ON)
 	{
 		m_io.levelStatus = WATER_LV_LOW;
-		m_io.levelStatusErr = WATER_LV_LOW;
 	}
 	else if(m_io.levelHigh==WATER_OFF && m_io.levelMedle==WATER_OFF && m_io.levelLow==WATER_OFF)
 	{
 		m_io.levelStatus = WATER_LV_EMPTY;
-		m_io.levelStatusErr = WATER_LV_EMPTY;
 	}
-
-
-
-#if 1
-	if(m_io.levelHigh && m_io.levelMedle)
-	{
-		// ok
-		m_io.levelStatusErr = 0;
-	}
-	else if(!m_io.levelHigh && m_io.levelMedle)
-	{
-		// warning
-		m_io.levelStatusErr = 0;
-	}
-	else
-	{
-		//error
-		if(!m_io.levelStatusErr)
-		{
-			Pump_Ciller_Pwr_OFF();//ï¿½ï¿½ï¿½ß¿ï¿½ ï¿½Ã·Î¿ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¾ï¿½ï¿½ï¿?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï±ï¿½
-			m_io.levelStatusErr = 1;
-		}
-	}
-
-#endif
-
-
 }
 
 

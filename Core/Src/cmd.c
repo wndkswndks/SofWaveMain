@@ -1455,7 +1455,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 
 		case CMD_AUTO_CAL_START:
 			m_rf.autoCalFlag = data;
-			if(data==1)
+			if(data == AUTOCAL_MAIN)
 			{
 				TX_RF_Max_Ontime_Set();
 				Tx_RF_FRQ_ALL_Module();
@@ -2013,11 +2013,9 @@ void Uart_Tx_Polling_Status()
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
 			txData = 6000 + m_io.battery*10;
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
-
 			txData = 7000 + (m_io.flowSensorFrq*10.0);
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
-
-			txData = 8000 + m_io.levelHigh;
+			txData = 8000 + m_io.levelStatus;
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
 			txData = 9000 + m_io.HP1_Insert;
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
@@ -2035,7 +2033,6 @@ void Uart_Tx_Polling_Status()
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
 			txData = 16000 +m_io.ChillerPwrEn;
 			Tx_LCD_Msg(CMD_DEVICE_STATUS, txData);
-
 			timeStamp2 = HAL_GetTick();
 		}
 

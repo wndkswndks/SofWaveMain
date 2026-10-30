@@ -1242,7 +1242,7 @@ void Hand_Init()//
 
 void LCD_Init()
 {
-	m_rf.energy = 32;
+	m_rf.energy = 30;
 	m_rf.pulseDuration = 50;
 	m_rf.postCooling = 5;
 	m_rf.PulseOption = 2;
@@ -1267,7 +1267,7 @@ void LCD_Init()
 
 	m_rf.preCooltimeOut = PRECOOL_TIMEOUT;
 	m_rf.vibeOn = 1;
-	m_rf.vibeLevel = 1;
+	m_rf.vibeLevel = 2;
 
 }
 
@@ -2006,7 +2006,7 @@ int compare_32(const void *a, const void *b)    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï
 int wattDa = 0;
 int trandu = 0;
 int tranduOut = 6;
-int frqQ = 10000;
+int frqQ = 10600;
 int qsortBuff[5] = {0,};
 int qsort10Buff[10] = {0,};
 
@@ -2377,12 +2377,12 @@ void AutoCal_Frq()
 	  }
   }
 
-  if((frqQ > 12500) || (high && low))
+  if((frqQ > 12000) || (high && low))
   {
   	low = 0;
   	high = 0;
   	Tx_RF_Watt_Zero_ALL_Module();
-  	frqQ = 10000;
+  	frqQ = 10600;
   	trandu++;
 //	Tx_RF_FRQ_Module(trandu, frqQ);
 

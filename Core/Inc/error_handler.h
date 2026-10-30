@@ -124,7 +124,8 @@ typedef enum
     IDX_GOTO_IDEL = 16,
     IDX_POWER_SPECS = 17,
     IDX_FLOW_LIMIT_STOP = 18,
-    IDX_MAIN_EVENT_END = 19, //~~~~~
+    IDX_LEVEL_LIMIT = 19,
+    IDX_MAIN_EVENT_END = 20, //~~~~~
 
     //------------------------------
 	IDX_HP_EVENT_START = 25,
