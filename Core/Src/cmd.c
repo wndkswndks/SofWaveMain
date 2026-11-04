@@ -15,8 +15,6 @@ uint8_t Rx_data2[1];
 uint8_t Rx_data3[1];
 uint8_t Rx_data4[1];
 uint8_t Rx_data5[1];
-extern int wattDa;
-extern int trandu;
 
 void Uart_Init()
 {
@@ -445,11 +443,13 @@ void CMD_Is_All_Live(uint8_t who)
 		case LIVE_RF:
 			m_rf.liveChkCnt = 0;
 			m_rf.liveOk = 0;
-			for(int i =0 ;i < 3;i++)
+			for(int i =0 ;i < 10;i++)
 			{
-				Tx_RF_GenStatus_Check();
+				Tx_RF_Version_Check();
+				if(m_rf.liveChkCnt)break;
+				else HAL_Delay(200);
 			}
-			if(m_rf.liveChkCnt >= 2)
+			if(m_rf.liveChkCnt >= 1)
 			{
 				m_rf.liveOk = 1;
 				Tx_LCD_Msg(CMD_DO_ALL_LIVE, LIVE_RF);
@@ -659,7 +659,6 @@ void Check_Cart_Req_Config()
 }
 
 
-extern int wattDa;
 
 uint8_t dRed = 255;
 uint8_t dGreen = 70;
@@ -721,23 +720,23 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 				{
 					case AUTOCAL_MAIN:
 						Debug_Printf("Autocal main",1);
-						wattDa = 0;
+						m_rf.wattDa = 0;
 					break;
 					case AUTOCAL_100MS:
 						Debug_Printf("Autocal 100ms",1);
-						wattDa = 350;
+						m_rf.wattDa = 350;
 					break;
 					case AUTOCAL_1WATT:
 						Debug_Printf("Autocal 1watt",1);
-						wattDa = 280;
+						m_rf.wattDa = 280;
 					break;
 					case AUTOCAL_FRQ:
 						Debug_Printf("Autocal Frq",1);
-						wattDa = 350;
+						m_rf.wattDa = 350;
 					break;
 					case AUTOCAL_TEST:
 						Debug_Printf("Autocal Test",1);
-						wattDa = 0;
+						m_rf.wattDa = 0;
 					break;
 				}
 				TX_RF_Max_Ontime_Set();
@@ -857,12 +856,12 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 
 
 		case CMD_DEBUG_AUTOCAL_TD_NO:
-			trandu = data;
+			m_rf.trandu = data;
 			Debug_Printf_Value("trandu = ", data,1);
 		break;
 
 		case CMD_DEBUG_AUTOCAL_DA:
-			wattDa = data;
+			m_rf.wattDa = data;
 			Debug_Printf_Value("wattDa = ", data,1);
 		break;
 
@@ -1293,26 +1292,6 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 		break;
 
 
-		case CMD_INFO_UI_DESING:
-			m_io.infoUiDesing = data;
-		break;
-
-		case CMD_INFO_UI_FW:
-			m_io.infoUiFw = data;
-		break;
-
-		case CMD_INFO_MAIN_FW:
-			m_io.infoMainFw = data;
-		break;
-
-		case CMD_INFO_HP_FW:
-			m_io.infoHPFw = data;
-		break;
-
-		case CMD_INFO_RF_FW:
-			m_io.infoRfFw = data;
-		break;
-
 		case CMD_RTC_YY:
 			m_io.YY = data;
 			Tx_LCD_Msg(CMD_RTC_YY, m_io.YY);
@@ -1388,6 +1367,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 				{
 					Pump_Ciller_Pwr_ON();
 					PreCooling_ON();
+					Tx_Hand1_Msg(CMD_LCD_STATUS, STATUS_PRECOOLING);
 					if(m_rf.stbyTimeStamp && HAL_GetTick() - m_rf.stbyTimeStamp <10000)
 					{
 						m_rf.stbyTimeStamp = 0;
@@ -1401,7 +1381,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 			{
 				Ready_OFF(EVENT_2);
 				m_rf.stbyTimeStamp = HAL_GetTick();
-
+				m_hand1.contectChk = 0;
 			}
 
 
@@ -1409,11 +1389,11 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 		break;
 
 		case CMD_INFOMATION:
-			Tx_LCD_Msg(CMD_INFO_UI_DESING, m_io.infoUiDesing);
-			Tx_LCD_Msg(CMD_INFO_UI_FW, m_io.infoUiFw);
+
 			Tx_LCD_Msg(CMD_INFO_MAIN_FW, m_io.infoMainFw);
 			Tx_LCD_Msg(CMD_INFO_HP_FW, m_io.infoHPFw);
 			Tx_LCD_Msg(CMD_INFO_RF_FW, m_io.infoRfFw);
+
 			Tx_LCD_Msg(CMD_RTC_YY, m_io.YY);
 			Tx_LCD_Msg(CMD_RTC_MM, m_io.MM);
 			Tx_LCD_Msg(CMD_RTC_DD, m_io.DD);
@@ -1457,6 +1437,8 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 			m_rf.autoCalFlag = data;
 			if(data == AUTOCAL_MAIN)
 			{
+				m_rf.trandu = 0;
+				m_rf.tranduEnd = 6;
 				TX_RF_Max_Ontime_Set();
 				Tx_RF_FRQ_ALL_Module();
 				Tx_RF_Watt_Zero_ALL_Module();
@@ -1564,12 +1546,10 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 		case CMD_DEBUG_PELTIER:
 			if (data== CMD_HP1_COOL_ON)
 			{
-
 				PELTIER_PWR_ON();
 			}
 			else if (data== CMD_HP1_COOL_OFF)
 			{
-
 				PELTIER_PWR_OFF();
 			}
 
@@ -1601,6 +1581,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 
 
 					Tx_LCD_Msg(CMD_RF_AREA_SEL, m_rf.rfAreaMode);
+					Tx_Hand1_Msg(CMD_RF_AREA_SEL, m_rf.rfAreaMode);
 					Eeprom_Byte_Write(IDX_RF_AREA_MODE_START, m_rf.rfAreaMode);
 				}
 				Tx_LCD_Msg(CMD_RF_AREA_ALL_EN, 0);
@@ -1618,6 +1599,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 					else if(m_rf.rfAreaAllEn) m_rf.rfAreaMode = IDX_RF_AREA_ALL;
 					else break;
 					Tx_LCD_Msg(CMD_RF_AREA_SEL, m_rf.rfAreaMode);
+					Tx_Hand1_Msg(CMD_RF_AREA_SEL, m_rf.rfAreaMode);
 					Eeprom_Byte_Write(IDX_RF_AREA_MODE_START, m_rf.rfAreaMode);
 				}
 				Tx_LCD_Msg(CMD_RF_AREA_3_EN, 0);
@@ -1635,6 +1617,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 					else if(m_rf.rfArea3En) m_rf.rfAreaMode = IDX_RF_AREA_3;
 					else break;
 					Tx_LCD_Msg(CMD_RF_AREA_SEL, m_rf.rfAreaMode);
+					Tx_Hand1_Msg(CMD_RF_AREA_SEL, m_rf.rfAreaMode);
 					Eeprom_Byte_Write(IDX_RF_AREA_MODE_START, m_rf.rfAreaMode);
 				}
 				Tx_LCD_Msg(CMD_RF_AREA_4_EN, 0);
@@ -1663,6 +1646,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 				break;
 			}
 			Tx_LCD_Msg(CMD_RF_AREA_SEL, m_rf.rfAreaMode);
+			Tx_Hand1_Msg(CMD_RF_AREA_SEL, m_rf.rfAreaMode);
 			Eeprom_Byte_Write(IDX_RF_AREA_MODE_START, m_rf.rfAreaMode);
 		break;
 
@@ -1779,6 +1763,11 @@ void Hand_Rx_Parssing(uint8_t add, int data)
 				//ï¿½Ö¾ï¿½ï¿½ï¿½ï¿?
 			break;
 
+			case CMD_INFO_HP_FW:
+				m_io.infoHPFw = data;
+			break;
+
+
 			case CMD_CATRIDGE_EVENT:
 				m_eep.catridgeDetect = data;
 				m_hand1.cartDetectFlag = 1;
@@ -1891,6 +1880,11 @@ void Hand_Rx_Parssing(uint8_t add, int data)
 			case CMD_GET_ALL_CART_END:
 //				Check_CartAllData(data);
 				Tx_LCD_Msg(CMD_GET_ALL_CART_END, data);
+			break;
+
+			case CMD_CONTECT_CHK:
+				m_hand1.contectChk = 1;
+				Tx_LCD_Msg(CMD_CONTECT_CHK, 1);
 			break;
 
 			default:

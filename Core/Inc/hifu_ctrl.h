@@ -74,6 +74,10 @@ typedef enum
 	RF_INDEX_CMD = 3,
 	RF_INDEX_DATA = 4,
 
+	RF_INDEX_VER_MAJOR = 4,
+	RF_INDEX_VER_MINOR = 5,
+	RF_INDEX_VER_PATCH = 6,
+
 	RF_INDEX_ERR_STATUS = 4,
 	RF_INDEX_TEMP = 5,
 	RF_INDEX_ERR_NO = 6,
@@ -326,6 +330,10 @@ typedef struct
 	uint8_t rfAreaAllEn;
 	uint8_t rfArea3En;
 	uint8_t rfArea4En;
+	int wattDa;
+	int trandu;
+	int tranduEnd;
+	int frqQ;
 } RF_T;
 
 
@@ -363,6 +371,7 @@ typedef struct
 	uint8_t liveChkCnt;
 	uint8_t cartAllOk;
 	uint16_t cartDetectFlag;
+	uint8_t contectChk;
 } HAND_T;
 
 

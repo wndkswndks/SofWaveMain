@@ -247,6 +247,8 @@ void Error_Check_Main()
 
 	Check_ERROR((m_io.chillerTemp<CHILLER_TEMP_MAX), IDX_CHILER_TEMP_OVER, ERR_DEL_3);
 	Check_ERROR((m_err.autoCalStatus==0), IDX_AUTO_CAL_COMU_ERR, ERR_DEL_1);
+
+	Check_ERROR((m_io.battery*10.0 > BATTRY_LIMIT_MIN), IDX_BATTRY_LIMIT_UNDER, ERR_DEL_3);
 #if 0
 	Check_ERROR((m_err.flowZero==0), IDX_FLOW_LIMIT_UNDER, ERR_DEL_1);
 	if(Check_ERROR((m_io.battery*10.0< BATTRY_LIMIT_MAX), IDX_BATTRY_LIMIT_OVER, ERR_DEL_1)){}

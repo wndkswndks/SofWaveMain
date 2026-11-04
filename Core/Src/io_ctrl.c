@@ -530,6 +530,9 @@ void IO_Init()
 		m_rf.switchHandFoot = SWITCH_HAND_FOOT_NO;
 	}
 
+
+	m_io.infoMainFw = MAIN_FW_VER;
+
 	RTC_Init();
 }
 void RTC_Init(void)

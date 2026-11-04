@@ -1225,6 +1225,8 @@ void Rf_Init()
 	RF_Pulse_Signal_GPIO_Port_L();
 	HAL_Delay(1500);
 	RF_Pwr_ON();
+	m_rf.frqQ = 10600;
+	m_rf.tranduEnd = 6;
 
 
 //	Rf_TD_BHB001_Table_260212();
@@ -1262,6 +1264,7 @@ void LCD_Init()
 	Tx_LCD_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
 	Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_STNBY);
 	Tx_LCD_Msg(CMD_RF_AREA_SEL, m_rf.rfAreaMode);
+	Tx_Hand1_Msg(CMD_RF_AREA_SEL, m_rf.rfAreaMode);
 //	Tx_Hand1_Msg(CMD_ADC_CHANGE, 5);//TEMP 5
 
 
@@ -1379,6 +1382,31 @@ void Tx_RF_GenStatus_Check()
 
 	m_rf.txBuff[RF_INDEX_DATA+2] = ETX;
 	Debug_Tx_GenStatus_Check_Printf();
+	Tx_RF_Msg(m_rf.txBuff, len);
+	memset(m_rf.txBuff, 0, 30);
+
+}
+void Tx_RF_Version_Check()
+{
+
+	uint8_t len = 0;
+
+	len = RF_NUM_FIX+1;
+	m_rf.txBuff[RF_INDEX_STX] = STX;
+	m_rf.txBuff[RF_INDEX_LEN] = len;
+	m_rf.txBuff[RF_INDEX_ADDR] = 'B';//���ʷ����� B, �ý��� b
+	m_rf.txBuff[RF_INDEX_CMD] = GEN_GET_VERSION;
+
+	m_rf.txBuff[RF_INDEX_DATA] = 0x00;
+
+
+	for(int i =0 ;i <= RF_INDEX_DATA ;i++)
+	{
+		m_rf.txBuff[RF_INDEX_DATA+1] ^= m_rf.txBuff[i];
+	}
+
+	m_rf.txBuff[RF_INDEX_DATA+2] = ETX;
+	Debug_printf_str("[TX_RF] Version Check\r\n");
 	Tx_RF_Msg(m_rf.txBuff, len);
 	memset(m_rf.txBuff, 0, 30);
 
@@ -2003,10 +2031,7 @@ int compare_32(const void *a, const void *b)    // �������� ��
 }
 
 
-int wattDa = 0;
-int trandu = 0;
 int tranduOut = 6;
-int frqQ = 10600;
 int qsortBuff[5] = {0,};
 int qsort10Buff[10] = {0,};
 
@@ -2043,7 +2068,7 @@ int AutoCal_10_Avg()// ������������ ����
 	}
 
 	avg = (float)(sum)/6;
-	printf(">>avg : %d %.2f \r\n", trandu, avg);
+	printf(">>avg : %d %.2f \r\n", m_rf.trandu, avg);
 	memset(qsort10Buff, 0, sizeof(qsort10Buff));
 
 	return avg;
@@ -2065,20 +2090,20 @@ void AutoCal()
 	memset(m_rf.FeedBackWBuff, 0, sizeof(m_rf.FeedBackWBuff));
 	m_rf.FeedBackCnt = 0;
 
-	if(wattDa<400)
+	if(m_rf.wattDa<400)
 	{
-		wattDa += 2 ;
+		m_rf.wattDa += 2 ;
 	}
 	else
 	{
 		Debug_Printf("AutoCal Da Over Err",1);
-		trandu = 0;
-		wattDa = 0;
+		m_rf.trandu = 0;
+		m_rf.wattDa = 0;
 		m_rf.autoCalFlag = 0;
 		m_rf.autoCalWattLevel = 0;
 	}
 
-	Tx_RF_Watt_Module(trandu, wattDa);
+	Tx_RF_Watt_Module(m_rf.trandu, m_rf.wattDa);
 
 
 	AutoCal_Tx_IP_Msg();//���̵� 0,2,4,6,8,
@@ -2091,7 +2116,7 @@ void AutoCal()
 	HAL_Delay(4000); // �޽�
 
 
-	printf("ACal\t%d\t%d",trandu, wattDa);
+	printf("ACal\t%d\t%d",m_rf.trandu, m_rf.wattDa);
 	qsortBuff[0] = m_rf.FeedBackWBuff[1] +(-1*m_rf.FeedBackWBuff[0]);
 	printf("\t%d \r\n",qsortBuff[0]);
 #if 0
@@ -2119,24 +2144,24 @@ void AutoCal()
 
 	if(watt >= wattBuff[m_rf.autoCalWattLevel])
 	{
-		add = (CMD_TRANDU_WATT_BASE + trandu*11 +m_rf.autoCalWattLevel+1);
-		Tx_LCD_Msg(add, wattDa-1);
-		wattDa += 16;
+		add = (CMD_TRANDU_WATT_BASE + m_rf.trandu*11 +m_rf.autoCalWattLevel+1);
+		Tx_LCD_Msg(add, m_rf.wattDa-1);
+		m_rf.wattDa += 16;
 		jump = 1;
 		m_rf.autoCalWattLevel++;
 		if(m_rf.autoCalWattLevel == 10)
 		{
 			m_rf.autoCalWattLevel = 0;
 			Tx_RF_Watt_Zero_ALL_Module();
-			if(trandu<6)
+			if(m_rf.trandu<m_rf.tranduEnd)
 			{
-				trandu++;
-				wattDa = 0;
+				m_rf.trandu++;
+				m_rf.wattDa = 0;
 			}
 			else
 			{
-				trandu = 0;
-				wattDa = 0;
+				m_rf.trandu = 0;
+				m_rf.wattDa = 0;
 				m_rf.autoCalFlag = 0;
 				Tx_LCD_Msg(CMD_AUTO_CAL_START, 0);
 			}
@@ -2159,7 +2184,7 @@ void AutoCal_test()
   }
 #endif
 
-  Tx_RF_Watt_Module(trandu, wattDa);
+  Tx_RF_Watt_Module(m_rf.trandu, m_rf.wattDa);
 
   for(int i =0 ;i < 5;i++)
   {
@@ -2174,7 +2199,7 @@ void AutoCal_test()
 
   }
 
-  printf("ACal %d %d -> \r\n",trandu, wattDa);
+  printf("ACal %d %d -> \r\n",m_rf.trandu, m_rf.wattDa);
 
   if(m_rf.FeedBackCnt<5)// 10���߿� 5�� �̸��϶� ��źҷ�?
   {
@@ -2223,7 +2248,7 @@ void AutoCal_100ms()// 100ms  ���� �д�
   }
 #endif
 
-  Tx_RF_Watt_Module(trandu, wattDa);
+  Tx_RF_Watt_Module(m_rf.trandu, m_rf.wattDa);
 
   AutoCal_Tx_IP_Msg();//���̵� 0,2,4,6,8,
   HAL_Delay(500);
@@ -2249,7 +2274,7 @@ void AutoCal_100ms()// 100ms  ���� �д�
   }
   HAL_Delay(4000); // �޽�
 
-  printf("ACal %d %d -> \r\n",trandu, wattDa);
+  printf("ACal %d %d -> \r\n",m_rf.trandu, m_rf.wattDa);
 
 
 
@@ -2257,7 +2282,7 @@ void AutoCal_100ms()// 100ms  ���� �д�
 	{
 		wattLongBuff[i] = m_rf.FeedBackWBuff[i] +(-1*m_rf.FeedBackWBuff[0]);
 
-		printf(">>%d %d\r\n", trandu, wattLongBuff[i]);
+		printf(">>%d %d\r\n", m_rf.trandu, wattLongBuff[i]);
 		if(25<=i && i<35)
 		{
 			qsort10Buff[i-25]= wattLongBuff[i];
@@ -2278,14 +2303,14 @@ void AutoCal_FindOnly_1watt()
 	memset(m_rf.FeedBackWBuff, 0, sizeof(m_rf.FeedBackWBuff));
 	m_rf.FeedBackCnt = 0;
 
-	if(wattDa<200)
+	if(m_rf.wattDa<200)
 	{
-		wattDa += 2 ;
+		m_rf.wattDa += 2 ;
 	}
 
 
 
-	Tx_RF_Watt_Module(trandu, wattDa);
+	Tx_RF_Watt_Module(m_rf.trandu, m_rf.wattDa);
 
 	for(int i =0 ;i < 1;i++)
 	{
@@ -2300,7 +2325,7 @@ void AutoCal_FindOnly_1watt()
 
 	}
 
-	printf("ACal %d %d -> ",trandu, wattDa);
+	printf("ACal %d %d -> ",m_rf.trandu, m_rf.wattDa);
 
 
 	qsortBuff[0] = m_rf.FeedBackWBuff[1] +(-1*m_rf.FeedBackWBuff[0]);
@@ -2312,11 +2337,11 @@ void AutoCal_FindOnly_1watt()
 	if(avg >=100)
 	{
 		Tx_RF_Watt_Zero_ALL_Module();
-		if(trandu<tranduOut)
+		if(m_rf.trandu<tranduOut)
 		{
 			printf("NEXT !!\r\n");
-			trandu++;
-			wattDa = 280;
+			m_rf.trandu++;
+			m_rf.wattDa = 280;
 		}
 		else
 		{
@@ -2337,11 +2362,11 @@ void AutoCal_Frq()
   memset(m_rf.FeedBackWBuff, 0, sizeof(m_rf.FeedBackWBuff));
   m_rf.FeedBackCnt = 0;
 
-  frqQ += 10;
-  Tx_RF_FRQ_Module(trandu, frqQ);
-  Tx_RF_Watt_Module(trandu, wattDa);
+  m_rf.frqQ += 10;
+  Tx_RF_FRQ_Module(m_rf.trandu, m_rf.frqQ);
+  Tx_RF_Watt_Module(m_rf.trandu, m_rf.wattDa);
 
-  printf("ACal\t%d\t%d\t->",trandu, frqQ);
+  printf("ACal\t%d\t%d\t->",m_rf.trandu, m_rf.frqQ);
 
   for(int i =0 ;i < 1;i++)
   {
@@ -2377,18 +2402,18 @@ void AutoCal_Frq()
 	  }
   }
 
-  if((frqQ > 12000) || (high && low))
+  if((m_rf.frqQ > 12000) || (high && low))
   {
   	low = 0;
   	high = 0;
   	Tx_RF_Watt_Zero_ALL_Module();
-  	frqQ = 10600;
-  	trandu++;
+  	m_rf.frqQ = 10600;
+  	m_rf.trandu++;
 //	Tx_RF_FRQ_Module(trandu, frqQ);
 
-  	if(trandu>6)
+  	if(m_rf.trandu>6)
   	{
-  		trandu = 0;
+  		m_rf.trandu = 0;
 		m_rf.autoCalFlag = 0;
   	}
   }
@@ -2439,9 +2464,9 @@ void RF_Borad_FeedBack_Test()
 		case STEP0:
 
 			Tx_RF_Watt_Zero_ALL_Module();
-			Tx_RF_Watt_Module(fBCh, wattDa);
+			Tx_RF_Watt_Module(fBCh, m_rf.wattDa);
 			RF_eg_Exp_On(1000);
-			Debug_Printf_Value("wattDa = ",wattDa,1);
+			Debug_Printf_Value("wattDa = ",m_rf.wattDa,1);
 			timeStamp = HAL_GetTick();
 			m_rf.feedBackTest = 0;
 			step = STEP1;
@@ -2453,14 +2478,14 @@ void RF_Borad_FeedBack_Test()
 			{
 				Tx_RF_FeedBack_Check();
 
-				if(wattDa<200)
+				if(m_rf.wattDa<200)
 				{
-					wattDa += 10;
+					m_rf.wattDa += 10;
 				}
 				else
 				{
 					Debug_Printf("End",1);
-					wattDa = 10;
+					m_rf.wattDa = 10;
 					m_rf.feedBackTest--;
 					if(!m_rf.feedBackTest)
 					{
@@ -2537,10 +2562,15 @@ void RF_Rx_Parssing(uint8_t rxID)
 			m_err.rfStatusTemp = rxBuffPassing[RF_INDEX_TEMP];
 			m_err.rfStatusErrNo = rxBuffPassing[RF_INDEX_ERR_NO];
 
-			m_rf.liveChkCnt++;
 		break;
 
 		case GEN_GET_VERSION_R:
+			m_rf.liveChkCnt++;
+			m_io.infoRfFw = 0;
+			m_io.infoRfFw += (rxBuffPassing[RF_INDEX_VER_MAJOR]*10000);
+			m_io.infoRfFw += (rxBuffPassing[RF_INDEX_VER_MINOR]*100);
+			m_io.infoRfFw += (rxBuffPassing[RF_INDEX_VER_PATCH]);
+			Debug_printf_str("Rf Fw Version : %u\r\n",m_io.infoRfFw);
 		break;
 
 		case GEN_FREQ_SET_R:
@@ -2582,6 +2612,7 @@ void Rf_Test()
 
 uint8_t Exp_Shot_Chk()
 {
+
 	if((m_rf.switchHandFoot == SWITCH_HAND)||(m_rf.switchHandFoot == SWITCH_HAND_FOOT_NO))
 	{
 		if (IS_HP1_SHOT_PUSH())
@@ -2666,6 +2697,16 @@ void Exp_Config()
 		case STEP0:
 			if(testExpFlag || Exp_Shot_Chk())
 			{
+				testExpFlag = 0;
+				if(m_hand1.contectChk==0)
+				{
+					Tx_LCD_Msg(CMD_CONTECT_CHK, 0);
+					HAL_Delay(500);
+					return;
+				}
+
+				m_hand1.contectChk = 0;
+
 				m_rf.totaEnergy = m_rf.totaEnergy + m_rf.energy;
 				totalEenerge = m_rf.totaEnergy;
 				Tx_LCD_Msg(CMD_TOTAL_JOULE, totalEenerge);
@@ -2678,7 +2719,7 @@ void Exp_Config()
 				Tx_Hand1_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
 
 				HAL_Delay(100);//200org
-				testExpFlag = 0;
+
 				Tx_LCD_Msg(CMD_LCD_EXP, LCD_EXP_START);
 				Tx_Hand1_Msg(CMD_LCD_EXP, LCD_EXP_START);
 				HAL_Delay(100);//200org

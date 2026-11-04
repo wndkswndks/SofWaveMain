@@ -115,7 +115,17 @@ void Eeprom_All_Read(void)
 		m_rf.rfAreaAllEn = m_eepMain.buff[IDX_RF_AREA_ALL_START];
 		m_rf.rfArea3En = m_eepMain.buff[IDX_RF_AREA_3_START];
 		m_rf.rfArea4En = m_eepMain.buff[IDX_RF_AREA_4_START];
-		m_rf.rfAreaMode = m_eepMain.buff[IDX_RF_AREA_MODE_START];
+
+		if(m_rf.rfAreaAllEn)
+		{
+			m_rf.rfAreaMode = IDX_RF_AREA_ALL;
+		}
+		else
+		{
+			m_rf.rfAreaMode = m_eepMain.buff[IDX_RF_AREA_MODE_START];
+
+		}
+
 	}
 
 

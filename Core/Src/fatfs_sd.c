@@ -615,7 +615,7 @@ FIL fil;//
 FRESULT fres;
 DWORD fre_clust;
 uint32_t total, sd_free;
-char buffer[100];//
+char buffer[300];//
 
 uint8_t SD_Error_Chk(FRESULT errCode, const char* msg)
 {

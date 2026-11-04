@@ -162,7 +162,7 @@
 #define AC_RLY_ON_TOGGLE()             HAL_GPIO_TogglePin(AC_RLY_ON_GPIO_Port, AC_RLY_ON_Pin)
 #define RF_Pulse_Signal_TOGGLE()       HAL_GPIO_TogglePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin)
 
-
+#define MAIN_FW_VER 10101
 /*  			define end  			*/
 
 
@@ -241,11 +241,9 @@ typedef struct
 	uint8_t levelStatus;
 	uint8_t levelStatusErr;
 	uint32_t day;
-	uint16_t infoUiDesing;
-	uint16_t infoUiFw;
 	uint16_t infoMainFw;
 	uint16_t infoHPFw;
-	uint16_t infoRfFw;
+	uint32_t infoRfFw;
 	uint8_t YY;
 	uint8_t MM;
 	uint8_t DD;
