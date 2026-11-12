@@ -719,7 +719,7 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 				{
 					case AUTOCAL_MAIN:
 						Debug_Printf("Autocal main",1);
-						m_rf.wattDa = 0;
+						m_rf.wattDa = 30;
 					break;
 
 					case AUTOCAL_100MS:
@@ -734,7 +734,7 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 
 					case AUTOCAL_FRQ:
 						Debug_Printf("Autocal Frq",1);
-						m_rf.wattDa = 350;
+						m_rf.wattDa = 100;
 					break;
 
 					case AUTOCAL_TEST:
@@ -1504,6 +1504,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 			if(data == AUTOCAL_MAIN)
 			{
 				m_rf.trandu = 0;
+				m_rf.wattDa = 30;
 				m_rf.tranduEnd = 6;
 				TX_RF_Max_Ontime_Set();
 				Tx_RF_FRQ_ALL_Module();

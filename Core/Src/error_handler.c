@@ -275,7 +275,7 @@ void Error_Check_HP()
 	else if(Check_ERROR((m_hand1.temprature > TEMP_MIN), IDX_TEMP_LIMIT_UNDER ,ERR_DEL_1)){}
 	else if(Check_ERROR((m_hand1.temprature > TEMP_LOW_VALUE), IDX_TEMP_LOW ,ERR_DEL_1)){}
 
-	if(m_eep.catridgeDetect == CATRIGE_CHK_OK && m_eep.catridgeStatus == SING_UP_CODE)
+	if(m_eep.catridgeDetect == CATRIGE_CHK_OK && m_eep.catridgeStatus == SING_UP_CODE && m_rf.expStep != STEP2)
 	{
 		for(int i = 1; i <= 7; i++)
 		{

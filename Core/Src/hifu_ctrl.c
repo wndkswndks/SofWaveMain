@@ -1225,7 +1225,7 @@ void Rf_Init()
 	RF_Pulse_Signal_GPIO_Port_L();
 	HAL_Delay(1500);
 	RF_Pwr_ON();
-	m_rf.frqQ = 10600;
+	m_rf.frqQ = 10700;
 	m_rf.tranduEnd = 6;
 
 //	m_rf.rfFBbuff[0][0] = 472; //0.28wÀÇ 0¹ø Æ®µà Á©¹Ù¸£°í Çã°ø
@@ -2386,7 +2386,7 @@ void AutoCal()
 	{
 		add = (CMD_TRANDU_WATT_BASE + m_rf.trandu*11 +m_rf.autoCalWattLevel+1);
 		Tx_LCD_Msg(add, m_rf.wattDa-1);
-		m_rf.wattDa += 16;
+		m_rf.wattDa += 10;
 		jump = 1;
 		m_rf.autoCalWattLevel++;
 		if(m_rf.autoCalWattLevel == 10)
@@ -2396,7 +2396,7 @@ void AutoCal()
 			if(m_rf.trandu<m_rf.tranduEnd)
 			{
 				m_rf.trandu++;
-				m_rf.wattDa = 0;
+				m_rf.wattDa = 30;
 			}
 			else
 			{
@@ -2649,7 +2649,7 @@ void AutoCal_Frq()
   memset(m_rf.FeedBackWBuff, 0, sizeof(m_rf.FeedBackWBuff));
   m_rf.FeedBackCnt = 0;
 
-  m_rf.frqQ += 10;
+  m_rf.frqQ += 20;
   Tx_RF_FRQ_Module(m_rf.trandu, m_rf.frqQ);
   Tx_RF_Watt_Module(m_rf.trandu, m_rf.wattDa);
 
@@ -2689,12 +2689,12 @@ void AutoCal_Frq()
 	  }
   }
 
-  if((m_rf.frqQ > 12000) || (high && low))
+  if((m_rf.frqQ > 11800) || (high && low))
   {
   	low = 0;
   	high = 0;
   	Tx_RF_Watt_Zero_ALL_Module();
-  	m_rf.frqQ = 10600;
+  	m_rf.frqQ = 10700;
   	m_rf.trandu++;
 //	Tx_RF_FRQ_Module(trandu, frqQ);
 
@@ -2702,6 +2702,7 @@ void AutoCal_Frq()
   	{
   		m_rf.trandu = 0;
 		m_rf.autoCalFlag = 0;
+		m_rf.frqQ = 10700;
   	}
   }
 
