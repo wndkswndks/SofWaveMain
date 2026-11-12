@@ -418,7 +418,7 @@ void Level_Check()
 {
 	m_io.levelMedle = IS_LEVEL_SENSOR1_ON() ;//
 	m_io.levelHigh = IS_LEVEL_SENSOR2_ON() ;//
-	m_io.levelLow = WATER_ON; //임시 아직 센서 연결안함//IS_LEVEL_SENSOR3_ON() ;
+	m_io.levelLow = WATER_ON; //임시 아직 센서 연결안함//IS_LEVEL_SENSOR3_ON() ;//
 
 	if(m_io.levelHigh==WATER_ON && m_io.levelMedle==WATER_ON && m_io.levelLow==WATER_ON)
 	{
@@ -495,7 +495,9 @@ void IO_Init()
 	    HAL_Delay(50);//
 	    BUZZER_L();
 	    HAL_Delay(50);
+
 	}
+	Pump_Ciller_Pwr_OFF();
 
 	if(IS_AC_INPUT_STATE()) m_io.powerSpecs = POWER_AC_KOREA;
 	else m_io.powerSpecs = POWER_AC_OTHER;

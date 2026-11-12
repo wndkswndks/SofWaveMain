@@ -179,9 +179,8 @@ void Debug_Tx_RF_Frq_Printf(uint8_t ch, uint16_t frq)
 void Debug_Tx_RF_All_Watt_Printf()
 {
 #if 1
-	float wattF = (float)m_rf.watt/10;
 	printf("[TX_RF] ");
-	printf("> %.1f Watt \r\n", wattF);
+	printf("> %u Watt \r\n", m_rf.watt);
 	for(int i =0 ;i < 7;i++)
 	{
 		printf("[%d] %u\r\n", i, (unsigned int)m_rf.rfwattBuff[i]);
@@ -295,7 +294,7 @@ void Tx_Hand1_Msg(uint8_t add, int data)
 
 void Tx_RF_Msg(uint8_t* buff, uint8_t len)
 {
-	while(HAL_GetTick() -m_rf.lastRfGenTxTime<50);
+	while(HAL_GetTick() -m_rf.lastRfGenTxTime<10);
 	HAL_UART_Transmit(&huart4,buff, len,100);
 	//Debug_Tx_RF_Printf(buff, len);
 	m_rf.lastRfGenTxTime = HAL_GetTick();
@@ -665,7 +664,7 @@ uint8_t dGreen = 70;
 uint8_t dBlue = 140;
 void Debug_Rx_Parssing(uint8_t add, int data)
 {
-
+	uint32_t timeS;
 	if(add==0)return;
 	switch (add)
 	{
@@ -722,22 +721,42 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 						Debug_Printf("Autocal main",1);
 						m_rf.wattDa = 0;
 					break;
+
 					case AUTOCAL_100MS:
 						Debug_Printf("Autocal 100ms",1);
 						m_rf.wattDa = 350;
 					break;
+
 					case AUTOCAL_1WATT:
 						Debug_Printf("Autocal 1watt",1);
 						m_rf.wattDa = 280;
 					break;
+
 					case AUTOCAL_FRQ:
 						Debug_Printf("Autocal Frq",1);
 						m_rf.wattDa = 350;
 					break;
+
 					case AUTOCAL_TEST:
 						Debug_Printf("Autocal Test",1);
 						m_rf.wattDa = 0;
 					break;
+
+					case AUTOCAL_SIMPLE_1WATT:
+						Debug_Printf("Autocal Simple 1watt",1);
+						m_rf.trandu = 0;
+						m_rf.wattDa = 350;
+					break;
+
+//					case FEED_BACK_IDEL:
+//						Debug_Printf("FeedBack Idel",1);
+//						m_rf.rfFBcnt = 0;
+//						m_rf.rfFBmode = FB_MODE_IDEL
+//					break;
+
+
+
+
 				}
 				TX_RF_Max_Ontime_Set();
 				Tx_RF_FRQ_ALL_Module();
@@ -784,16 +803,54 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 		break;
 
 		case CMD_DEBUG_WATT_FEEDBACK:
-			Debug_Printf("CMD_DEBUG_WATT_FEEDBACK START",1);
-			m_rf.feedBackTest = data;
-			uint8_t fbTd = data/1000;
-			uint16_t fbDa = data%1000;
-			Tx_RF_Watt_Zero_ALL_Module();
-			Tx_RF_Watt_Module(fbTd, fbDa);
-			RF_eg_Exp_On(2000);
-			HAL_Delay(2000);
-			Tx_RF_FeedBack_Check();
+			m_rf.rfFBavg1 = 0;
+			m_rf.rfFBavg2 = 0;
+			m_rf.rfFBcnt = 0;
+			Tx_RF_FRQ_ALL_Module();
+			if(data)
+			{
+				Tx_RF_Watt_ALL_Module_Force(data);
+				RF_eg_Exp_On(5000);
+			}
+			for(int i =0 ;i < 70;i++)
+			{
+				Tx_RF_FeedBack_Check();
+				HAL_Delay(50);
+			}
 		break;
+
+		case CMD_DEBUG_FEEDBACK:
+			m_rf.energy =20;
+			m_rf.pulseDuration = 70;
+			Tx_RF_FRQ_ALL_Module();
+			RF_Watt_All_Calculate();
+			Tx_RF_Watt_ALL_Module();
+			TX_RF_Max_Ontime_Set();
+			HAL_Delay(500);
+
+			m_rf.rfFBmode = FB_MODE_TEST;
+			m_rf.rfFBtestCnt = 0;
+			memset(m_rf.rfFBtestBuff, 0, sizeof(m_rf.rfFBtestBuff));
+			RF_eg_Exp_On(2000);
+			HAL_Delay(500);
+			timeS = HAL_GetTick();
+			for(int i =0 ;i < 5;i++)
+			{
+				Tx_RF_FeedBack_Check();
+			}
+			for(int i =0 ;i < 2;i++)
+			{
+				Debug_printf_str("<%d> : ",i);
+				for(int j =0 ;j < 5;j++)
+				{
+					Debug_printf_str("%u /", m_rf.rfFBtestBuff[j][i]);
+				}
+				Debug_printf_str("\r\n");
+			}
+			Debug_printf_str("T:%u\r\n",(HAL_GetTick()-timeS));
+
+		break;
+
 
 		case CMD_IS_CATRIDGE:
 			Tx_Hand1_Msg(CMD_IS_CATRIDGE, 0);
@@ -1031,6 +1088,10 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 			SD_Read_All_Binary("ERROR_LOG/error_log.txt");
 		break;
 
+		case CMD_GET_ALL_CART:
+			Tx_Hand1_Msg(CMD_GET_ALL_CART, 1);
+			m_eep.cartDataMoving = 1;
+		break;
 
 	}
 
@@ -1374,6 +1435,12 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 						m_rf.readyHighPass = 1;
 						HAL_Delay(500);
 					}
+					Tx_RF_FRQ_ALL_Module();
+					RF_Watt_All_Calculate();
+					Tx_RF_Watt_ALL_Module();
+					TX_RF_Max_Ontime_Set();
+					HAL_Delay(500);
+//					FB_Idel_Chk();
 				}
 				else Ready_OFF(EVENT_9);
 			}
@@ -1381,7 +1448,6 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 			{
 				Ready_OFF(EVENT_2);
 				m_rf.stbyTimeStamp = HAL_GetTick();
-				m_hand1.contectChk = 0;
 			}
 
 
@@ -1883,8 +1949,7 @@ void Hand_Rx_Parssing(uint8_t add, int data)
 			break;
 
 			case CMD_CONTECT_CHK:
-				m_hand1.contectChk = 1;
-				Tx_LCD_Msg(CMD_CONTECT_CHK, 1);
+
 			break;
 
 			default:

@@ -178,7 +178,7 @@ typedef enum
 } DIP_STATE_E;
 typedef enum
 {
-	BUZZER_ON_TIME = 50,
+	BUZZER_ON_TIME = 200,
 
 	COOL_LV1 = 1,
 	COOL_LV2 = 2,

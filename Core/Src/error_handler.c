@@ -303,7 +303,8 @@ void Error_Check_HP()
 
 		Check_ERROR((m_eep.remainingShotNum < CATRIDGE_REMAIN_MAX), IDX_CATRIGE_RESHOT_ERR ,ERR_DEL_1);
 
-		if(Check_ERROR((m_eep.remainingShotNum > CATRIDGE_REMAIN_LOW_500), IDX_CATRIGE_RESHOT_LOW_500 ,ERR_DEL_1)){}
+		if(Check_ERROR((m_eep.remainingShotNum > 0), IDX_CATRIGE_RESHOT_ZERO ,ERR_DEL_1)){}
+		else if(Check_ERROR((m_eep.remainingShotNum > CATRIDGE_REMAIN_LOW_500), IDX_CATRIGE_RESHOT_LOW_500 ,ERR_DEL_1)){}
 		else if(Check_ERROR((m_eep.remainingShotNum > CATRIDGE_REMAIN_LOW_1000), IDX_CATRIGE_RESHOT_LOW_1000 ,ERR_DEL_1)){}
 
 		Check_ERROR((m_err.powerSpecs==0), IDX_POWER_SPECS, ERR_DEL_1);

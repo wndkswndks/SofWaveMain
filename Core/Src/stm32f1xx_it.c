@@ -207,6 +207,7 @@ void SysTick_Handler(void)
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
   RF_Eg_Exp_Conter();
+  Buzzer_OFF_Config();
 
   /* USER CODE END SysTick_IRQn 1 */
 }

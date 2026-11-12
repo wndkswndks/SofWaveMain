@@ -257,6 +257,12 @@ typedef enum
 	SWITCH_FOOT = 2,
 
 	NO_TOUCH_SEC = 600,
+
+	FB_MODE_IDEL = 0,
+	FB_MODE_START = 1,
+	FB_MODE_NOMAL = 2,
+	FB_MODE_TEST = 3,
+
 } LCD_NUM_E;
 
 
@@ -334,6 +340,17 @@ typedef struct
 	int trandu;
 	int tranduEnd;
 	int frqQ;
+	uint16_t rfFBavg1;
+	uint16_t rfFBavg2;
+	uint8_t rfFBcnt;
+	uint16_t rfFBbuff[50][2];
+	uint8_t rfFBmode;
+	uint32_t fbTimeStamp;
+	uint8_t rfFBLow;
+	uint8_t rfFBstartFail;
+	uint8_t rfFBReTry;
+	uint16_t rfFBtestBuff[5][2];
+	uint8_t rfFBtestCnt;
 } RF_T;
 
 
@@ -408,6 +425,7 @@ void RF_PWM_Force_Stop();
 void RF_PWM_Force_Force_Stop();
 void Rf_TD_BHB004_Table_260212();
 void Pulse_Trig_TimeSave();
+void Tx_RF_Watt_ALL_Module_Force(uint16_t da);
 
 
 /*  			function end  			*/

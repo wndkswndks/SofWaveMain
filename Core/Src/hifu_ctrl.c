@@ -1221,15 +1221,126 @@ void Rf_Init()
 {
 //	HP1_Pwr_ON();
 	m_rf.pluseOn = 0;
-	m_rf.pluseLevel = 0;
+	m_rf.pluseLevel = PWM_H_LEVEL;
 	RF_Pulse_Signal_GPIO_Port_L();
 	HAL_Delay(1500);
 	RF_Pwr_ON();
 	m_rf.frqQ = 10600;
 	m_rf.tranduEnd = 6;
 
+//	m_rf.rfFBbuff[0][0] = 472; //0.28wÀÇ 0¹ø Æ®µà Á©¹Ù¸£°í Çã°ø
+//	m_rf.rfFBbuff[0][1] = 490; //0.28wÀÇ 6¹ø Æ®µà Á©¹Ù¸£°í Çã°ø
 
-//	Rf_TD_BHB001_Table_260212();
+//	m_rf.rfFBbuff[1][0] = 487; //0.30wÀÇ 0¹ø Æ®µà Á©¹Ù¸£°í Çã°ø
+//	m_rf.rfFBbuff[1][1] = 421; //0.30wÀÇ 6¹ø Æ®µà Á©¹Ù¸£°í Çã°ø
+
+//	m_rf.rfFBbuff[2][0] = 495;
+//	m_rf.rfFBbuff[2][1] = 441;
+
+//	m_rf.rfFBbuff[3][0] = 501;
+//	m_rf.rfFBbuff[3][1] = 455;
+
+//	m_rf.rfFBbuff[4][0] = 509;
+//	m_rf.rfFBbuff[4][1] = 471;
+
+//	m_rf.rfFBbuff[5][0] = 516;
+//	m_rf.rfFBbuff[5][1] = 488;
+
+//	m_rf.rfFBbuff[6][0] = 528;
+//	m_rf.rfFBbuff[6][1] = 507;
+
+//	m_rf.rfFBbuff[7][0] = 534;
+//	m_rf.rfFBbuff[7][1] = 520;
+
+//	m_rf.rfFBbuff[8][0] = 539;
+//	m_rf.rfFBbuff[8][1] = 533;
+
+//	m_rf.rfFBbuff[9][0] = 544;
+//	m_rf.rfFBbuff[9][1] = 548;
+
+//	m_rf.rfFBbuff[10][0] = 550;
+//	m_rf.rfFBbuff[10][1] = 560;
+
+//	m_rf.rfFBbuff[11][0] = 560;
+//	m_rf.rfFBbuff[11][1] = 577;
+
+//	m_rf.rfFBbuff[12][0] = 566;
+//	m_rf.rfFBbuff[12][1] = 589;
+
+//	m_rf.rfFBbuff[13][0] = 573;
+//	m_rf.rfFBbuff[13][1] = 599;
+
+//	m_rf.rfFBbuff[14][0] = 579;
+//	m_rf.rfFBbuff[14][1] = 610;
+
+//	m_rf.rfFBbuff[15][0] = 585;
+//	m_rf.rfFBbuff[15][1] = 623;
+
+//	m_rf.rfFBbuff[16][0] = 595;
+//	m_rf.rfFBbuff[16][1] = 640;
+
+//	m_rf.rfFBbuff[17][0] = 602;
+//	m_rf.rfFBbuff[17][1] = 653;
+
+//	m_rf.rfFBbuff[18][0] = 606;
+//	m_rf.rfFBbuff[18][1] = 663;
+
+//	m_rf.rfFBbuff[19][0] = 612;
+//	m_rf.rfFBbuff[19][1] = 675;
+
+//	m_rf.rfFBbuff[20][0] = 618;
+//	m_rf.rfFBbuff[20][1] = 685;
+
+//	m_rf.rfFBbuff[21][0] = 628;
+//	m_rf.rfFBbuff[21][1] = 702;
+
+//	m_rf.rfFBbuff[22][0] = 632;
+//	m_rf.rfFBbuff[22][1] = 712;
+
+//	m_rf.rfFBbuff[23][0] = 634;
+//	m_rf.rfFBbuff[23][1] = 722;
+
+//	m_rf.rfFBbuff[24][0] = 639;
+//	m_rf.rfFBbuff[24][1] = 731;
+
+//	m_rf.rfFBbuff[25][0] = 644;
+//	m_rf.rfFBbuff[25][1] = 743;
+
+//	m_rf.rfFBbuff[26][0] = 650;
+//	m_rf.rfFBbuff[26][1] = 755;
+
+//	m_rf.rfFBbuff[27][0] = 653;
+//	m_rf.rfFBbuff[27][1] = 764;
+
+//	m_rf.rfFBbuff[28][0] = 657;
+//	m_rf.rfFBbuff[28][1] = 777;
+
+//	m_rf.rfFBbuff[29][0] = 662;
+//	m_rf.rfFBbuff[29][1] = 785;
+
+//	m_rf.rfFBbuff[30][0] = 667;
+//	m_rf.rfFBbuff[30][1] = 795;
+
+//	m_rf.rfFBbuff[31][0] = 673;
+//	m_rf.rfFBbuff[31][1] = 811;
+
+//	m_rf.rfFBbuff[32][0] = 673;
+//	m_rf.rfFBbuff[32][1] = 818;
+
+//	m_rf.rfFBbuff[33][0] = 677;
+//	m_rf.rfFBbuff[33][1] = 826;
+
+//	m_rf.rfFBbuff[34][0] = 678;
+//	m_rf.rfFBbuff[34][1] = 835;
+
+//	m_rf.rfFBbuff[35][0] = 677; //0.98wÀÇ 0¹ø Æ®µà Á©¹Ù¸£°í Çã°ø
+//	m_rf.rfFBbuff[35][1] = 841; //0.98wÀÇ 6¹ø Æ®µà Á©¹Ù¸£°í Çã°ø
+
+//	m_rf.rfFBbuff[36][0] = 677; //1.00wÀÇ 0¹ø Æ®µà Á©¹Ù¸£°í Çã°ø
+//	m_rf.rfFBbuff[36][1] = 859; //1.00wÀÇ 6¹ø Æ®µà Á©¹Ù¸£°í Çã°ø
+
+
+
 
 
 
@@ -1274,10 +1385,28 @@ void LCD_Init()
 
 }
 
+void RF_Watt_Fix_Calculate(int watt)
+{
+	int wattM, wattS;
+	int gap;
+
+	wattM = watt/10;
+	wattS = (watt%10)/2;
+
+	for(int i =0 ;i < 7; i++)
+	{
+		m_rf.rfwattBuff[i] = m_eep.rfWattBuff[wattM+(i*11)];
+
+		if(wattS != 0)
+		{
+			gap = (m_eep.rfWattBuff[wattM+(i*11)+1] - m_eep.rfWattBuff[wattM+(i*11)])/5;
+			m_rf.rfwattBuff[i] += (gap*wattS);
+		}
+	}
+}
 
 void RF_Watt_All_Calculate()
 {
-	int idx;
 	float wattF;
 	int wattI;
 	int wattM, wattS;
@@ -1308,16 +1437,16 @@ void RF_Watt_All_Calculate()
 	switch (m_rf.rfAreaMode)
 	{
 		case IDX_RF_AREA_3:
+			m_rf.rfwattBuff[0] = 0;
+			m_rf.rfwattBuff[1] = 0;
+			m_rf.rfwattBuff[2] = 0;
 			m_rf.rfwattBuff[3] = 0;
-			m_rf.rfwattBuff[4] = 0;
-			m_rf.rfwattBuff[5] = 0;
-			m_rf.rfwattBuff[6] = 0;
 		break;
 
 		case IDX_RF_AREA_4:
-			m_rf.rfwattBuff[4] = 0;
-			m_rf.rfwattBuff[5] = 0;
-			m_rf.rfwattBuff[6] = 0;
+			m_rf.rfwattBuff[0] = 0;
+			m_rf.rfwattBuff[1] = 0;
+			m_rf.rfwattBuff[2] = 0;
 		break;
 	}
 }
@@ -1432,7 +1561,7 @@ void Tx_RF_FeedBack_Check()
 	}
 
 	m_rf.txBuff[RF_INDEX_DATA+2] = ETX;
-	Debug_Tx_FeedBack_Check_Printf();
+//	Debug_Tx_FeedBack_Check_Printf();
 	Tx_RF_Msg(m_rf.txBuff, len);
 	memset(m_rf.txBuff, 0, 30);
 
@@ -1553,6 +1682,66 @@ void Tx_RF_FRQ_ALL_Module( )
 
 
 
+void Tx_RF_Watt_ALL_Module_Force(uint16_t da)
+{
+	if(da>400) da = 400;
+
+	uint8_t len = 0;
+	uint8_t daH = (da>>8)&0xff;
+	uint8_t daL = (da)&0xff;
+	uint8_t point3 = da%10;
+	ddTimeStart1(); //wndksdebug
+	len = RF_NUM_FIX + 16;
+	m_rf.txBuff[RF_INDEX_STX] = STX;
+	m_rf.txBuff[RF_INDEX_LEN] = len;
+	m_rf.txBuff[RF_INDEX_ADDR] = 'B';//ï¿½ï¿½ï¿½Ê·ï¿½ï¿½ï¿½ï¿½ï¿½ B, ï¿½Ã½ï¿½ï¿½ï¿½ b
+	m_rf.txBuff[RF_INDEX_CMD] = ALL_CH_OUTPUT_SET;
+
+	m_rf.txBuff[RF_INDEX_DATA+0] = daH;
+	m_rf.txBuff[RF_INDEX_DATA+1] = daL;
+
+	m_rf.txBuff[RF_INDEX_DATA+2] = daH;
+	m_rf.txBuff[RF_INDEX_DATA+3] = daL;
+
+	m_rf.txBuff[RF_INDEX_DATA+4] = daH;
+	m_rf.txBuff[RF_INDEX_DATA+5] = daL;
+
+	if(point3 ==3)
+	{
+		daH = 0;
+		daL = 0;
+	}
+	m_rf.txBuff[RF_INDEX_DATA+6] = daH;
+	m_rf.txBuff[RF_INDEX_DATA+7] = daL;
+
+	m_rf.txBuff[RF_INDEX_DATA+8] = daH;
+	m_rf.txBuff[RF_INDEX_DATA+9] = daL;
+
+	m_rf.txBuff[RF_INDEX_DATA+10] = daH;
+	m_rf.txBuff[RF_INDEX_DATA+11] = daL;
+
+	m_rf.txBuff[RF_INDEX_DATA+12] = daH;
+	m_rf.txBuff[RF_INDEX_DATA+13] = daL;
+
+	m_rf.txBuff[RF_INDEX_DATA+14] = 0;
+	m_rf.txBuff[RF_INDEX_DATA+15] = 0;
+
+
+	for(int i =0 ;i <= RF_INDEX_DATA+15 ;i++)
+	{
+		m_rf.txBuff[RF_INDEX_DATA+16] ^= m_rf.txBuff[i];
+	}
+	m_rf.txBuff[RF_INDEX_DATA+17] = ETX;
+	Debug_printf_str("Common Watt : %u\r\n",da);
+	Tx_RF_Msg(m_rf.txBuff, len);
+	memset(m_rf.txBuff, 0, 30);
+	ddTimeEnd1(); //wndksdebug
+
+}
+
+
+
+
 void Tx_RF_Watt_ALL_Module( )
 {
 
@@ -1564,7 +1753,7 @@ void Tx_RF_Watt_ALL_Module( )
 	m_rf.txBuff[RF_INDEX_ADDR] = 'B';//ï¿½ï¿½ï¿½Ê·ï¿½ï¿½ï¿½ï¿½ï¿½ B, ï¿½Ã½ï¿½ï¿½ï¿½ b
 	m_rf.txBuff[RF_INDEX_CMD] = ALL_CH_OUTPUT_SET;
 
-	RF_Watt_All_Calculate();
+
 	m_rf.txBuff[RF_INDEX_DATA+0] = (m_rf.rfwattBuff[RF_WATT_CH0]>>8)&0xff;
 	m_rf.txBuff[RF_INDEX_DATA+1] = (m_rf.rfwattBuff[RF_WATT_CH0])&0xff;
 
@@ -1643,8 +1832,7 @@ void Tx_RF_Watt_Zero_ALL_Module( )
 	m_rf.txBuff[RF_INDEX_ADDR] = 'B';//ï¿½ï¿½ï¿½Ê·ï¿½ï¿½ï¿½ï¿½ï¿½ B, ï¿½Ã½ï¿½ï¿½ï¿½ b
 	m_rf.txBuff[RF_INDEX_CMD] = ALL_CH_OUTPUT_SET;
 
-	RF_Watt_All_Calculate();
-	m_rf.txBuff[RF_INDEX_DATA+0] = 0;
+ 	m_rf.txBuff[RF_INDEX_DATA+0] = 0;
 	m_rf.txBuff[RF_INDEX_DATA+1] = 0;
 
 	m_rf.txBuff[RF_INDEX_DATA+2] = 0;
@@ -1694,8 +1882,10 @@ void RF_Pwm_On()
 {
 	m_rf.pluseOn = 1;
 	m_rf.pluseTimeStamp = HAL_GetTick();
+	m_rf.fbTimeStamp = m_rf.pluseTimeStamp;
 	Pulse_Trig_TimeSave();
 	m_rf.pluseLevel = PWM_H_LEVEL;
+	RF_Pulse_Signal_GPIO_Port_H();
 
 }
 
@@ -1781,6 +1971,8 @@ void RF_Pwm_Conter_Common(uint8_t pulseNum)
 			break;
 
 			case PWM_L_LEVEL:
+				m_rf.rfFBcnt = 0;
+				m_rf.rfFBLow = 1;
 				if(m_rf.interval != 0)RF_Pulse_Signal_GPIO_Port_L();
 				if(HAL_GetTick() - m_rf.pluseTimeStamp >= m_rf.interval*TIME_100MS)
 				{
@@ -1822,6 +2014,7 @@ void RF_PWM_Force_Stop()
 		Tx_LCD_Msg(CMD_FORCE_STOP, 0);
 		Tx_Hand1_Msg(CMD_FORCE_STOP, 0);
 		Body_Led_Ctrl(BODY_LED_STANDBY);
+		m_rf.stbyTimeStamp = HAL_GetTick();
 	}
 }
 void RF_PWM_Force_Force_Stop()
@@ -1844,6 +2037,7 @@ void RF_PWM_Force_Force_Stop()
 	m_rf.readyFlag = READY_OFF;
 	Body_Led_Ctrl(BODY_LED_STANDBY);
 	Debug_Printf("FORCE READY_OFF",1);
+	m_rf.stbyTimeStamp = HAL_GetTick();
 }
 
 void RF_Eg_Exp_Conter()
@@ -1880,6 +2074,60 @@ void Vibe_Time_Cal()
 
 }
 
+void FB_Idel_Chk()
+{
+	uint8_t cnt1 = 0, cnt2 = 0;
+	uint32_t sum1 = 0, sum2 = 0;
+	m_rf.rfFBmode = FB_MODE_IDEL;
+#if 0
+	RF_eg_Exp_On(1000);
+	HAL_Delay(800);
+	m_rf.rfFBReTry = 0;
+	Tx_RF_FeedBack_Check();
+	if(m_rf.rfFBReTry)Tx_RF_FeedBack_Check();
+	m_rf.rfFBReTry = 0;
+#endif
+
+
+	m_rf.rfFBtestCnt = 0;
+	memset(m_rf.rfFBtestBuff, 0, sizeof(m_rf.rfFBtestBuff));
+	RF_eg_Exp_On(1000);
+	HAL_Delay(800);
+	for(int i =0 ;i < 5;i++)
+	{
+		Tx_RF_FeedBack_Check();
+	}
+	for(int i =0 ;i < 2;i++)
+	{
+		Debug_printf_str("<%d> : ",i);
+		for(int j =0 ;j < 5;j++)
+		{
+			Debug_printf_str("%u /", m_rf.rfFBtestBuff[j][i]);
+		}
+		Debug_printf_str("\r\n");
+	}
+
+	for(int i =0 ;i < 5;i++)
+	{
+		if(m_rf.rfFBtestBuff[i][0])
+		{
+			cnt1++;
+			sum1 += m_rf.rfFBtestBuff[i][0];
+		}
+		if(m_rf.rfFBtestBuff[i][1])
+		{
+			cnt2++;
+			sum2 += m_rf.rfFBtestBuff[i][1];
+		}
+	}
+	int idx = (m_rf.watt - 28) / 2;
+	m_rf.rfFBbuff[idx][0] = (sum1/cnt1);
+	m_rf.rfFBbuff[idx][1] = (sum2/cnt2);
+
+	Debug_printf_str(">>[%u] [%u]\r\n", m_rf.rfFBbuff[idx][0], m_rf.rfFBbuff[idx][1]);
+
+	m_rf.rfFBmode = FB_MODE_START;
+}
 void LCD_Goto_Tret()
 {
 	static uint32_t timeStamp;
@@ -1893,10 +2141,7 @@ void LCD_Goto_Tret()
 		{
 			m_rf.readyHighPass = 0;
 			Ready_ON();
-
-			Tx_RF_FRQ_ALL_Module();
-			Tx_RF_Watt_ALL_Module();
-			TX_RF_Max_Ontime_Set();
+//			m_rf.rfFBmode = FB_MODE_START;
 
 			Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_TRET);
 			totalTime = m_rf.pulseDuration*TIME_100MS + m_rf.postCooling*TIME_100MS + m_rf.interval*TIME_100MS;
@@ -1917,11 +2162,6 @@ void LCD_Goto_Tret()
 			m_err.preCoolStatus = 1;
 #if 1
 			Ready_ON();
-
-			Tx_RF_FRQ_ALL_Module();
-			Tx_RF_Watt_ALL_Module();
-			TX_RF_Max_Ontime_Set();
-
 			Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_TRET);
 			totalTime = m_rf.pulseDuration*TIME_100MS + m_rf.postCooling*TIME_100MS + m_rf.interval*TIME_100MS;
 			Tx_Hand1_Msg(CMD_PULSE_DURATION, totalTime);
@@ -2292,7 +2532,54 @@ void AutoCal_100ms()// 100ms  ï¿½ï¿½ï¿½ï¿½ ï¿½Ð´ï¿½
 
 }
 
+void AutoCal_Simple_1watt()
+{
+	int avg = 0;
 
+	if(m_rf.autoCalFlag != AUTOCAL_SIMPLE_1WATT)return;
+
+	memset(m_rf.FeedBackWBuff, 0, sizeof(m_rf.FeedBackWBuff));
+	m_rf.FeedBackCnt = 0;
+
+
+	m_rf.wattDa = 350;
+
+	Tx_RF_Watt_Module(m_rf.trandu, m_rf.wattDa);
+
+	for(int i =0 ;i < 1;i++)
+	{
+		AutoCal_Tx_IP_Msg();//ï¿½ï¿½ï¿½Ìµï¿½ 0,2,4,6,8,
+		HAL_Delay(500);
+
+		RF_eg_Exp_On(2000);
+		HAL_Delay(1500);
+
+		AutoCal_Tx_IP_Msg();//ï¿½ï¿½Æ¼ï¿½ï¿½ 1,3,5,7,9
+		HAL_Delay(4000); // ï¿½Þ½ï¿½
+
+	}
+
+	printf("ACal %d %d -> ",m_rf.trandu, m_rf.wattDa);
+
+
+	qsortBuff[0] = m_rf.FeedBackWBuff[1] +(-1*m_rf.FeedBackWBuff[0]);
+	printf("%d\r\n",qsortBuff[0]);
+
+	Tx_RF_Watt_Zero_ALL_Module();
+	if(m_rf.trandu<tranduOut)
+	{
+		printf("NEXT !!\r\n");
+		m_rf.trandu++;
+		m_rf.wattDa = 280;
+	}
+	else
+	{
+		printf("OUT TD !!\r\n");
+		m_rf.autoCalFlag = 0;
+	}
+
+
+}
 
 void AutoCal_FindOnly_1watt()
 {
@@ -2419,6 +2706,43 @@ void AutoCal_Frq()
   }
 
 }
+
+void FeedBack_Idel_Find()
+{
+	if(m_rf.autoCalFlag != FEED_BACK_IDEL)return;
+	static int wattFB = 28;
+	float wattFBf;
+	m_rf.rfFBavg1 = 0;
+	m_rf.rfFBavg2 = 0;
+
+	wattFBf = (float)wattFB/100;
+	Debug_printf_str("wattFB = %.2f\r\n", wattFBf);
+	RF_Watt_Fix_Calculate(wattFB);
+	Tx_RF_Watt_ALL_Module();
+	RF_eg_Exp_On(1000);
+	HAL_Delay(500);
+	Tx_RF_FeedBack_Check();
+	HAL_Delay(3000);
+	if((m_rf.rfFBavg1 != 0) && (m_rf.rfFBavg2 !=0))
+	{
+		m_rf.rfFBbuff[m_rf.rfFBcnt][0] = m_rf.rfFBavg1;
+		m_rf.rfFBbuff[m_rf.rfFBcnt][1] = m_rf.rfFBavg2;
+		if(m_rf.rfFBcnt<49) m_rf.rfFBcnt++;
+		wattFB += 2;
+	}
+
+	if(wattFB==102)
+	{
+		m_rf.autoCalFlag = 0;
+		m_rf.rfFBcnt = 0;
+		wattFB = 28;
+		for(int i =0 ;i < 50;i++)
+		{
+			Debug_printf_str("%u, %u\r\n", m_rf.rfFBbuff[i][0], m_rf.rfFBbuff[i][1]);
+		}
+	}
+
+}
 void AutoCal_Config()
 {
 	switch (m_rf.autoCalFlag)
@@ -2442,6 +2766,14 @@ void AutoCal_Config()
 		case AUTOCAL_TEST:
 			AutoCal_test();
 		break;
+
+		case AUTOCAL_SIMPLE_1WATT:
+			AutoCal_Simple_1watt();
+		break;
+
+//		case FEED_BACK_IDEL:
+//			FeedBack_Idel_Find();
+//		break;
 
 		default:
 		break;
@@ -2506,16 +2838,246 @@ void RF_Borad_FeedBack_Test()
 
 
 }
+
+void RF_FeedBack_Cal_org(uint8_t* buff)
+{
+	uint16_t fbVal[7] = {0,};
+	uint32_t sum1 = 0, sum2 = 0;
+	uint32_t avg1, avg2;
+	uint32_t over1,over2;
+	uint32_t overVal = 7;
+	uint8_t fail = 0;
+
+	printf("FB ");
+	for(int i =0 ;i < 7;i++)
+	{
+		fbVal[i] = (buff[4+i*2]<<8) |buff[4+i*2+1];
+		printf("%u /", fbVal[i]);
+
+		if(0 <= i && i <3) sum1 += fbVal[i];
+		else if(4 <= i && i <7) sum2 += fbVal[i];
+
+		if(fbVal[i]==0) fail = 1;
+	}
+	avg1 = sum1/3;
+	avg2 = sum2/3;
+	printf("(%u)(%u)\r\n",avg1, avg2);
+
+	over1 = m_rf.rfFBavg1+overVal;
+	over2 = m_rf.rfFBavg2+overVal;
+
+	if((fail==0)&&(m_rf.rfFBcnt>2))
+	{
+		if (m_rf.rfAreaMode == IDX_RF_AREA_ALL)
+		{
+			if((avg1 > over1) && (avg2 > over2))
+			{
+				Buzzer_ON();
+				RF_PWM_Force_Force_Stop();
+			}
+		}
+		else
+		{
+			if(avg1 > over1)
+			{
+				Buzzer_ON();
+				RF_PWM_Force_Force_Stop();
+			}
+		}
+
+	}
+	m_rf.rfFBavg1 = avg1;
+	m_rf.rfFBavg2 = avg2;
+	m_rf.rfFBcnt++;
+}
+
+
 void RF_FeedBack_Cal(uint8_t* buff)
 {
-	uint16_t fbVal = 0;
-	printf("RF_FeedBack_Cal \r\n");
-	for(int i =0 ;i < 8;i++)
+	uint16_t fbVal[7] = {0,};
+	uint32_t sum1 = 0, sum2 = 0;
+	uint32_t avg1, avg2;
+	uint32_t over1,over2;
+	uint32_t overVal = 15 +(m_rf.watt/5);
+	uint8_t fail = 0;
+
+	printf("FB ");
+	for(int i =0 ;i < 7;i++)
 	{
-		fbVal = (buff[4+i*2]<<8) |buff[4+i*2+1];
-		printf("[%d] %u \r\n",i, fbVal);
+		fbVal[i] = (buff[4+i*2]<<8) |buff[4+i*2+1];
+		printf("%u /", fbVal[i]);
+
+
 	}
+
+	if((fbVal[0]==0)||(fbVal[6]==0))
+	{
+		printf("FB ZeroErr skip\r\n");
+		return;
+	}
+
+	if (m_rf.rfAreaMode == IDX_RF_AREA_ALL)
+	{
+		if((fbVal[0]<15)||(fbVal[6]<15))
+		{
+			printf("FB Low skip\r\n");
+			return;
+		}
+	}
+	else
+	{
+		if(fbVal[6]<15)
+		{
+			printf("FB Low skip\r\n");
+			return;
+		}
+	}
+
+
+	printf("(%u)(%u)\r\n",fbVal[0], fbVal[6]);
+
+	over1 = m_rf.rfFBavg1+overVal;
+	over2 = m_rf.rfFBavg2+overVal;
+
+	if(m_rf.rfFBcnt>=3)
+	{
+		if (m_rf.rfAreaMode == IDX_RF_AREA_ALL)
+		{
+			if((fbVal[0] > over1) || (fbVal[6] > over2))
+			{
+				Buzzer_ON();
+				RF_PWM_Force_Force_Stop();
+				printf("FB Over\r\n");
+			}
+		}
+		else
+		{
+			if(fbVal[6] > over2)
+			{
+				Buzzer_ON();
+				RF_PWM_Force_Force_Stop();
+				printf("FB Over\r\n");
+			}
+		}
+
+	}
+
+	if(!m_rf.rfFBLow)
+	{
+		m_rf.rfFBavg1 = fbVal[0];
+		m_rf.rfFBavg2 = fbVal[6];
+	}
+
+	m_rf.rfFBcnt++;
 }
+
+
+void RF_FeedBack_Cal_Start(uint8_t* buff)
+{
+	uint16_t fbVal[7] = {0,};
+	uint32_t over1,over2;
+	uint32_t overMagin = 20+(m_rf.watt/5);
+	uint32_t maginVal1,maginVal2;
+
+	printf("FBstart ");
+	for(int i =0 ;i < 7;i++)
+	{
+		fbVal[i] = (buff[4+i*2]<<8) |buff[4+i*2+1];
+		printf("%u /", fbVal[i]);
+	}
+	int idx = (m_rf.watt - 28) / 2;
+
+	over1 = m_rf.rfFBbuff[idx][0];
+	over2 = m_rf.rfFBbuff[idx][1];
+	maginVal1 = fbVal[0]+overMagin;
+	maginVal2 = fbVal[6]+overMagin;
+
+	printf("(%u)(%u) ",maginVal1, maginVal2);
+
+	if((fbVal[0]==0)||(fbVal[6]==0))
+	{
+		printf("FB Zero Err\r\n");
+		Buzzer_ON();
+//		RF_PWM_Force_Force_Stop();
+		m_rf.rfFBReTry = 1;
+		return;
+	}
+
+
+	printf("< [%u] [%u]\r\n",over1, over2);
+
+	if (m_rf.rfAreaMode == IDX_RF_AREA_ALL)
+	{
+		if((maginVal1 > over1) || (maginVal2 > over2))
+		{
+			Buzzer_ON();
+//			RF_PWM_Force_Force_Stop();
+			printf("FB Idel Chk Fail\r\n");
+			m_rf.rfFBstartFail = 1;
+			return;
+		}
+	}
+	else
+	{
+		if(maginVal2 > over2)
+		{
+			Buzzer_ON();
+//			RF_PWM_Force_Force_Stop();
+			printf("FB Idel Chk Fail\r\n");
+			m_rf.rfFBstartFail = 1;
+			return;
+		}
+	}
+	m_rf.rfFBstartFail = 0;
+
+	printf("FB Idel Chk PASS\r\n");
+
+}
+
+void RF_FeedBack_Cal_Idle_org(uint8_t* buff)
+{
+	uint16_t fbVal[7] = {0,};
+
+	printf("FB Idle ");
+	for(int i =0 ;i < 7;i++)
+	{
+		fbVal[i] = (buff[4+i*2]<<8) |buff[4+i*2+1];
+		printf("%u /", fbVal[i]);
+	}
+	printf("(%u)(%u)\r\n",fbVal[0], fbVal[6]);
+
+	int idx = (m_rf.watt - 28) / 2;
+	if(fbVal[0] && fbVal[6])
+	{
+		m_rf.rfFBbuff[idx][0] = fbVal[0];
+		m_rf.rfFBbuff[idx][1] = fbVal[6];
+	}
+	else
+	{
+		m_rf.rfFBReTry = 1;
+	}
+
+
+}
+
+void RF_FeedBack_Cal_Idle(uint8_t* buff)
+{
+	uint16_t fbVal[7] = {0,};
+
+	printf("FB Idle ");
+	for(int i =0 ;i < 7;i++)
+	{
+		fbVal[i] = (buff[4+i*2]<<8) |buff[4+i*2+1];
+		printf("%u /", fbVal[i]);
+	}
+	printf("(%u)(%u)\r\n",fbVal[0], fbVal[6]);
+	m_rf.rfFBtestBuff[m_rf.rfFBtestCnt][0] = fbVal[0];
+	m_rf.rfFBtestBuff[m_rf.rfFBtestCnt][1] = fbVal[6];
+
+	m_rf.rfFBtestCnt++;
+	m_rf.rfFBtestCnt %= 5;
+}
+
 void RF_Rx_Parssing(uint8_t rxID)
 {
 	uint32_t timeStamp;
@@ -2548,7 +3110,7 @@ void RF_Rx_Parssing(uint8_t rxID)
 	memset(m_rf.rxBuff, 0, 30);
 
 	rxCallBackCmd = rxBuffPassing[RF_INDEX_CMD];
-	if(rxCallBackCmd != GEN_STATUS_CHECK_R)
+	if((rxCallBackCmd != GEN_STATUS_CHECK_R) && (rxCallBackCmd != GEN_RF_VOLTAGE_REQ_R))
 	{
 		Debug_Rx_RF_Printf(rxBuffPassing, m_rf.rxCnt);
 	}
@@ -2586,8 +3148,28 @@ void RF_Rx_Parssing(uint8_t rxID)
 		break;
 
 		case GEN_RF_VOLTAGE_REQ_R:
-			Debug_Printf("[RX_RF] GEN_RF_VOLTAGE_REQ_R",1);
-			RF_FeedBack_Cal(rxBuffPassing);
+//			Debug_Printf("[RX_RF] GEN_RF_VOLTAGE_REQ_R",1);
+			switch (m_rf.rfFBmode)
+			{
+				case FB_MODE_IDEL:
+					RF_FeedBack_Cal_Idle(rxBuffPassing);
+				break;
+
+				case FB_MODE_START:
+					RF_FeedBack_Cal_Start(rxBuffPassing);
+				break;
+
+				case FB_MODE_NOMAL:
+					RF_FeedBack_Cal(rxBuffPassing);
+				break;
+
+//				case FB_MODE_TEST:
+//					RF_FeedBack_Cal_Test(rxBuffPassing);
+//				break;
+
+
+			}
+
 		break;
 
 		case ALL_CH_FREQ_SET_R:
@@ -2605,9 +3187,43 @@ void RF_Rx_Parssing(uint8_t rxID)
 }
 
 
-void Rf_Test()
+uint8_t FeedBack_StartChk()
 {
+	static uint32_t timeStamp;
 
+	if(HAL_GetTick() - m_rf.fbTimeStamp >= 800)
+	{
+		m_rf.rfFBReTry = 0;
+		Tx_RF_FeedBack_Check();
+		if(m_rf.rfFBReTry)Tx_RF_FeedBack_Check();
+		m_rf.rfFBReTry = 0;
+		m_rf.rfFBmode = FB_MODE_NOMAL;
+		if(m_rf.rfFBstartFail)
+		{
+			RF_Pulse_Signal_GPIO_Port_L();
+			m_rf.expStep = STEP0;
+			return 0;
+		}
+		else
+		{
+			return 1;
+		}
+
+	}
+	return 0;
+}
+void FeedBack_UnDetectChk()
+{
+	static uint32_t timeStamp;
+
+	if(m_rf.pluseLevel == PWM_H_LEVEL)
+	{
+		if(HAL_GetTick()-timeStamp >= 50)
+		{
+			Tx_RF_FeedBack_Check();
+			timeStamp = HAL_GetTick();
+		}
+	}
 }
 
 uint8_t Exp_Shot_Chk()
@@ -2698,49 +3314,55 @@ void Exp_Config()
 			if(testExpFlag || Exp_Shot_Chk())
 			{
 				testExpFlag = 0;
-				if(m_hand1.contectChk==0)
-				{
-					Tx_LCD_Msg(CMD_CONTECT_CHK, 0);
-					HAL_Delay(500);
-					return;
-				}
 
-				m_hand1.contectChk = 0;
-
-				m_rf.totaEnergy = m_rf.totaEnergy + m_rf.energy;
-				totalEenerge = m_rf.totaEnergy;
-				Tx_LCD_Msg(CMD_TOTAL_JOULE, totalEenerge);
-
-				m_rf.currentShot++;
-				Tx_LCD_Msg(CMD_CURRENT_SHOT, m_rf.currentShot);
-				if(m_eep.remainingShotNum > 0) m_eep.remainingShotNum--;
-
-				Tx_LCD_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
-				Tx_Hand1_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
-
-				HAL_Delay(100);//200org
-
-				Tx_LCD_Msg(CMD_LCD_EXP, LCD_EXP_START);
-				Tx_Hand1_Msg(CMD_LCD_EXP, LCD_EXP_START);
-				HAL_Delay(100);//200org
+				m_rf.expEndFlag = 0;
+				m_rf.rfFBavg1 = 0;
+				m_rf.rfFBavg2 = 0;
+				m_rf.rfFBcnt = 0;
+				m_rf.rfFBLow = 0;
+				m_rf.rfFBmode = FB_MODE_NOMAL;
+				m_rf.rfFBstartFail = 0;
 				RF_Pwm_On();
-				Body_Led_Ctrl(BODY_LED_SHOT);
-				Vibe_Time_Cal();
 				m_rf.expStep = STEP1;
-				m_rf.shotChkStep = STEP0;
-				m_rf.readyStayCnt = 0;
 			}
 		break;
 
 		case STEP1:
-			RF_Pwm_Conter_Common(m_rf.PulseOption);
-			if(m_rf.expEndFlag) m_rf.expStep = STEP2;
+//			 if(FeedBack_StartChk())
+			 {
+			 	 m_rf.readyStayCnt = 0;
+				 m_rf.shotChkStep = STEP0;
+				 m_rf.totaEnergy = m_rf.totaEnergy + m_rf.energy;
+				 totalEenerge = m_rf.totaEnergy;
+				 Tx_LCD_Msg(CMD_TOTAL_JOULE, totalEenerge);
 
-			Exp_Shot_Chk_Stop();
+				 m_rf.currentShot++;
+				 Tx_LCD_Msg(CMD_CURRENT_SHOT, m_rf.currentShot);
+				 if(m_eep.remainingShotNum > 0) m_eep.remainingShotNum--;
 
+				 Tx_LCD_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
+				 Tx_Hand1_Msg(CMD_REMIND_SHOT, m_eep.remainingShotNum);
+
+				 HAL_Delay(100);//200org
+
+				 Tx_LCD_Msg(CMD_LCD_EXP, LCD_EXP_START);
+				 Tx_Hand1_Msg(CMD_LCD_EXP, LCD_EXP_START);
+				 HAL_Delay(100);//200org
+				 Body_Led_Ctrl(BODY_LED_SHOT);
+				 Vibe_Time_Cal();
+			 	 m_rf.expStep = STEP2;
+
+			 }
 		break;
 
 		case STEP2:
+			RF_Pwm_Conter_Common(m_rf.PulseOption);
+			if(m_rf.expEndFlag) m_rf.expStep = STEP3;
+			Exp_Shot_Chk_Stop();
+			FeedBack_UnDetectChk();
+		break;
+
+		case STEP3:
 			if(m_rf.expEndFlag)
 			{
 				m_rf.expEndFlag = 0;
