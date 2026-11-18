@@ -1228,11 +1228,11 @@ void Rf_Init()
 	m_rf.frqQ = 10700;
 	m_rf.tranduEnd = 6;
 
-//	m_rf.rfFBbuff[0][0] = 472; //0.28wÀÇ 0¹ø Æ®µà Á©¹Ù¸£°í Çã°ø
-//	m_rf.rfFBbuff[0][1] = 490; //0.28wÀÇ 6¹ø Æ®µà Á©¹Ù¸£°í Çã°ø
+//	m_rf.rfFBbuff[0][0] = 472; //0.28wï¿½ï¿½ 0ï¿½ï¿½ Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½Ù¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿?
+//	m_rf.rfFBbuff[0][1] = 490; //0.28wï¿½ï¿½ 6ï¿½ï¿½ Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½Ù¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿?
 
-//	m_rf.rfFBbuff[1][0] = 487; //0.30wÀÇ 0¹ø Æ®µà Á©¹Ù¸£°í Çã°ø
-//	m_rf.rfFBbuff[1][1] = 421; //0.30wÀÇ 6¹ø Æ®µà Á©¹Ù¸£°í Çã°ø
+//	m_rf.rfFBbuff[1][0] = 487; //0.30wï¿½ï¿½ 0ï¿½ï¿½ Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½Ù¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿?
+//	m_rf.rfFBbuff[1][1] = 421; //0.30wï¿½ï¿½ 6ï¿½ï¿½ Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½Ù¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿?
 
 //	m_rf.rfFBbuff[2][0] = 495;
 //	m_rf.rfFBbuff[2][1] = 441;
@@ -1333,11 +1333,11 @@ void Rf_Init()
 //	m_rf.rfFBbuff[34][0] = 678;
 //	m_rf.rfFBbuff[34][1] = 835;
 
-//	m_rf.rfFBbuff[35][0] = 677; //0.98wÀÇ 0¹ø Æ®µà Á©¹Ù¸£°í Çã°ø
-//	m_rf.rfFBbuff[35][1] = 841; //0.98wÀÇ 6¹ø Æ®µà Á©¹Ù¸£°í Çã°ø
+//	m_rf.rfFBbuff[35][0] = 677; //0.98wï¿½ï¿½ 0ï¿½ï¿½ Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½Ù¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿?
+//	m_rf.rfFBbuff[35][1] = 841; //0.98wï¿½ï¿½ 6ï¿½ï¿½ Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½Ù¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿?
 
-//	m_rf.rfFBbuff[36][0] = 677; //1.00wÀÇ 0¹ø Æ®µà Á©¹Ù¸£°í Çã°ø
-//	m_rf.rfFBbuff[36][1] = 859; //1.00wÀÇ 6¹ø Æ®µà Á©¹Ù¸£°í Çã°ø
+//	m_rf.rfFBbuff[36][0] = 677; //1.00wï¿½ï¿½ 0ï¿½ï¿½ Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½Ù¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿?
+//	m_rf.rfFBbuff[36][1] = 859; //1.00wï¿½ï¿½ 6ï¿½ï¿½ Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½Ù¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿?
 
 
 
@@ -1376,7 +1376,7 @@ void LCD_Init()
 	Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_STNBY);
 	Tx_LCD_Msg(CMD_RF_AREA_SEL, m_rf.rfAreaMode);
 	Tx_Hand1_Msg(CMD_RF_AREA_SEL, m_rf.rfAreaMode);
-//	Tx_Hand1_Msg(CMD_ADC_CHANGE, 5);//TEMP 5
+	Tx_Hand1_Msg(CMD_ADC_CHANGE, 4);//TEMP 4
 
 
 	m_rf.preCooltimeOut = PRECOOL_TIMEOUT;
@@ -1872,7 +1872,7 @@ void Rx_RF_Get(uint8_t getData)
 {
 	m_rf.rxBuff[m_rf.rxCnt] = getData;
 	m_rf.rxCnt++;
-	m_rf.rxCnt %= 30;
+	m_rf.rxCnt %= 50;
 
 	m_rf.lastTimeStamp = HAL_GetTick();
 }
@@ -2160,7 +2160,7 @@ void LCD_Goto_Tret()
 		if(m_rf.preCooltime && HAL_GetTick()- m_rf.preCooltime> m_rf.preCooltimeOut)
 		{
 			m_err.preCoolStatus = 1;
-#if 1
+#if 0
 			Ready_ON();
 			Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_TRET);
 			totalTime = m_rf.pulseDuration*TIME_100MS + m_rf.postCooling*TIME_100MS + m_rf.interval*TIME_100MS;
@@ -2919,7 +2919,7 @@ void RF_FeedBack_Cal(uint8_t* buff)
 
 	if (m_rf.rfAreaMode == IDX_RF_AREA_ALL)
 	{
-		if((fbVal[0]<15)||(fbVal[6]<15))
+		if(/*(fbVal[0]<15)||*/(fbVal[6]<8))
 		{
 			printf("FB Low skip\r\n");
 			return;
@@ -2947,7 +2947,12 @@ void RF_FeedBack_Cal(uint8_t* buff)
 			if((fbVal[0] > over1) || (fbVal[6] > over2))
 			{
 				Buzzer_ON();
-				RF_PWM_Force_Force_Stop();
+//				RF_PWM_Force_Force_Stop();
+				Tx_LCD_Msg(CMD_CONTECT_CHK, 1);
+				RF_Pulse_Signal_GPIO_Port_L();
+				m_rf.expStep = STEP3;
+				m_rf.expEndFlag = 1;
+				m_rf.pluseOn = 0;
 				printf("FB Over\r\n");
 			}
 		}
@@ -2956,7 +2961,12 @@ void RF_FeedBack_Cal(uint8_t* buff)
 			if(fbVal[6] > over2)
 			{
 				Buzzer_ON();
-				RF_PWM_Force_Force_Stop();
+//				RF_PWM_Force_Force_Stop();
+				Tx_LCD_Msg(CMD_CONTECT_CHK, 1);
+				RF_Pulse_Signal_GPIO_Port_L();
+				m_rf.expStep = STEP3;
+				m_rf.expEndFlag = 1;
+				m_rf.pluseOn = 0;
 				printf("FB Over\r\n");
 			}
 		}

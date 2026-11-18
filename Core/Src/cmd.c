@@ -1429,7 +1429,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 					Pump_Ciller_Pwr_ON();
 					PreCooling_ON();
 					Tx_Hand1_Msg(CMD_LCD_STATUS, STATUS_PRECOOLING);
-					if(m_rf.stbyTimeStamp && HAL_GetTick() - m_rf.stbyTimeStamp <10000)
+					if(m_rf.stbyTimeStamp && HAL_GetTick() - m_rf.stbyTimeStamp <15000)
 					{
 						m_rf.stbyTimeStamp = 0;
 						m_rf.readyHighPass = 1;
@@ -2169,6 +2169,7 @@ void Uart_Simple_Rx_Passing(UART_T* uart, uint8_t rxData)
 		case STEP0:
 			if(rxData == '[')
 			{
+				uart->minusFlag = 0;
 				uart->rxCmdAdd = 0;
 				uart->rxCmdData  = 0;
 				uart->rxStep = STEP1;

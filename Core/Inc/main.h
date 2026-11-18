@@ -128,6 +128,8 @@ void Error_Handler(void);
 #define COOLING_LV5_GPIO_Port GPIOC
 #define COOLING_LV4_Pin GPIO_PIN_9
 #define COOLING_LV4_GPIO_Port GPIOC
+#define CON_COMP_Pin GPIO_PIN_8
+#define CON_COMP_GPIO_Port GPIOA
 #define LEVEL_SENSOR3_Pin GPIO_PIN_11
 #define LEVEL_SENSOR3_GPIO_Port GPIOA
 #define FLOWSENSOR_B_OUT_Pin GPIO_PIN_12

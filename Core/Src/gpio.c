@@ -57,7 +57,7 @@ void MX_GPIO_Init(void)
                           |LED_DR1_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(PELTIER_DA_OUT_GPIO_Port, PELTIER_DA_OUT_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, PELTIER_DA_OUT_Pin|CON_COMP_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(SPI1_NSS_GPIO_Port, SPI1_NSS_Pin, GPIO_PIN_SET);
@@ -105,12 +105,12 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PELTIER_DA_OUT_Pin */
-  GPIO_InitStruct.Pin = PELTIER_DA_OUT_Pin;
+  /*Configure GPIO pins : PELTIER_DA_OUT_Pin CON_COMP_Pin */
+  GPIO_InitStruct.Pin = PELTIER_DA_OUT_Pin|CON_COMP_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(PELTIER_DA_OUT_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : SPI1_NSS_Pin CON_SOL2_ON_Pin CON_SOL1_ON_Pin COOLING_LV5_Pin
                            COOLING_LV4_Pin */

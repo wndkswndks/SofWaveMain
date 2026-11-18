@@ -105,7 +105,7 @@ void HP2_Pwr_OFF()
 {
 	HP2_PWR_EN_L();
 	Debug_Printf("HP2_Pwr_OFF",1);
-	m_io.HP2PwrEn = 1;
+	m_io.HP2PwrEn = 0;
 }
 
 void Pump_Pwr_ON()
@@ -130,7 +130,8 @@ void Ciller_Pwr_ON()
 {
 	if(!m_io.ChillerPwrEn)
 	{
-		CILLER_PWR_ON_GPIO_Port_H();
+//		CILLER_PWR_ON_GPIO_Port_H();
+		CON_COMP_ON();
 		Debug_Printf("Ciller ON",1);
 		m_io.ChillerPwrEn = 1;
 	}
@@ -138,7 +139,8 @@ void Ciller_Pwr_ON()
 
 void Ciller_Pwr_OFF()
 {
-	CILLER_PWR_ON_GPIO_Port_L();
+//	CILLER_PWR_ON_GPIO_Port_L();
+	CON_COMP_OFF();
 	Debug_Printf("Ciller OFF",1);
 	m_io.ChillerPwrEn = 0;
 }
@@ -147,12 +149,14 @@ void Pump_Ciller_Pwr_ON()
 {
 	Pump_Pwr_ON();
 	Ciller_Pwr_ON();
+	CILLER_PWR_ON_GPIO_Port_H();
 }
 
 void Pump_Ciller_Pwr_OFF()
 {
 	Ciller_Pwr_OFF();
 	Pump_Pwr_OFF();
+	CILLER_PWR_ON_GPIO_Port_L();
 }
 
 void Buzzer_ON()
@@ -311,6 +315,7 @@ float Get_NTC_Temperature_j(uint32_t adc_value) {
 
 uint8_t chilFlag = 0;
 uint32_t chilTerm = 0;
+uint32_t pwOffTime;
 
 void Chiller_Temperature_Read()
 {
@@ -327,18 +332,22 @@ void Chiller_Temperature_Read()
 	adcQQ2 = adc;
 	m_io.chillerTemp = Get_NTC_Temperature_j(adc);
 
+	uint8_t pwFlag;
 
-
-	if(HAL_GetTick()-timeStamp >= 5000)
+	if(HAL_GetTick()-timeStamp >= 10000)
 	{
 		timeStamp = HAL_GetTick();
-		if(m_io.chillerTemp<-10.0)
+
+		if(m_io.chillerTemp< 0.0)
 		{
 			Ciller_Pwr_OFF();
-			HAL_Delay(500);
-			Ciller_Pwr_ON();
+			pwFlag = 1;
 		}
-//		printf("[244,%d]\r\n",Data);
+		else if(m_io.chillerTemp> 5.0)
+		{
+			Ciller_Pwr_ON();
+			pwFlag = 1;
+		}
 	}
 
 
@@ -519,7 +528,7 @@ void IO_Init()
 	m_io.rtcEn = 1;
 	if(IS_HP1_INSERT())HP1_Pwr_ON();
 	Body_Led_Ctrl(BODY_LED_BOOT);
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+//	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
 
 	if(IS_HP1_FOOT_INSERT())
 	{

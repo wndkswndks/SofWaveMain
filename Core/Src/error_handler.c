@@ -9,6 +9,51 @@
 ERROR_T m_err;
 
 
+#define DAY_LIMIT   30      // 이 일수 이상 차이나면 부저
+
+/* YYMMDD(예: 260928) -> 누적 일수 (2000년대 기준) */
+static int32_t Date_ToDays(uint32_t yymmdd)
+{
+    int32_t y = 2000 + (int32_t)(yymmdd / 10000);
+    int32_t m = (int32_t)((yymmdd / 100) % 100);
+    int32_t d = (int32_t)(yymmdd % 100);
+
+    // 1,2월을 전년도 13,14월로 취급 → 윤일(2/29)이 연말로 가서 계산이 단순해짐
+    if (m <= 2) { y -= 1; m += 12; }
+
+    return 365 * y + y / 4 - y / 100 + y / 400
+         + (153 * (m - 3) + 2) / 5 + d;
+}
+
+/* 날짜 형식 유효성 체크 (0 같은 쓰레기값 방지) */
+static uint8_t Date_IsValid(uint32_t yymmdd)
+{
+    uint32_t m = (yymmdd / 100) % 100;
+    uint32_t d = yymmdd % 100;
+    return (yymmdd <= 991231) && (m >= 1 && m <= 12) && (d >= 1 && d <= 31);
+}
+
+/* day2 - day1 일수 (day2가 더 이전이면 음수) */
+int32_t Date_Diff(uint32_t day1, uint32_t day2)
+{
+    return Date_ToDays(day2) - Date_ToDays(day1);
+}
+
+/* 체크 후 부저 */
+uint8_t Date_Over_Check(uint32_t day1, uint32_t day2)
+{
+    if (!Date_IsValid(day1) || !Date_IsValid(day2)) return 0;
+
+    if (Date_Diff(day1, day2) >= DAY_LIMIT)
+    {
+		return 1;
+    }
+	else
+	{
+		return 0;
+	}
+
+}
 
 uint8_t Check_ERROR(uint8_t nomal, uint8_t cmd, uint8_t delay)
 {
@@ -320,7 +365,7 @@ void Error_Check_RF()
 	m_err.rfTimeout++;
 	Tx_RF_GenStatus_Check();
 	Check_ERROR((m_err.rfTimeout< COMU_MAX_CNT), IDX_RF_COMU_ERR, 1);//E02
-	Check_ERROR((m_err.rfStatus == 1), IDX_RF_STATUS_ERR, 1);//E14
+//	Check_ERROR((m_err.rfStatus == 1), IDX_RF_STATUS_ERR, 1);//E14
 #if 0
 #endif
 

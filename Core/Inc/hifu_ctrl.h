@@ -276,7 +276,7 @@ typedef struct
 {
 	char cmd;
 	uint8_t txBuff[30];
-	uint8_t rxBuff[30];
+	uint8_t rxBuff[50];
 	uint8_t rxCnt;
 
 	uint32_t lastTimeStamp;

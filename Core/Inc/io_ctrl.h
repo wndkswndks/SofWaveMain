@@ -81,11 +81,11 @@
 //#define COOLING_LV3_H()          HAL_GPIO_WritePin(COOLING_LV3_GPIO_Port, COOLING_LV3_Pin, GPIO_PIN_SET)
 //#define COOLING_LV3_L()           HAL_GPIO_WritePin(COOLING_LV3_GPIO_Port, COOLING_LV3_Pin, GPIO_PIN_RESET)
 
-#define COOLING_LV4_H()          HAL_GPIO_WritePin(COOLING_LV4_GPIO_Port, COOLING_LV4_Pin, GPIO_PIN_SET)
-#define COOLING_LV4_L()           HAL_GPIO_WritePin(COOLING_LV4_GPIO_Port, COOLING_LV4_Pin, GPIO_PIN_RESET)
+#define COOLING_LV4_H()          		HAL_GPIO_WritePin(COOLING_LV4_GPIO_Port, COOLING_LV4_Pin, GPIO_PIN_SET)
+#define COOLING_LV4_L()           		HAL_GPIO_WritePin(COOLING_LV4_GPIO_Port, COOLING_LV4_Pin, GPIO_PIN_RESET)
 
-#define COOLING_LV5_H()          HAL_GPIO_WritePin(COOLING_LV5_GPIO_Port, COOLING_LV5_Pin, GPIO_PIN_SET)
-#define COOLING_LV5_L()           HAL_GPIO_WritePin(COOLING_LV5_GPIO_Port, COOLING_LV5_Pin, GPIO_PIN_RESET)
+#define COOLING_LV5_H()          		HAL_GPIO_WritePin(COOLING_LV5_GPIO_Port, COOLING_LV5_Pin, GPIO_PIN_SET)
+#define COOLING_LV5_L()           		HAL_GPIO_WritePin(COOLING_LV5_GPIO_Port, COOLING_LV5_Pin, GPIO_PIN_RESET)
 
 #define HP2_SHOT_PUSH_H()        		HAL_GPIO_WritePin(HP2_SHOT_PUSH_GPIO_Port, HP2_SHOT_PUSH_Pin, GPIO_PIN_SET)
 #define HP2_SHOT_PUSH_L()         		HAL_GPIO_WritePin(HP2_SHOT_PUSH_GPIO_Port, HP2_SHOT_PUSH_Pin, GPIO_PIN_RESET)
@@ -120,30 +120,34 @@
 #define PELTIER_PWR_H()      			HAL_GPIO_WritePin(PELTIER_PWR_ON_GPIO_Port, PELTIER_PWR_ON_Pin, GPIO_PIN_SET)
 #define PELTIER_PWR_L()      			HAL_GPIO_WritePin(PELTIER_PWR_ON_GPIO_Port, PELTIER_PWR_ON_Pin, GPIO_PIN_RESET)
 
+#define CON_COMP_ON()              	    HAL_GPIO_WritePin(CON_COMP_GPIO_Port, CON_COMP_Pin, GPIO_PIN_SET)
+#define CON_COMP_OFF()                  HAL_GPIO_WritePin(CON_COMP_GPIO_Port, CON_COMP_Pin, GPIO_PIN_RESET)
+
 
 //LED
-#define BODY_LED_3_ON()			      HAL_GPIO_WritePin(HANDLE_LED_BLUE_GPIO_Port, HANDLE_LED_BLUE_Pin, GPIO_PIN_SET)
-#define BODY_LED_3_OFF()       		  HAL_GPIO_WritePin(HANDLE_LED_BLUE_GPIO_Port, HANDLE_LED_BLUE_Pin, GPIO_PIN_RESET)
+#define BODY_LED_3_ON()			        HAL_GPIO_WritePin(HANDLE_LED_BLUE_GPIO_Port, HANDLE_LED_BLUE_Pin, GPIO_PIN_SET)
+#define BODY_LED_3_OFF()       		    HAL_GPIO_WritePin(HANDLE_LED_BLUE_GPIO_Port, HANDLE_LED_BLUE_Pin, GPIO_PIN_RESET)
 
-#define BODY_LED_2_ON()     		  HAL_GPIO_WritePin(HANDLE_LED_GREED_GPIO_Port, HANDLE_LED_GREED_Pin, GPIO_PIN_SET)
-#define BODY_LED_2_OFF()      		  HAL_GPIO_WritePin(HANDLE_LED_GREED_GPIO_Port, HANDLE_LED_GREED_Pin, GPIO_PIN_RESET)
+#define BODY_LED_2_ON()     		    HAL_GPIO_WritePin(HANDLE_LED_GREED_GPIO_Port, HANDLE_LED_GREED_Pin, GPIO_PIN_SET)
+#define BODY_LED_2_OFF()      		    HAL_GPIO_WritePin(HANDLE_LED_GREED_GPIO_Port, HANDLE_LED_GREED_Pin, GPIO_PIN_RESET)
 
-#define BODY_LED_1_ON()  			  HAL_GPIO_WritePin(HANDLE_LED_RED_GPIO_Port, HANDLE_LED_RED_Pin, GPIO_PIN_SET)
-#define BODY_LED_1_OFF()              HAL_GPIO_WritePin(HANDLE_LED_RED_GPIO_Port, HANDLE_LED_RED_Pin, GPIO_PIN_RESET)
+#define BODY_LED_1_ON()  			    HAL_GPIO_WritePin(HANDLE_LED_RED_GPIO_Port, HANDLE_LED_RED_Pin, GPIO_PIN_SET)
+#define BODY_LED_1_OFF()                HAL_GPIO_WritePin(HANDLE_LED_RED_GPIO_Port, HANDLE_LED_RED_Pin, GPIO_PIN_RESET)
 
-#define LED_DR2_ON()              			  HAL_GPIO_WritePin(LED_DR2_GPIO_Port, LED_DR2_Pin, GPIO_PIN_SET)
-#define LED_DR2_OFF()               		  HAL_GPIO_WritePin(LED_DR2_GPIO_Port, LED_DR2_Pin, GPIO_PIN_RESET)
+#define LED_DR2_ON()              	    HAL_GPIO_WritePin(LED_DR2_GPIO_Port, LED_DR2_Pin, GPIO_PIN_SET)
+#define LED_DR2_OFF()               	HAL_GPIO_WritePin(LED_DR2_GPIO_Port, LED_DR2_Pin, GPIO_PIN_RESET)
 
-#define LED_DR1_ON()              			  HAL_GPIO_WritePin(LED_DR1_GPIO_Port, LED_DR1_Pin, GPIO_PIN_SET)
-#define LED_DR1_OFF()               		  HAL_GPIO_WritePin(LED_DR1_GPIO_Port, LED_DR1_Pin, GPIO_PIN_RESET)
+#define LED_DR1_ON()              		HAL_GPIO_WritePin(LED_DR1_GPIO_Port, LED_DR1_Pin, GPIO_PIN_SET)
+#define LED_DR1_OFF()               	HAL_GPIO_WritePin(LED_DR1_GPIO_Port, LED_DR1_Pin, GPIO_PIN_RESET)
+
 
 
 #define HP1_RST_CONTROL_TOGGLE()         HAL_GPIO_TogglePin(HP1_RST_CONTROL_GPIO_Port, HP1_RST_CONTROL_Pin)
 #define HP1_Boot_CONTROL_TOGGLE()        HAL_GPIO_TogglePin(HP1_Boot_CONTROL_GPIO_Port, HP1_Boot_CONTROL_Pin)
 #define HP2_Boot_CONTROL_TOGGLE()        HAL_GPIO_TogglePin(HP2_Boot_CONTROL_GPIO_Port, HP2_Boot_CONTROL_Pin)
 #define HP2_RST_CONTROL_TOGGLE()         HAL_GPIO_TogglePin(HP2_RST_CONTROL_GPIO_Port, HP2_RST_CONTROL_Pin)
-#define HP1_PWR_EN_TOGGLE()               HAL_GPIO_TogglePin(HP1_PWR_EN_GPIO_Port, HP1_PWR_EN_Pin)
-#define HP2_PWR_EN_TOGGLE()               HAL_GPIO_TogglePin(HP2_PWR_EN_GPIO_Port, HP2_PWR_EN_Pin)
+#define HP1_PWR_EN_TOGGLE()              HAL_GPIO_TogglePin(HP1_PWR_EN_GPIO_Port, HP1_PWR_EN_Pin)
+#define HP2_PWR_EN_TOGGLE()              HAL_GPIO_TogglePin(HP2_PWR_EN_GPIO_Port, HP2_PWR_EN_Pin)
 #define CILLER_PWR_ON_TOGGLE()           HAL_GPIO_TogglePin(CILLER_PWR_ON_GPIO_Port, CILLER_PWR_ON_Pin)
 #define WATER_PUMP_PWR_EN_TOGGLE()       HAL_GPIO_TogglePin(WATER_PUMP_PWR_EN_GPIO_Port, WATER_PUMP_PWR_EN_Pin)
 #define CON_SOL2_ON_TOGGLE()             HAL_GPIO_TogglePin(CON_SOL2_ON_GPIO_Port, CON_SOL2_ON_Pin)
@@ -159,8 +163,8 @@
 #define COOLING_LV4_TOGGLE()             HAL_GPIO_TogglePin(COOLING_LV4_GPIO_Port, COOLING_LV4_Pin)
 #define COOLING_LV5_TOGGLE()             HAL_GPIO_TogglePin(COOLING_LV5_GPIO_Port, COOLING_LV5_Pin)
 
-#define AC_RLY_ON_TOGGLE()             HAL_GPIO_TogglePin(AC_RLY_ON_GPIO_Port, AC_RLY_ON_Pin)
-#define RF_Pulse_Signal_TOGGLE()       HAL_GPIO_TogglePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin)
+#define AC_RLY_ON_TOGGLE()               HAL_GPIO_TogglePin(AC_RLY_ON_GPIO_Port, AC_RLY_ON_Pin)
+#define RF_Pulse_Signal_TOGGLE()         HAL_GPIO_TogglePin(RF_Pulse_Signal_GPIO_Port, RF_Pulse_Signal_Pin)
 
 #define MAIN_FW_VER 10101
 /*  			define end  			*/

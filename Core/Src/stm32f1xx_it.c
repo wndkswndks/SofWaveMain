@@ -97,6 +97,7 @@ void NMI_Handler(void)
 void HardFault_Handler(void)
 {
   /* USER CODE BEGIN HardFault_IRQn 0 */
+  GPIOD->BSRR = (uint32_t)GPIO_PIN_13 << 16U;
 
   /* USER CODE END HardFault_IRQn 0 */
   while (1)
