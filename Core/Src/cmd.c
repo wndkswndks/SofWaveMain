@@ -735,6 +735,7 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 					case AUTOCAL_FRQ:
 						Debug_Printf("Autocal Frq",1);
 						m_rf.wattDa = 100;
+						m_rf.frqQ = 10700;
 					break;
 
 					case AUTOCAL_TEST:
@@ -1715,6 +1716,10 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 			Tx_LCD_Msg(CMD_RF_AREA_SEL, m_rf.rfAreaMode);
 			Tx_Hand1_Msg(CMD_RF_AREA_SEL, m_rf.rfAreaMode);
 			Eeprom_Byte_Write(IDX_RF_AREA_MODE_START, m_rf.rfAreaMode);
+		break;
+
+		case CMD_TARGET_TEMP:
+			Tx_Hand1_Msg(CMD_TARGET_TEMP, data);
 		break;
 
 

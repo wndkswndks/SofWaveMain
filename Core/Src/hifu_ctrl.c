@@ -2322,6 +2322,7 @@ void AutoCal()
 {
 	uint8_t wattBuff[10] = {10, 20, 30, 40, 50, 60 , 70, 80 , 90, 100};
 	int watt = 0;
+	int wattRear = 0;
 	static int preWatt = 0;
 	uint16_t add;
 	static uint8_t jump = 0;
@@ -2329,19 +2330,6 @@ void AutoCal()
 
 	memset(m_rf.FeedBackWBuff, 0, sizeof(m_rf.FeedBackWBuff));
 	m_rf.FeedBackCnt = 0;
-
-	if(m_rf.wattDa<400)
-	{
-		m_rf.wattDa += 2 ;
-	}
-	else
-	{
-		Debug_Printf("AutoCal Da Over Err",1);
-		m_rf.trandu = 0;
-		m_rf.wattDa = 0;
-		m_rf.autoCalFlag = 0;
-		m_rf.autoCalWattLevel = 0;
-	}
 
 	Tx_RF_Watt_Module(m_rf.trandu, m_rf.wattDa);
 
@@ -2386,7 +2374,7 @@ void AutoCal()
 	{
 		add = (CMD_TRANDU_WATT_BASE + m_rf.trandu*11 +m_rf.autoCalWattLevel+1);
 		Tx_LCD_Msg(add, m_rf.wattDa-1);
-		m_rf.wattDa += 10;
+		m_rf.wattDa += 12;
 		jump = 1;
 		m_rf.autoCalWattLevel++;
 		if(m_rf.autoCalWattLevel == 10)
@@ -2406,6 +2394,29 @@ void AutoCal()
 				Tx_LCD_Msg(CMD_AUTO_CAL_START, 0);
 			}
 		}
+	}
+
+	wattRear = watt%10;
+
+	if(m_rf.wattDa<400)
+	{
+		if(1 <= wattRear && wattRear <6)
+		{
+			m_rf.wattDa += 6 ;
+		}
+		else
+		{
+			m_rf.wattDa += 2 ;
+		}
+
+	}
+	else
+	{
+		Debug_Printf("AutoCal Da Over Err",1);
+		m_rf.trandu = 0;
+		m_rf.wattDa = 0;
+		m_rf.autoCalFlag = 0;
+		m_rf.autoCalWattLevel = 0;
 	}
 
 }
@@ -2672,30 +2683,34 @@ void AutoCal_Frq()
   qsortBuff[0] = m_rf.FeedBackWBuff[1] +(-1*m_rf.FeedBackWBuff[0]);
   printf(">>>\t%d\r\n",qsortBuff[0]);
 
-  static uint8_t high,low;
 
-  if (high)
+
+
+
+  static int maxWatt;
+  static int maxFrq;
+  uint8_t pass = 0;
+  if(maxWatt < qsortBuff[0] )
   {
-	  if(qsortBuff[0]<50)
-	  {
-		low = 1;
-	  }
+	maxWatt = qsortBuff[0];
+	maxFrq = m_rf.frqQ;
   }
-  else
+  else if((maxWatt - qsortBuff[0]) >10)
   {
-	  if(qsortBuff[0]>90)
-	  {
-		high = 1;
-	  }
+	pass = 1;
+	Debug_printf_str("ACal [%d]maxFrq = %d, maxWatt = %d\r\n", m_rf.trandu, maxFrq, maxWatt);
   }
 
-  if((m_rf.frqQ > 11800) || (high && low))
+
+  if((m_rf.frqQ > 11800) || pass)
   {
-  	low = 0;
-  	high = 0;
+
   	Tx_RF_Watt_Zero_ALL_Module();
   	m_rf.frqQ = 10700;
   	m_rf.trandu++;
+  	maxWatt = 0;
+	maxFrq = 0;
+
 //	Tx_RF_FRQ_Module(trandu, frqQ);
 
   	if(m_rf.trandu>6)
