@@ -340,12 +340,12 @@ void Chiller_Temperature_Read()
 
 		if(m_io.chillerTemp< 0.0)
 		{
-			Ciller_Pwr_OFF();
+//			Ciller_Pwr_OFF();
 			pwFlag = 1;
 		}
 		else if(m_io.chillerTemp> 5.0)
 		{
-			Ciller_Pwr_ON();
+//			Ciller_Pwr_ON();
 			pwFlag = 1;
 		}
 	}

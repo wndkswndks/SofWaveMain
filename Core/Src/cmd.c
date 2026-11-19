@@ -393,7 +393,7 @@ void PreCooling_ON()
 {
 	m_rf.preCooltime = HAL_GetTick();
 	m_rf.treatStatus = STATUS_PRECOOLING;
-	PELTIER_PWR_ON();
+//	PELTIER_PWR_ON();
 	Tx_LCD_Msg(CMD_LCD_STATUS, STATUS_PRECOOLING);
 	if(m_io.sol1OnStatus) SOL1_ON();
 	Debug_Printf("PreCooling_ON",1);
@@ -404,7 +404,7 @@ void Peltier_Ctrl_Start()
 {
 	if(m_io.waterPumpPwrEn && m_io.ChillerPwrEn && m_io.sol1OnStatus)
 	{
-		PELTIER_PWR_ON();
+//		PELTIER_PWR_ON();
 		SOL1_ON();
 		Debug_Printf("PreCooling_ON",1);
 	}
@@ -1427,7 +1427,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 			{
 				if(Ready_Enter_Chk())
 				{
-					Pump_Ciller_Pwr_ON();
+//					Pump_Ciller_Pwr_ON();
 					PreCooling_ON();
 					Tx_Hand1_Msg(CMD_LCD_STATUS, STATUS_PRECOOLING);
 					if(m_rf.stbyTimeStamp && HAL_GetTick() - m_rf.stbyTimeStamp <15000)
@@ -1594,7 +1594,7 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 		break;
 
 		case CMD_COOLING:
-			Pump_Ciller_Pwr_ON();
+//			Pump_Ciller_Pwr_ON();
 		break;
 
 		case CMD_TEMP_OFFSET:
