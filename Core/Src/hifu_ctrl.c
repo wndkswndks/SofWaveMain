@@ -2961,13 +2961,14 @@ void RF_FeedBack_Cal(uint8_t* buff)
 		{
 			if((fbVal[0] > over1) || (fbVal[6] > over2))
 			{
+				#if 0//우선 일본인 까지는 삭제
 				Buzzer_ON();
-//				RF_PWM_Force_Force_Stop();
 				Tx_LCD_Msg(CMD_CONTECT_CHK, 1);
 				RF_Pulse_Signal_GPIO_Port_L();
 				m_rf.expStep = STEP3;
 				m_rf.expEndFlag = 1;
 				m_rf.pluseOn = 0;
+				#endif
 				printf("FB Over\r\n");
 			}
 		}
@@ -2975,13 +2976,14 @@ void RF_FeedBack_Cal(uint8_t* buff)
 		{
 			if(fbVal[6] > over2)
 			{
+			#if 0//우선 일본인 까지는 삭제
 				Buzzer_ON();
-//				RF_PWM_Force_Force_Stop();
 				Tx_LCD_Msg(CMD_CONTECT_CHK, 1);
 				RF_Pulse_Signal_GPIO_Port_L();
 				m_rf.expStep = STEP3;
 				m_rf.expEndFlag = 1;
 				m_rf.pluseOn = 0;
+			#endif
 				printf("FB Over\r\n");
 			}
 		}
@@ -3340,7 +3342,7 @@ void Exp_Config()
 			if(testExpFlag || Exp_Shot_Chk())
 			{
 				testExpFlag = 0;
-
+				m_rf.pulseCnt = 0;
 				m_rf.expEndFlag = 0;
 				m_rf.rfFBavg1 = 0;
 				m_rf.rfFBavg2 = 0;
