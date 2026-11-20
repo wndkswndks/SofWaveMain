@@ -312,6 +312,7 @@ void Error_Check_HP()
 	if(Check_ERROR((m_err.handTimeout < COMU_MAX_CNT), IDX_HAND_COMU_ERR ,ERR_DEL_1)){m_hand1.temprature = 0;}
 	if(Check_ERROR((m_err.preCoolStatus == 0), IDX_PRE_COOL_ERR ,ERR_DEL_1)){}
 
+#if 0
 	if(Check_ERROR((TEMP_OUT_MIN <= m_hand1.temprature && m_hand1.temprature <TEMP_OUT_MAX),IDX_TEMP_OUT ,ERR_DEL_1))
 	{
 		Ready_OFF(EVENT_5);
@@ -319,6 +320,7 @@ void Error_Check_HP()
 	}
 	else if(Check_ERROR((m_hand1.temprature > TEMP_MIN), IDX_TEMP_LIMIT_UNDER ,ERR_DEL_1)){}
 	else if(Check_ERROR((m_hand1.temprature > TEMP_LOW_VALUE), IDX_TEMP_LOW ,ERR_DEL_1)){}
+#endif
 
 	if(m_eep.catridgeDetect == CATRIGE_CHK_OK && m_eep.catridgeStatus == SING_UP_CODE && m_rf.expStep != STEP2)
 	{

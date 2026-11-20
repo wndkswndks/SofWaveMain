@@ -209,6 +209,7 @@ void SysTick_Handler(void)
   /* USER CODE BEGIN SysTick_IRQn 1 */
   RF_Eg_Exp_Conter();
   Buzzer_OFF_Config();
+  RF_5Sec_Off();
 
   /* USER CODE END SysTick_IRQn 1 */
 }

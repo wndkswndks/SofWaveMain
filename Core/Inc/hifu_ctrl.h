@@ -351,6 +351,7 @@ typedef struct
 	uint8_t rfFBReTry;
 	uint16_t rfFBtestBuff[5][2];
 	uint8_t rfFBtestCnt;
+	uint32_t offTimestemp;
 } RF_T;
 
 
@@ -426,6 +427,7 @@ void RF_PWM_Force_Force_Stop();
 void Rf_TD_BHB004_Table_260212();
 void Pulse_Trig_TimeSave();
 void Tx_RF_Watt_ALL_Module_Force(uint16_t da);
+void RF_5Sec_Off();
 
 
 /*  			function end  			*/

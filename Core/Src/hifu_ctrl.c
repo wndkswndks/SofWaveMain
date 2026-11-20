@@ -1419,6 +1419,7 @@ void RF_Watt_All_Calculate()
 
 	m_rf.watt = wattI;
 
+#if 0
 	wattM = wattI/10;
 	wattS = (wattI%10)/2;
 
@@ -1432,6 +1433,15 @@ void RF_Watt_All_Calculate()
 			m_rf.rfwattBuff[i] += (gap*wattS);
 		}
 	}
+#endif
+
+	m_rf.rfwattBuff[0] = m_eep.rfWattBuff[10];
+	m_rf.rfwattBuff[1] = m_eep.rfWattBuff[21];
+	m_rf.rfwattBuff[2] = m_eep.rfWattBuff[32];
+	m_rf.rfwattBuff[3] = m_eep.rfWattBuff[43];
+	m_rf.rfwattBuff[4] = m_eep.rfWattBuff[54];
+	m_rf.rfwattBuff[5] = m_eep.rfWattBuff[65];
+	m_rf.rfwattBuff[6] = m_eep.rfWattBuff[76];
 
 
 	switch (m_rf.rfAreaMode)
@@ -1883,12 +1893,24 @@ void RF_Pwm_On()
 	m_rf.pluseOn = 1;
 	m_rf.pluseTimeStamp = HAL_GetTick();
 	m_rf.fbTimeStamp = m_rf.pluseTimeStamp;
+	m_rf.offTimestemp = m_rf.pluseTimeStamp;
 	Pulse_Trig_TimeSave();
 	m_rf.pluseLevel = PWM_H_LEVEL;
 	RF_Pulse_Signal_GPIO_Port_H();
 
 }
 
+void RF_5Sec_Off()
+{
+	if(m_rf.offTimestemp)
+	{
+		if(HAL_GetTick() - m_rf.offTimestemp >= 3000)
+		{
+			RF_Pulse_Signal_GPIO_Port_L();
+			m_rf.offTimestemp = 0;
+		}
+	}
+}
 void RF_eg_Exp_On(uint32_t expTime)
 {
 //	Debug_Printf_Value("RF_eg_Exp_On ",expTime,1);
@@ -1951,7 +1973,7 @@ void RF_Pwm_Conter_Common(uint8_t pulseNum)
 		switch (m_rf.pluseLevel)
 		{
 			case PWM_H_LEVEL:
-				RF_Pulse_Signal_GPIO_Port_H();
+//				RF_Pulse_Signal_GPIO_Port_H();
 				if(HAL_GetTick() - m_rf.pluseTimeStamp >= ((float)m_rf.pulseDuration/pulseNum *TIME_100MS))
 				{
 					Pulse_Trig_TimeSave();
@@ -1973,7 +1995,7 @@ void RF_Pwm_Conter_Common(uint8_t pulseNum)
 			case PWM_L_LEVEL:
 				m_rf.rfFBcnt = 0;
 				m_rf.rfFBLow = 1;
-				if(m_rf.interval != 0)RF_Pulse_Signal_GPIO_Port_L();
+//				if(m_rf.interval != 0)RF_Pulse_Signal_GPIO_Port_L();
 				if(HAL_GetTick() - m_rf.pluseTimeStamp >= m_rf.interval*TIME_100MS)
 				{
 					Pulse_Trig_TimeSave();
@@ -1984,7 +2006,7 @@ void RF_Pwm_Conter_Common(uint8_t pulseNum)
 			break;
 
 			case PWM_POST_LEVEL:
-				RF_Pulse_Signal_GPIO_Port_L();
+//				RF_Pulse_Signal_GPIO_Port_L();
 				if(HAL_GetTick() - m_rf.pluseTimeStamp >= m_rf.postCooling*TIME_100MS)
 				{
 					Pulse_Trig_TimeSave();
