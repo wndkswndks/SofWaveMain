@@ -361,7 +361,8 @@ typedef struct
 
 typedef struct
 {
-	uint16_t catridgeId;
+	uint16_t catridgeIdHead;
+	uint16_t catridgeIdTeal;
 	uint16_t manufacYY;
 	uint16_t manufacMM;
 	uint16_t manufacDD;

@@ -336,7 +336,10 @@ void Error_Check_HP()
 
 		}
 
-		Check_ERROR((m_eep.catridgeId < CATRIDGE_ID_MAX), IDX_CATRIGE_ID_ERR ,ERR_DEL_1);
+
+		if(Check_ERROR((CART_ID_MIN_H <= m_eep.catridgeIdHead && m_eep.catridgeIdHead <=CART_ID_MAX_H), IDX_CATRIGE_ID_ERR ,ERR_DEL_1)){}
+		else if(Check_ERROR((CART_ID_MIN_T <= m_eep.catridgeIdTeal && m_eep.catridgeIdTeal <=CART_ID_MAX_T), IDX_CATRIGE_ID_ERR ,ERR_DEL_1)){}
+
 		Check_Day_ERROR(m_eep.manufacYY, m_eep.manufacMM, m_eep.manufacDD, IDX_CATRIGE_MANU_ERR);
 		Check_Day_ERROR(m_eep.issuedYY, m_eep.issuedMM, m_eep.issuedDD, IDX_CATRIGE_ISUE_ERR);
 

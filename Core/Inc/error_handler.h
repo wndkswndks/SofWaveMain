@@ -47,8 +47,6 @@ typedef enum
 	CATRIDGE_FRQ_MIN = 9000,
 	CATRIDGE_FRQ_MAX = 13000,
 
-	CATRIDGE_ID_MAX = 100,
-
 	YY_MAX = 70,
 	YY_MIN = 25,
 	MM_MAX = 12,
@@ -56,9 +54,10 @@ typedef enum
 	DD_MAX = 31,
 	DD_MIN = 1,
 
-	CART_ID_MIN = 1,
-	CART_ID_MAX = 99,
-
+	CART_ID_MIN_H = 2600,//2026 00
+	CART_ID_MAX_H = 5011,//2050 12
+	CART_ID_MIN_T = 0,
+	CART_ID_MAX_T = 20000,
 	HOUR_MAX = 24,
 	HOUR_MIN = 1,
 	MIN_MAX = 60,

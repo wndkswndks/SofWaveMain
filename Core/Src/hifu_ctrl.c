@@ -2251,7 +2251,7 @@ void CARTRIGE_REQ_DATA(uint8_t idx)
 	switch (idx)
 	{
 		case CART_IDX_CART_ID:
-			Tx_LCD_Msg(CMD_CART_ID, m_eep.catridgeId);
+//			Tx_LCD_Msg(CMD_CART_ID_HEAD, m_eep.catridgeId);
 		break;
 		case CART_IDX_MANUFAC_YY:
 			Tx_LCD_Msg(CMD_MANUFAC_YY, m_eep.manufacYY);

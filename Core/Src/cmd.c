@@ -526,54 +526,7 @@ void HP_Reset_Config()
 	}
 
 }
-void Check_CartAllData(uint8_t status)
-{
-#if 1
-	HP_Cmd_Recall(CMD_CART_ID, m_eep.catridgeId, status);
-	HP_Cmd_Recall(CMD_MANUFAC_YY, m_eep.manufacYY, status);
-	HP_Cmd_Recall(CMD_MANUFAC_MM, m_eep.manufacMM, status);
-	HP_Cmd_Recall(CMD_MANUFAC_DD, m_eep.manufacDD, status);
-	HP_Cmd_Recall(CMD_ISSUED_YY, m_eep.issuedYY, status);
-	HP_Cmd_Recall(CMD_ISSUED_MM, m_eep.issuedMM, status);
-	HP_Cmd_Recall(CMD_ISSUED_DD, m_eep.issuedDD, status);
 
-	if(m_eep.catridgeRxErrCnt >= 6)
-	{
-		Debug_Printf("CartAllErr",1);
-		m_hand1.cartAllOk = 2;
-		m_eep.catridgeRxErrCnt = 0;
-		return;
-	}
-	for(int i =1 ;i <= 7;i++)
-	{
-		HP_Cmd_Recall(CMD_TRANDU_FRQ_BASE + i, m_eep.rfFrqBuff[i], status);
-	}
-	for(int i =1 ;i <= 77;i++)
-	{
-		HP_Cmd_Recall(CMD_TRANDU_WATT_BASE + i, m_eep.rfWattBuff[i], status);
-	}
-
-	HP_Cmd_Recall(CMD_REMIND_SHOT, m_eep.remainingShotNum, status);
-	HP_Cmd_Recall(CMD_POWER_SPECS, m_eep.powerSpecs, status);
-	HP_Cmd_Recall(CMD_CATRIDGE_STATUS, m_eep.catridgeStatus, status);
-#endif
-
-
-	if(m_eep.catridgeRxErrCnt <= 10)
-	{
-		Tx_LCD_Msg(CMD_GET_ALL_CART_END, status);
-		Debug_Printf("CartAllOk",1);
-		Debug_Printf_Value("catridgeRxErrCnt", m_eep.catridgeRxErrCnt, 1);
-		m_hand1.cartAllOk = 1;
-
-	}
-	else
-	{
-		Debug_Printf_Value("catridgeRxErrCnt", m_eep.catridgeRxErrCnt, 1);
-	}
-	m_eep.catridgeRxErrCnt = 0;
-
-}
 
 
 uint8_t Check_Cart_Req(uint8_t cmd, uint16_t nowValue, uint16_t min, uint16_t max)
@@ -610,7 +563,8 @@ void Check_Cart_Req_Config()
 
 		timeStamp = HAL_GetTick();
 
-		    if(Check_Cart_Req(CMD_CART_ID, m_eep.catridgeId, CART_ID_MIN, CART_ID_MAX) ){txCnt++; }
+		    if(Check_Cart_Req(CMD_CART_ID_HEAD, m_eep.catridgeIdHead, CART_ID_MIN_H, CART_ID_MAX_H) ){txCnt++; }
+		else if(Check_Cart_Req(CMD_CART_ID_TEAL, m_eep.catridgeIdTeal, CART_ID_MIN_T, CART_ID_MAX_T) ){txCnt++; }
 		else if(Check_Cart_Req(CMD_MANUFAC_YY, m_eep.manufacYY, YY_MIN, YY_MAX) ){txCnt++; }
 		else if(Check_Cart_Req(CMD_MANUFAC_MM, m_eep.manufacMM, MM_MIN, MM_MAX) ){txCnt++; }
 		else if(Check_Cart_Req(CMD_MANUFAC_DD, m_eep.manufacDD, DD_MIN, DD_MAX) ){txCnt++; }
@@ -1094,6 +1048,17 @@ void Debug_Rx_Parssing(uint8_t add, int data)
 			m_eep.cartDataMoving = 1;
 		break;
 
+		case CMD_CART_ID_HEAD:
+			Tx_LCD_Msg(CMD_CART_ID_HEAD, data);
+		break;
+
+		case CMD_CART_ID_TEAL:
+			Tx_LCD_Msg(CMD_CART_ID_TEAL, data);
+		break;
+
+
+
+
 	}
 
 
@@ -1321,9 +1286,14 @@ void LCD_Rx_Parssing(uint8_t add, int data)
 			}
 		break;
 
-		case CMD_CART_ID:
-			Data_Req_Set(CMD_CART_ID, data, &m_eep.catridgeId);
+		case CMD_CART_ID_HEAD:
+			Data_Req_Set(CMD_CART_ID_HEAD, data, &m_eep.catridgeIdHead);
 		break;
+
+		case CMD_CART_ID_TEAL:
+			Data_Req_Set(CMD_CART_ID_TEAL, data, &m_eep.catridgeIdTeal);
+		break;
+
 		case CMD_MANUFAC_YY:
 			Data_Req_Set(CMD_MANUFAC_YY, data, &m_eep.manufacYY);
 		break;
@@ -1776,10 +1746,14 @@ void Hand_Rx_Parssing(uint8_t add, int data)
 		switch (add)
 		{
 
-			case CMD_CART_ID:
-				m_eep.catridgeId = data;
-				Tx_LCD_Msg(CMD_CART_ID, data);
+			case CMD_CART_ID_HEAD:
+				m_eep.catridgeIdHead = data;
+				Tx_LCD_Msg(CMD_CART_ID_HEAD, data);
+			break;
 
+			case CMD_CART_ID_TEAL:
+				m_eep.catridgeIdTeal = data;
+				Tx_LCD_Msg(CMD_CART_ID_TEAL, data);
 			break;
 
 			case CMD_MANUFAC_YY:
@@ -1796,9 +1770,6 @@ void Hand_Rx_Parssing(uint8_t add, int data)
 				m_eep.manufacDD = data;
 				Tx_LCD_Msg(CMD_MANUFAC_DD, data);
 			break;
-
-			break;
-
 
 			case CMD_ISSUED_YY:
 				m_eep.issuedYY = data;
