@@ -21,6 +21,8 @@
 #define OUTPUT_VOLTAGE_ERR_CHK   'K' //1  // 출력 전압 에러 확인
 #define OUTPUT_VOLTAGE_LIMIT_SET  'L' //4  // 출력 전압 한도 설정
 #define OUTPUT_MODE_SET                'M' //1  // 출력 모드 설정
+#define GEN_RF_FILLTER_VOLTAGE_REQ        'Q' //1  // 필터 RF 출력 전압 요청
+#define GEN_RF_FILLTER_CURRNT_REQ        'R' //1  // 필터 RF 출력 전압 요청
 
 #define GEN_STATUS_CHECK_R          'a' //2  // 제너레이터 상태 체크
 #define GEN_GET_VERSION_R            'b' //3  // 제너레이터 버전
@@ -35,6 +37,8 @@
 #define OUTPUT_VOLTAGE_ERR_CHK_R   'k' //2  // 출력 전압 에러 확인
 #define OUTPUT_VOLTAGE_LIMIT_SET_R  'l' //4  // 출력 전압 한도 설정
 #define OUTPUT_MODE_SET_R                'm' //1  // 출력 모드 설정
+#define GEN_RF_FILLTER_VOLTAGE_REQ_R  'q' //1  // 필터 RF 출력 전압 요청
+#define GEN_RF_FILLTER_CURRNT_REQ_R   'r' //1  // 필터 RF 출력 전압 요청
 
 
 #define STX	0x02

@@ -1566,6 +1566,56 @@ void Tx_RF_FeedBack_Check()
 	memset(m_rf.txBuff, 0, 30);
 
 }
+void Tx_RF_FeedBack_Filter_V_Check()
+{
+
+	uint8_t len = 0;
+
+	len = RF_NUM_FIX + 1;
+	m_rf.txBuff[RF_INDEX_STX] = STX;
+	m_rf.txBuff[RF_INDEX_LEN] = len;
+	m_rf.txBuff[RF_INDEX_ADDR] = 'B';//���ʷ����� B, �ý��� b
+	m_rf.txBuff[RF_INDEX_CMD] = GEN_RF_FILLTER_VOLTAGE_REQ;
+
+	m_rf.txBuff[RF_INDEX_DATA] = 0x00;
+
+
+	for(int i =0 ;i <= RF_INDEX_DATA ;i++)
+	{
+		m_rf.txBuff[RF_INDEX_DATA+1] ^= m_rf.txBuff[i];
+	}
+
+	m_rf.txBuff[RF_INDEX_DATA+2] = ETX;
+//	Debug_Tx_FeedBack_Check_Printf();
+	Tx_RF_Msg(m_rf.txBuff, len);
+	memset(m_rf.txBuff, 0, 30);
+
+}
+void Tx_RF_FeedBack_Filter_Curnt_Check()
+{
+
+	uint8_t len = 0;
+
+	len = RF_NUM_FIX + 1;
+	m_rf.txBuff[RF_INDEX_STX] = STX;
+	m_rf.txBuff[RF_INDEX_LEN] = len;
+	m_rf.txBuff[RF_INDEX_ADDR] = 'B';//���ʷ����� B, �ý��� b
+	m_rf.txBuff[RF_INDEX_CMD] = GEN_RF_FILLTER_CURRNT_REQ;
+
+	m_rf.txBuff[RF_INDEX_DATA] = 0x00;
+
+
+	for(int i =0 ;i <= RF_INDEX_DATA ;i++)
+	{
+		m_rf.txBuff[RF_INDEX_DATA+1] ^= m_rf.txBuff[i];
+	}
+
+	m_rf.txBuff[RF_INDEX_DATA+2] = ETX;
+//	Debug_Tx_FeedBack_Check_Printf();
+	Tx_RF_Msg(m_rf.txBuff, len);
+	memset(m_rf.txBuff, 0, 30);
+
+}
 
 
 
@@ -2908,6 +2958,68 @@ void RF_FeedBack_Cal_org(uint8_t* buff)
 }
 
 
+void RF_FeedBack_FilterCurnt_Cal(uint8_t* buff)
+{
+	uint16_t fbVal[7] = {0,};
+	uint32_t sum1 = 0, sum2 = 0;
+	uint32_t avg1, avg2;
+	uint32_t over1,over2;
+	uint32_t overVal = 15 +(m_rf.watt/5);
+	uint8_t fail = 0;
+
+	printf("FtC ");
+	for(int i =0 ;i < 7;i++)
+	{
+		fbVal[i] = (buff[4+i*2]<<8) |buff[4+i*2+1];
+		printf("%u /", fbVal[i]);
+	}
+	printf("(%u)(%u)\r\n",fbVal[0], fbVal[6]);
+
+}
+
+
+void RF_FeedBack_FilterV_Cal(uint8_t* buff)
+{
+	uint16_t fbVal[7] = {0,};
+	uint32_t sum1 = 0, sum2 = 0;
+	uint32_t avg1, avg2;
+	uint32_t over1,over2;
+	uint32_t overVal = 15 +(m_rf.watt/5);
+	uint8_t fail = 0;
+
+	printf("FtV ");
+	for(int i =0 ;i < 7;i++)
+	{
+		fbVal[i] = (buff[4+i*2]<<8) |buff[4+i*2+1];
+		printf("%u /", fbVal[i]);
+	}
+	printf("(%u)(%u)\r\n",fbVal[0], fbVal[6]);
+}
+
+
+
+void RF_FeedBack_Cal_Test(uint8_t* buff)
+{
+	uint16_t fbVal[7] = {0,};
+	static uint16_t fbValPre[7] = {0,};
+	float diff[7] = {0,};
+	uint32_t sum1 = 0, sum2 = 0;
+	uint32_t avg1, avg2;
+	uint32_t over1,over2;
+	uint32_t overVal = 15 +(m_rf.watt/5);
+	uint8_t fail = 0;
+
+	printf("FB ");
+	for(int i =0 ;i < 7;i++)
+	{
+		fbVal[i] = (buff[4+i*2]<<8) |buff[4+i*2+1];
+		diff[i] = ((float)(fbVal[i] -fbValPre[i])/fbValPre[i])*100.0;
+		printf("%u(%.1f) /", fbVal[i], diff[i]);
+	}
+	printf("\r\n");
+	memcpy(fbValPre, fbVal, sizeof(fbVal));
+}
+
 void RF_FeedBack_Cal(uint8_t* buff)
 {
 	uint16_t fbVal[7] = {0,};
@@ -3138,7 +3250,10 @@ void RF_Rx_Parssing(uint8_t rxID)
 	memset(m_rf.rxBuff, 0, 30);
 
 	rxCallBackCmd = rxBuffPassing[RF_INDEX_CMD];
-	if((rxCallBackCmd != GEN_STATUS_CHECK_R) && (rxCallBackCmd != GEN_RF_VOLTAGE_REQ_R))
+	if((rxCallBackCmd != GEN_STATUS_CHECK_R)
+	&& (rxCallBackCmd != GEN_RF_VOLTAGE_REQ_R)
+	&& (rxCallBackCmd != GEN_RF_FILLTER_VOLTAGE_REQ_R)
+	&& (rxCallBackCmd != GEN_RF_FILLTER_CURRNT_REQ_R))
 	{
 		Debug_Rx_RF_Printf(rxBuffPassing, m_rf.rxCnt);
 	}
@@ -3188,16 +3303,20 @@ void RF_Rx_Parssing(uint8_t rxID)
 				break;
 
 				case FB_MODE_NOMAL:
-					RF_FeedBack_Cal(rxBuffPassing);
+					RF_FeedBack_Cal_Test(rxBuffPassing);
 				break;
 
 //				case FB_MODE_TEST:
 //					RF_FeedBack_Cal_Test(rxBuffPassing);
 //				break;
-
-
 			}
+		break;
+		case GEN_RF_FILLTER_VOLTAGE_REQ_R:
+			RF_FeedBack_FilterV_Cal(rxBuffPassing);
+		break;
 
+		case GEN_RF_FILLTER_CURRNT_REQ_R:
+			RF_FeedBack_FilterCurnt_Cal(rxBuffPassing);
 		break;
 
 		case ALL_CH_FREQ_SET_R:
@@ -3244,11 +3363,13 @@ void FeedBack_UnDetectChk()
 {
 	static uint32_t timeStamp;
 
-	if(m_rf.pluseLevel == PWM_H_LEVEL)
+//	if(m_rf.pluseLevel == PWM_H_LEVEL)
 	{
 		if(HAL_GetTick()-timeStamp >= 50)
 		{
 			Tx_RF_FeedBack_Check();
+//			Tx_RF_FeedBack_Filter_V_Check();
+//			Tx_RF_FeedBack_Filter_Curnt_Check();
 			timeStamp = HAL_GetTick();
 		}
 	}

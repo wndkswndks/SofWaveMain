@@ -294,7 +294,7 @@ void Tx_Hand1_Msg(uint8_t add, int data)
 
 void Tx_RF_Msg(uint8_t* buff, uint8_t len)
 {
-	while(HAL_GetTick() -m_rf.lastRfGenTxTime<10);
+	while(HAL_GetTick() -m_rf.lastRfGenTxTime<50);
 	HAL_UART_Transmit(&huart4,buff, len,100);
 	//Debug_Tx_RF_Printf(buff, len);
 	m_rf.lastRfGenTxTime = HAL_GetTick();
